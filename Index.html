@@ -199,11 +199,10 @@ padding: 10px;
 margin-left: 5px;
 }
 }
-/* Style for the changelog button */
 #changelog-button {
 padding: 8px 15px;
 margin-left: 10px;
-background-color: #4CAF50; /* Green */
+background-color: #4CAF50;
 color: white;
 border: none;
 border-radius: 4px;
@@ -216,7 +215,6 @@ transition: background-color 0.3s;
 background-color: #45a049;
 }
 
-/* Style for the changelog modal */
 .modal {
 display: none;
 position: fixed;
@@ -231,8 +229,8 @@ background-color: rgba(0,0,0,0.4);
 }
 #clear-chat-button {
     padding: 8px 15px;
-    margin-left: 10px; /* Space between changelog and clear buttons */
-    background-color: #f44336; /* Red */
+    margin-left: 10px; 
+    background-color: #f44336;
     color: white;
     border: none;
     border-radius: 4px;
@@ -242,7 +240,7 @@ background-color: rgba(0,0,0,0.4);
 }
 
 #clear-chat-button:hover {
-    background-color: #d32f2f; /* Darker red on hover */
+    background-color: #d32f2f; 
 }
 .modal-content {
 background-color: #fefefe;
@@ -304,7 +302,7 @@ color: #999;
 </div>
 
 
-<!-- The Modal -->
+
 <div id="changelogModal" class="modal">
 <div class="modal-content">
 <span class="close">&times;</span>
@@ -378,7 +376,7 @@ sendMessage();
 });
 function displayError(errorMessage) {
 const errorDiv = document.createElement('div');
-errorDiv.classList.add('message', 'bot-message'); // Style it like a bot message
+errorDiv.classList.add('message', 'bot-message');
 errorDiv.textContent = `Error: ${errorMessage}`;
 chatContainer.appendChild(errorDiv);
 chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -570,8 +568,8 @@ changelogModal.style.display = "none";
 }
 const clearChatButton = document.getElementById('clear-chat-button');
 clearChatButton.addEventListener('click', () => {
-    chatContainer.innerHTML = ''; // Clear the chat container
-    messageHistory = [];        // Clear the message history
+    chatContainer.innerHTML = '';
+    messageHistory = [];
 });
 </script>
 </body>
