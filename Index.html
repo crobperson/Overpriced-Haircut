@@ -3,8 +3,6 @@
 <head>
 <title>Google</title>
 <style>
-
-
 body {
 font-family: sans-serif;
 margin: 0;
@@ -202,7 +200,7 @@ margin-left: 5px;
 #changelog-button {
 padding: 8px 15px;
 margin-left: 10px;
-background-color: #4CAF50;
+background-color: #4CAF50; 
 color: white;
 border: none;
 border-radius: 4px;
@@ -230,7 +228,7 @@ background-color: rgba(0,0,0,0.4);
 #clear-chat-button {
     padding: 8px 15px;
     margin-left: 10px; 
-    background-color: #f44336;
+    background-color: #f44336; 
     color: white;
     border: none;
     border-radius: 4px;
@@ -292,7 +290,7 @@ color: #999;
     <div id="chat-container"></div>
     <div id="typing-indicator">Gemini is typing...</div>
     <div id="input-area">
-        <input type="file" id="file-input" accept="image/*,application/pdf,audio/*" style="display:none;"> <label for="file-input" style="padding: 10px; margin-right: 5px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">Choose File</label>
+        <input type="file" id="file-input" accept=".html,image/*,application/pdf,audio/*" style="display:none;"> <label for="file-input" style="padding: 10px; margin-right: 5px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">Choose File</label>
         <textarea id="input-box" placeholder="Enter your message..." rows="1"></textarea>
         <button id="send-button">Send</button>
     </div>
@@ -301,12 +299,14 @@ color: #999;
     </p>
 </div>
 
-
-
 <div id="changelogModal" class="modal">
 <div class="modal-content">
 <span class="close">&times;</span>
 <h2>Changelog</h2>
+<p>
+<strong>Version 1.3 (December 9, 2024)</strong><br>
+- Even better AI, better than gpt4 (and my Samsung smart refrigerator), better file support, fixed more pesky bugs<br>
+</p>
 <p>
 <strong>Version 1.2 + 0.06 (November 25, 2024)</strong><br>
 - I forgot to remove some debugging code (error messages in chat).<br>
@@ -340,10 +340,10 @@ color: #999;
 
 <script>
 const API_KEYS = [
-'Key1',
-'Key2',
-'Key3',
-'Key4'
+'AIzaSyBdc_A8VxExwO6-0LY1--r2-Ym73lMg-h4',
+'AIzaSyBydeCpaNOIPSk794CpTGnfKrxbjCgJLu4',
+'AIzaSyCQ7tBHtctxlNs61Zm2Y__7KYeDLfz5dms',
+'AIzaSyAip_DFfKNC35MFIorEoNK4y6czP9P65-c'
 ];
 const BASE_URL = 'https://generativelanguage.googleapis.com';
 
@@ -355,13 +355,13 @@ const modelToggle = document.getElementById('modelToggle');
 const fileInput = document.getElementById('file-input');
 
 let messageHistory = [];
-let currentModel = 'gemini-1.5-pro-002';
+let currentModel = 'gemini-exp-1206';
 
 modelToggle.addEventListener('change', () => {
 if (modelToggle.checked) {
-currentModel = 'gemini-1.5-flash-002';
+currentModel = 'gemini-1.5-flash-latest';
 } else {
-currentModel = 'gemini-1.5-pro-002';
+currentModel = 'gemini-exp-1206';
 }
 console.log(`Model switched to: ${currentModel}`);
 });
@@ -376,7 +376,7 @@ sendMessage();
 });
 function displayError(errorMessage) {
 const errorDiv = document.createElement('div');
-errorDiv.classList.add('message', 'bot-message');
+errorDiv.classList.add('message', 'bot-message'); 
 errorDiv.textContent = `Error: ${errorMessage}`;
 chatContainer.appendChild(errorDiv);
 chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -390,7 +390,7 @@ headers: {
 body: JSON.stringify({
 contents: contents,
 generationConfig: {
-temperature: 0.5,
+temperature: 0,
 topK: 40,
 topP: 0.95,
 maxOutputTokens: 8192,
@@ -409,92 +409,111 @@ return data;
 }
 
 async function sendMessage() {
-const userMessageText = inputBox.value.trim();
-const file = fileInput.files[0];
+    const userMessageText = inputBox.value.trim();
+    const file = fileInput.files[0];
 
-if (userMessageText === '' && !file) return;
+    if (userMessageText === '' && !file) return;
 
-const userMessage = document.createElement('div');
-userMessage.classList.add('message', 'user-message');
-userMessage.textContent = userMessageText || 'Sent a file';
-chatContainer.appendChild(userMessage);
-chatContainer.scrollTop = chatContainer.scrollHeight;
+    const userMessage = document.createElement('div');
+    userMessage.classList.add('message', 'user-message');
+    userMessage.textContent = userMessageText || 'Sent a file';
+    chatContainer.appendChild(userMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 
-inputBox.value = '';
-fileInput.value = '';
+    inputBox.value = '';
+    fileInput.value = '';
 
-typingIndicator.style.display = 'block';
+    typingIndicator.style.display = 'block';
 
-let botMessageText = '';
-let success = false;
-let fileData = null; // Initialize fileData outside the try block
-const contents = [];
+    let botMessageText = '';
+    let success = false;
+    let fileData = null;
+    const contents = [];
 
-for (const msg of messageHistory) {
-contents.push(msg);
+    for (const msg of messageHistory) {
+        contents.push(msg);
+    }
+
+    if (userMessageText) {
+        contents.push({ role: 'user', parts: [{ text: userMessageText }] });
+    }
+
+    if (file) {
+        try {
+            fileData = await uploadFile(file);
+            if (file.type === 'text/html') {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const htmlContent = e.target.result;
+                    contents.push({ role: 'user', parts: [{ text: `HTML file content: ${htmlContent}` }] });
+                    await continueSendMessage(contents); 
+                };
+                reader.onerror = (error) => {
+                    console.error('Error reading HTML file:', error);
+                    typingIndicator.style.display = 'none';
+                    alert('Failed to read HTML file.');
+                };
+                reader.readAsText(file);
+                return; 
+            } else {
+                contents.push({ role: 'user', parts: [{ file_data: { mime_type: file.type, file_uri: fileData.file.uri } }] });
+            }
+        } catch (error) {
+            console.error('File upload error:', error);
+            typingIndicator.style.display = 'none';
+            alert('Failed to upload file: ' + error.message);
+            return;
+        }
+    }
+
+    await continueSendMessage(contents); 
 }
 
-if (userMessageText) {
-contents.push({ role: 'user', parts: [{ text: userMessageText }] });
-}
+async function continueSendMessage(contents) {
+    let botMessageText = '';
+    let success = false;
 
-if (file) {
-try {
-fileData = await uploadFile(file); // Assign fileData here
-contents.push({ role: 'user', parts: [{ file_data: { mime_type: file.type, file_uri: fileData.file.uri } }] });
-} catch (error) {
-console.error('File upload error:', error);
-typingIndicator.style.display = 'none';
-alert('Failed to upload file: ' + error.message);
-return;
-}
-}
+    for (const apiKey of API_KEYS) {
+        try {
+            const data = await fetchWithKey(apiKey, contents, currentModel);
+            const fullResponse = data?.candidates[0]?.content?.parts[0]?.text;
 
-for (const apiKey of API_KEYS) {
-try {
-const data = await fetchWithKey(apiKey, contents, currentModel);
-const fullResponse = data?.candidates[0]?.content?.parts[0]?.text;
+            if (!fullResponse) {
+                throw new Error('Invalid response format: Missing content.');
+            }
 
-if (!fullResponse) {
-throw new Error('Invalid response format: Missing content.');
-}
+            botMessageText = fullResponse.trim();
 
-botMessageText = fullResponse.trim();
+            if (botMessageText) {
+                messageHistory.push({ role: 'model', parts: [{ text: botMessageText }] });
+                typingIndicator.style.display = 'none';
+            }
 
-if (botMessageText) {
-messageHistory.push({ role: 'model', parts: [{ text: botMessageText }] });
-typingIndicator.style.display = 'none';
-}
+            success = true;
+            break;
+        } catch (error) {
+            console.error(`Error with API key:`, error.message);
+        }
+    }
 
-success = true;
-break;
-} catch (error) {
-console.error(`Error with API key:`, error.message);
-}
-}
+    const botMessage = document.createElement('div');
+    botMessage.classList.add('message', 'bot-message');
 
-const botMessage = document.createElement('div');
-botMessage.classList.add('message', 'bot-message');
+    if (success) {
+        const formattedText = marked.parse(botMessageText);
+        botMessage.innerHTML = formattedText;
+    } else {
+        botMessage.textContent = "I'm sorry, I'm currently unable to process your request. Please try again later.";
+    }
 
-if (success) {
-// **Use marked.js to convert Markdown to HTML**
-const formattedText = marked.parse(botMessageText);
-botMessage.innerHTML = formattedText; // Use innerHTML to render HTML
-} else {
-botMessage.textContent = "I'm sorry, I'm currently unable to process your request. Please try again later.";
-}
+    chatContainer.appendChild(botMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 
-chatContainer.appendChild(botMessage);
-chatContainer.scrollTop = chatContainer.scrollHeight;
+    if (contents.length > 0) {
+        messageHistory.push(...contents);
+    }
 
-if (userMessageText || file) {
-messageHistory.push({ role: 'user', parts: userMessageText ? [{ text: userMessageText }] : [] });
-if (file && fileData) { // Check if fileData is available
-messageHistory.push({ role: 'user', parts: [{ file_data: { mime_type: file.type, file_uri: fileData.file.uri } }] });
-}
-}
-
-typingIndicator.style.display = 'none';
+    typingIndicator.style.display = 'none';
 }
 
 async function uploadFile(file) {
@@ -542,13 +561,11 @@ reject(error);
 }
 });
 }
-// Last Updated Label
 const lastUpdated = document.createElement('p');
-lastUpdated.id = 'last-updated'; // Give it an ID for easy styling
-lastUpdated.textContent = 'Last updated: November 25, 2024, 9:47 PM';
+lastUpdated.id = 'last-updated'; 
+lastUpdated.textContent = 'Last updated: December 9, 2024, 1:00 PM';
 document.body.appendChild(lastUpdated);
 
-// Changelog Modal
 const changelogModal = document.getElementById("changelogModal");
 const btn = document.getElementById("changelog-button");
 const span = document.getElementsByClassName("close")[0];
@@ -568,8 +585,8 @@ changelogModal.style.display = "none";
 }
 const clearChatButton = document.getElementById('clear-chat-button');
 clearChatButton.addEventListener('click', () => {
-    chatContainer.innerHTML = '';
-    messageHistory = [];
+    chatContainer.innerHTML = ''; 
+    messageHistory = [];        
 });
 </script>
 </body>
