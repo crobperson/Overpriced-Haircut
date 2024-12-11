@@ -228,19 +228,19 @@ background-color: rgb(0,0,0);
 background-color: rgba(0,0,0,0.4);
 }
 #clear-chat-button {
-    padding: 8px 15px;
-    margin-left: 10px; /* Space between changelog and clear buttons */
-    background-color: #f44336; /* Red */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
+padding: 8px 15px;
+margin-left: 10px; /* Space between changelog and clear buttons */
+background-color: #f44336; /* Red */
+color: white;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+font-size: 14px;
+transition: background-color: 0.3s;
 }
 
 #clear-chat-button:hover {
-    background-color: #d32f2f; /* Darker red on hover */
+background-color: #d32f2f; /* Darker red on hover */
 }
 .modal-content {
 background-color: #fefefe;
@@ -270,35 +270,57 @@ right: 10px;
 font-size: 12px;
 color: #999;
 }
+#update-available {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    padding: 5px 10px;
+    background-color: #f44336; /* Red */
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    display: none; /* Hidden by default */
+    cursor: pointer; /* Make it look clickable */
+}
+
+#update-available a {
+    color: white; /* Ensure link color is white */
+    text-decoration: none; /* Remove underline from link */
+}
+
+#update-available a:hover {
+    text-decoration: underline; /* Add underline on hover for better UX */
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> </head>
 <body>
+<div id="update-available"><a href="https://github.com/crobperson/Overpriced-Haircut" target="_blank">Update Available</a></div>
 <div class="container">
-    <div class="header">
-        <div style="display:flex; align-items:center;">
-            <div class="toggle-container">
-                <label for="modelToggle" style="margin-right: 5px;">Fast Mode:</label>
-                <label class="switch">
-                    <input type="checkbox" id="modelToggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
-        <div>
-            <button id="changelog-button">Changelog</button>
-            <button id="clear-chat-button">Clear Chat</button>
-        </div>
-    </div>
-    <div id="chat-container"></div>
-    <div id="typing-indicator">Gemini is typing...</div>
-    <div id="input-area">
-        <input type="file" id="file-input" accept=".html,image/*,application/pdf,audio/*" style="display:none;"> <label for="file-input" style="padding: 10px; margin-right: 5px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">Choose File</label>
-        <textarea id="input-box" placeholder="Enter your message..." rows="1"></textarea>
-        <button id="send-button">Send</button>
-    </div>
-    <p style="font-size: 10px; text-align: center; color: #888;">
-        contact clifton.roberson@utstudents.net for bug reports, feature requests, or an overpriced haircut
-    </p>
+<div class="header">
+<div style="display:flex; align-items:center;">
+<div class="toggle-container">
+<label for="modelToggle" style="margin-right: 5px;">Fast Mode:</label>
+<label class="switch">
+<input type="checkbox" id="modelToggle">
+<span class="slider"></span>
+</label>
+</div>
+</div>
+<div>
+<button id="changelog-button">Changelog</button>
+<button id="clear-chat-button">Clear Chat</button>
+</div>
+</div>
+<div id="chat-container"></div>
+<div id="typing-indicator">Gemini is typing...</div>
+<div id="input-area">
+<input type="file" id="file-input" accept=".html,image/*,application/pdf,audio/*" style="display:none;"> <label for="file-input" style="padding: 10px; margin-right: 5px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">Choose File</label>
+<textarea id="input-box" placeholder="Enter your message..." rows="1"></textarea>
+<button id="send-button">Send</button>
+</div>
+<p style="font-size: 10px; text-align: center; color: #888;">
+contact clifton.roberson@utstudents.net for bug reports, feature requests, or an overpriced haircut
+</p>
 </div>
 
 <!-- The Modal -->
@@ -306,6 +328,11 @@ color: #999;
 <div class="modal-content">
 <span class="close">&times;</span>
 <h2>Changelog</h2>
+<p>
+<strong>Version 1.35 (December 11, 2024)</strong><br>
+- We are moving away from sites.google.com. Now you can see when new updates drop<br>
+</p>
+<p>
 <p>
 <strong>Version 1.35 (December 10, 2024)</strong><br>
 - We back with the daily updates! (ill quit in like a day) I added chunk by chunk text streaming (no more having to take a nap between each request) so ill probably end up removing fast mode later next 1pm<br>
@@ -364,6 +391,27 @@ const fileInput = document.getElementById('file-input');
 
 let messageHistory = [];
 let currentModel = 'gemini-exp-1206';
+const currentCodeName = 'code V2.html';
+
+// Function to check if the current file is in the specified GitHub repository
+async function checkGitHubStatus() {
+    try {
+        const response = await fetch('https://api.github.com/repos/crobperson/Overpriced-Haircut/contents/');
+        const data = await response.json();
+
+        // Check if the current file exists in the repository
+        const fileExists = data.some(file => file.name === currentCodeName);
+
+        if (!fileExists) {
+            document.getElementById('update-available').style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error checking GitHub status:', error);
+    }
+}
+
+// Call the function to check GitHub status on page load
+checkGitHubStatus();
 
 modelToggle.addEventListener('change', () => {
 if (modelToggle.checked) {
@@ -390,145 +438,145 @@ chatContainer.appendChild(errorDiv);
 chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 async function fetchWithKeyStream(apiKey, contents, model, botMessage) {
-    const response = await fetch(`${BASE_URL}/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            contents: contents,
-            generationConfig: {
-                temperature: 1,
-                topK: 40,
-                topP: 0.95,
-                maxOutputTokens: 81920,
-                responseMimeType: 'text/plain'
-            }
-        })
-    });
+const response = await fetch(`${BASE_URL}/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({
+contents: contents,
+generationConfig: {
+temperature: 1,
+topK: 40,
+topP: 0.95,
+maxOutputTokens: 81920,
+responseMimeType: 'text/plain'
+}
+})
+});
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Unknown API error');
-    }
+if (!response.ok) {
+const errorData = await response.json();
+throw new Error(errorData.error?.message || 'Unknown API error');
+}
 
-    const reader = response.body.getReader();
-    let buffer = '';
-    let botMessageText = '';
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+const reader = response.body.getReader();
+let buffer = '';
+let botMessageText = '';
+while (true) {
+const { done, value } = await reader.read();
+if (done) break;
 
-        buffer += new TextDecoder().decode(value);
-        let newlineIndex;
-        while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
-            const line = buffer.substring(0, newlineIndex);
-            buffer = buffer.substring(newlineIndex + 1);
-            if (line.startsWith('data:')) {
-                const jsonData = JSON.parse(line.substring(5));
-                if (jsonData.candidates && jsonData.candidates[0].content && jsonData.candidates[0].content.parts) {
-                    const textChunk = jsonData.candidates[0].content.parts[0].text;
-                    if (textChunk) {
-                        botMessageText += textChunk;
-                        botMessage.innerHTML = marked.parse(botMessageText); // Update with formatted text
-                    }
-                }
-            }
-        }
-    }
+buffer += new TextDecoder().decode(value);
+let newlineIndex;
+while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
+const line = buffer.substring(0, newlineIndex);
+buffer = buffer.substring(newlineIndex + 1);
+if (line.startsWith('data:')) {
+const jsonData = JSON.parse(line.substring(5));
+if (jsonData.candidates && jsonData.candidates[0].content && jsonData.candidates[0].content.parts) {
+const textChunk = jsonData.candidates[0].content.parts[0].text;
+if (textChunk) {
+botMessageText += textChunk;
+botMessage.innerHTML = marked.parse(botMessageText); // Update with formatted text
+}
+}
+}
+}
+}
 
-    return botMessageText;
+return botMessageText;
 }
 
 async function sendMessage() {
-    const userMessageText = inputBox.value.trim();
-    const file = fileInput.files[0];
+const userMessageText = inputBox.value.trim();
+const file = fileInput.files[0];
 
-    if (userMessageText === '' && !file) return;
+if (userMessageText === '' && !file) return;
 
-    const userMessage = document.createElement('div');
-    userMessage.classList.add('message', 'user-message');
-    userMessage.textContent = userMessageText || 'Sent a file';
-    chatContainer.appendChild(userMessage);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+const userMessage = document.createElement('div');
+userMessage.classList.add('message', 'user-message');
+userMessage.textContent = userMessageText || 'Sent a file';
+chatContainer.appendChild(userMessage);
+chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    inputBox.value = '';
-    fileInput.value = '';
+inputBox.value = '';
+fileInput.value = '';
 
-    typingIndicator.style.display = 'block';
+typingIndicator.style.display = 'block';
 
-    let fileData = null;
-    const contents = [];
+let fileData = null;
+const contents = [];
 
-    for (const msg of messageHistory) {
-        contents.push(msg);
-    }
+for (const msg of messageHistory) {
+contents.push(msg);
+}
 
-    if (userMessageText) {
-        contents.push({ role: 'user', parts: [{ text: userMessageText }] });
-    }
+if (userMessageText) {
+contents.push({ role: 'user', parts: [{ text: userMessageText }] });
+}
 
-    if (file) {
-        try {
-            fileData = await uploadFile(file);
-            if (file.type === 'text/html') {
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    const htmlContent = e.target.result;
-                    contents.push({ role: 'user', parts: [{ text: `HTML file content: ${htmlContent}` }] });
-                    await continueSendMessage(contents);
-                };
-                reader.onerror = (error) => {
-                    console.error('Error reading HTML file:', error);
-                    typingIndicator.style.display = 'none';
-                    alert('Failed to read HTML file.');
-                };
-                reader.readAsText(file);
-                return;
-            } else {
-                contents.push({ role: 'user', parts: [{ file_data: { mime_type: file.type, file_uri: fileData.file.uri } }] });
-            }
-        } catch (error) {
-            console.error('File upload error:', error);
-            typingIndicator.style.display = 'none';
-            alert('Failed to upload file: ' + error.message);
-            return;
-        }
-    }
+if (file) {
+try {
+fileData = await uploadFile(file);
+if (file.type === 'text/html') {
+const reader = new FileReader();
+reader.onload = async (e) => {
+const htmlContent = e.target.result;
+contents.push({ role: 'user', parts: [{ text: `HTML file content: ${htmlContent}` }] });
+await continueSendMessage(contents);
+};
+reader.onerror = (error) => {
+console.error('Error reading HTML file:', error);
+typingIndicator.style.display = 'none';
+alert('Failed to read HTML file.');
+};
+reader.readAsText(file);
+return;
+} else {
+contents.push({ role: 'user', parts: [{ file_data: { mime_type: file.type, file_uri: fileData.file.uri } }] });
+}
+} catch (error) {
+console.error('File upload error:', error);
+typingIndicator.style.display = 'none';
+alert('Failed to upload file: ' + error.message);
+return;
+}
+}
 
-    await continueSendMessage(contents);
+await continueSendMessage(contents);
 }
 
 async function continueSendMessage(contents) {
-    let success = false;
-    const botMessage = document.createElement('div');
-    botMessage.classList.add('message', 'bot-message');
-    chatContainer.appendChild(botMessage);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+let success = false;
+const botMessage = document.createElement('div');
+botMessage.classList.add('message', 'bot-message');
+chatContainer.appendChild(botMessage);
+chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    for (const apiKey of API_KEYS) {
-        try {
-            const botMessageText = await fetchWithKeyStream(apiKey, contents, currentModel, botMessage);
-            if (botMessageText) {
-                messageHistory.push({ role: 'model', parts: [{ text: botMessageText }] });
-            }
-            success = true;
-            break;
-        } catch (error) {
-            console.error(`Error with API key:`, error.message);
-        }
-    }
+for (const apiKey of API_KEYS) {
+try {
+const botMessageText = await fetchWithKeyStream(apiKey, contents, currentModel, botMessage);
+if (botMessageText) {
+messageHistory.push({ role: 'model', parts: [{ text: botMessageText }] });
+}
+success = true;
+break;
+} catch (error) {
+console.error(`Error with API key:`, error.message);
+}
+}
 
-    if (!success) {
-        botMessage.textContent = "I'm sorry, I'm currently unable to process your request. Please try again later.";
-    }
+if (!success) {
+botMessage.textContent = "I'm sorry, I'm currently unable to process your request. Please try again later.";
+}
 
-    // Update message history only after the message has been successfully sent
-    if (contents.length > 0) {
-        messageHistory.push(...contents);
-    }
+// Update message history only after the message has been successfully sent
+if (contents.length > 0) {
+messageHistory.push(...contents);
+}
 
-    typingIndicator.style.display = 'none';
+typingIndicator.style.display = 'none';
 }
 
 async function uploadFile(file) {
@@ -602,8 +650,8 @@ changelogModal.style.display = "none";
 }
 const clearChatButton = document.getElementById('clear-chat-button');
 clearChatButton.addEventListener('click', () => {
-    chatContainer.innerHTML = ''; // Clear the chat container
-    messageHistory = [];        // Clear the message history
+chatContainer.innerHTML = ''; // Clear the chat container
+messageHistory = []; // Clear the message history
 });
 </script>
 </body>
