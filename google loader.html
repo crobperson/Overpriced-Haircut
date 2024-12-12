@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Google</title>
+<style>
+body {
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #f8f9fa; /* Light background color */
+}
+
+button {
+  padding: 15px 30px; /* Larger padding */
+  font-size: 18px; /* Larger font size */
+  font-weight: bold; /* Bold text */
+  color: white;
+  background-color: #4285f4; /* Google blue color */
+  border: none;
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  cursor: pointer;
+  transition: all 0.2s ease; /* Smooth hover effect */
+}
+
+button:hover {
+  background-color: #3367d6; /* Slightly darker blue on hover */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Larger shadow on hover */
+}
+
+button:active {
+  transform: translateY(1px); /* Button moves down slightly when clicked */
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2); /* Smaller shadow when clicked */
+}
+</style>
+</head>
+<body>
+
+<button id="launchButton">Click To Run Google By Clifton</button>
+
+<script>
+const launchButton = document.getElementById("launchButton");
+
+launchButton.addEventListener("click", () => {
+  const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/refs/heads/main/Google%20thang.html";
+
+  fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Network response was not ok, status: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(htmlCode => {
+      // Replace the current document's content with the fetched HTML
+      document.open();
+      document.write(htmlCode);
+      document.close();
+    })
+    .catch(error => {
+      console.error("Error fetching or displaying HTML:", error);
+      alert("Error loading HTML. See console for details.");
+    });
+});
+</script>
+
+</body>
+</html>
