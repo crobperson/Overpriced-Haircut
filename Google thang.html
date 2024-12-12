@@ -1,333 +1,404 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Google</title>
+<title>Gemini Chat</title>
 <style>
 body {
-font-family: sans-serif;
-margin: 0;
-padding: 0;
-display: flex;
-justify-content: center;
-align-items: center;
-min-height: 100vh;
-background-color: #f0f0f0;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8f9fa;
 }
 
 .container {
-display: flex;
-flex-direction: column;
-width: 90%;
-max-width: 600px;
-height: 80vh;
-background-color: #fff;
-border: 1px solid #ccc;
-border-radius: 8px;
-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    max-width: 700px;
+    height: 90vh;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
 }
 
 .header {
-padding: 10px 20px;
-background-color: #f9f9f9;
-border-bottom: 1px solid #ddd;
-display: flex;
-flex-wrap: wrap;
-justify-content: space-between;
-align-items: center;
+    padding: 15px 25px;
+    background-color: #e9ecef;
+    border-bottom: 1px solid #ced4da;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .toggle-container {
-display: flex;
-align-items: center;
-margin: 5px 0;
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
 }
 
 .toggle-container label {
-margin-right: 10px;
-font-size: 14px;
+    margin-right: 10px;
+    font-size: 14px;
+    color: #495057;
 }
 
 .switch {
-position: relative;
-display: inline-block;
-width: 50px;
-height: 28px;
-margin-left: 10px;
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
 }
 
 .switch input {
-opacity: 0;
-width: 0;
-height: 0;
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
 .slider {
-position: absolute;
-cursor: pointer;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background-color: #ccc;
-transition: 0.4s;
-border-radius: 28px;
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
 }
 
 .slider:before {
-position: absolute;
-content: "";
-height: 22px;
-width: 22px;
-left: 3px;
-bottom: 3px;
-background-color: white;
-transition: 0.4s;
-border-radius: 50%;
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
 }
 
 input:checked + .slider {
-background-color: #2196F3;
+    background-color: #3498db;
 }
 
 input:checked + .slider:before {
-transform: translateX(22px);
+    transform: translateX(22px);
 }
 
 #chat-container {
-flex: 1;
-padding: 15px;
-overflow-y: auto;
-background-color: #fafafa;
-display: flex;
-flex-direction: column;
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
 }
 
 .message {
-padding: 10px 15px;
-margin-bottom: 10px;
-border-radius: 18px;
-max-width: 80%;
-word-wrap: break-word;
-position: relative;
-clear: both;
-white-space: pre-line;
+    padding: 12px 18px;
+    margin-bottom: 15px;
+    border-radius: 20px;
+    max-width: 75%;
+    word-wrap: break-word;
+    position: relative;
+    white-space: pre-line;
+    line-height: 1.4;
+    font-size: 15px;
 }
 
 .user-message {
-background-color: #e0f7fa;
-align-self: flex-end;
-margin-left: auto;
-text-align: right;
+    background-color: #dcf8c6;
+    align-self: flex-end;
+    text-align: right;
 }
 
 .bot-message {
-background-color: #f1f8e9;
-align-self: flex-start;
-margin-right: auto;
+    background-color: #fff;
+    align-self: flex-start;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.copy-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.copy-button:hover {
+    opacity: 1;
+}
+
+.copy-button svg {
+    width: 18px;
+    height: 18px;
+    fill: #666;
 }
 
 #input-area {
-display: flex;
-padding: 10px 20px;
-border-top: 1px solid #ddd;
-background-color: #f9f9f9;
-align-items: center;
+    display: flex;
+    padding: 15px 20px;
+    border-top: 1px solid #ced4da;
+    background-color: #e9ecef;
+    align-items: center;
 }
 
 #input-box {
-flex-grow: 1;
-padding: 10px;
-border: 1px solid #ccc;
-border-radius: 20px;
-resize: none;
-font-size: 14px;
-outline: none;
+    flex-grow: 1;
+    padding: 12px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 25px;
+    resize: none;
+    font-size: 15px;
+    outline: none;
+    background-color: #fff;
+    line-height: 1.5;
 }
 
 #send-button {
-padding: 10px 20px;
-margin-left: 10px;
-background-color: #007bff;
-color: #fff;
-border: none;
-border-radius: 20px;
-cursor: pointer;
-font-size: 14px;
-transition: background-color 0.3s;
+    padding: 10px 25px;
+    margin-left: 15px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #send-button:hover {
-background-color: #0056b3;
+    background-color: #0056b3;
+}
+
+.file-upload-label {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-right: 10px;
+    background-color: #6c757d;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.file-upload-label:hover {
+    background-color: #5a6268;
 }
 
 #file-input {
-margin-left: 10px;
+    display: none;
 }
 
 #typing-indicator {
-padding: 5px 20px;
-font-style: italic;
-color: #999;
-background-color: #f9f9f9;
-border-top: 1px solid #ddd;
-display: none;
+    padding: 10px 20px;
+    font-style: italic;
+    color: #777;
+    background-color: #e9ecef;
+    border-top: 1px solid #ced4da;
+    display: none;
+    font-size: 14px;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
-.container {
-width: 95%;
-height: 90vh;
-}
+    .container {
+        width: 95%;
+        height: 95vh;
+    }
+
+    .message {
+        max-width: 85%;
+    }
 }
 
 @media (max-width: 480px) {
-.header {
-flex-direction: column;
-align-items: flex-start;
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .toggle-container {
+        width: 100%;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    #send-button {
+        padding: 10px 15px;
+    }
+
+    .file-upload-label {
+        padding: 10px 15px;
+    }
 }
 
-.toggle-container {
-width: 100%;
-justify-content: space-between;
-}
-
-#send-button {
-padding: 10px;
-margin-left: 5px;
-}
-}
-/* Style for the changelog button */
-#changelog-button {
-padding: 8px 15px;
-margin-left: 10px;
-background-color: #4CAF50; /* Green */
-color: white;
-border: none;
-border-radius: 4px;
-cursor: pointer;
-font-size: 14px;
-transition: background-color 0.3s;
-}
-
-#changelog-button:hover {
-background-color: #45a049;
-}
-
-/* Style for the changelog modal */
+/* Modal Styles */
 .modal {
-display: none;
-position: fixed;
-z-index: 1;
-left: 0;
-top: 0;
-width: 100%;
-height: 100%;
-overflow: auto;
-background-color: rgb(0,0,0);
-background-color: rgba(0,0,0,0.4);
-}
-#clear-chat-button {
-padding: 8px 15px;
-margin-left: 10px; /* Space between changelog and clear buttons */
-background-color: #f44336; /* Red */
-color: white;
-border: none;
-border-radius: 4px;
-cursor: pointer;
-font-size: 14px;
-transition: background-color: 0.3s;
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
-#clear-chat-button:hover {
-background-color: #d32f2f; /* Darker red on hover */
-}
 .modal-content {
-background-color: #fefefe;
-margin: 15% auto;
-padding: 20px;
-border: 1px solid #888;
-width: 80%;
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .close {
-color: #aaa;
-float: right;
-font-size: 28px;
-font-weight: bold;
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .close:hover,
 .close:focus {
-color: black;
-text-decoration: none;
-cursor: pointer;
+    color: black;
 }
+
+/* Button Styles */
+.button-primary {
+    padding: 8px 16px;
+    margin: 10px 5px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.button-primary:hover {
+    background-color: #218838;
+}
+
+.button-secondary {
+    padding: 8px 16px;
+    margin: 10px 5px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.button-secondary:hover {
+    background-color: #c82333;
+}
+
+/* Last Updated & Footer */
 #last-updated {
-position: fixed;
-top: 10px;
-right: 10px;
-font-size: 12px;
-color: #999;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: #999;
 }
-/* Style for the popup message */
+
+.footer-text {
+    font-size: 12px;
+    text-align: center;
+    color: #888;
+    padding: 10px;
+}
+/* Popup Message Style */
 .popup-message {
     position: fixed;
-    top: 20px;
+    top: -60px; /* Start above the viewport */
     left: 50%;
     transform: translateX(-50%);
-    background-color: #4CAF50; /* Green, you can change this */
+    background-color: #28a745;
     color: white;
     padding: 10px 20px;
     border-radius: 5px;
     z-index: 1000;
-    opacity: 0; /* Start faded out */
-    transition: opacity 0.3s, top 0.3s; /* Smooth fade and slide */
+    opacity: 0;
+    transition: opacity 0.5s ease-out, top 0.5s ease-out; /* Smooth fade and slide */
 }
 
 .popup-message.show {
     opacity: 1;
-    top: 30px;
+    top: 20px; /* Move into view */
 }
 
 </style>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> </head>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+
+</script>
+</head>
 <body>
 <div class="container">
-<div class="header">
-<div style="display:flex; align-items:center;">
-<div class="toggle-container">
-<label for="modelToggle" style="margin-right: 5px;">Fast Mode:</label>
-<label class="switch">
-<input type="checkbox" id="modelToggle">
-<span class="slider"></span>
-</label>
-</div>
-</div>
-<div>
-<button id="changelog-button">Changelog</button>
-<button id="clear-chat-button">Clear Chat</button>
-</div>
-</div>
-<div id="chat-container"></div>
-<div id="typing-indicator">Gemini is typing...</div>
-<div id="input-area">
-<input type="file" id="file-input" accept=".html,image/*,application/pdf,audio/*" style="display:none;"> <label for="file-input" style="padding: 10px; margin-right: 5px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">Choose File</label>
-<textarea id="input-box" placeholder="Enter your message..." rows="1"></textarea>
-<button id="send-button">Send</button>
-</div>
-<p style="font-size: 10px; text-align: center; color: #888;">
-contact clifton.roberson@utstudents.net for bug reports, feature requests, or an overpriced haircut
-</p>
+    <div class="header">
+        <div class="toggle-container">
+            <label for="modelToggle">Fast Mode:</label>
+            <label class="switch">
+                <input type="checkbox" id="modelToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div>
+            <button id="changelog-button" class="button-primary">Changelog</button>
+            <button id="clear-chat-button" class="button-secondary">Clear Chat</button>
+        </div>
+    </div>
+    <div id="chat-container"></div>
+    <div id="typing-indicator">Gemini is typing...</div>
+    <div id="input-area">
+        <label for="file-input" class="file-upload-label">Choose File</label>
+        <input type="file" id="file-input" accept=".html,image/*,application/pdf,audio/*">
+        <textarea id="input-box" placeholder="Enter your message..." rows="1"></textarea>
+        <button id="send-button">Send</button>
+    </div>
+    <p class="footer-text">
+        Contact clifton.roberson@utstudents.net for bug reports, feature requests, or an overpriced haircut
+    </p>
 </div>
 <div id="popup-container"></div>
 
 <!-- The Modal -->
 <div id="changelogModal" class="modal">
-<div class="modal-content">
-<span class="close">&times;</span>
+    <div class="modal-content">
+        <span class="close">&times;</span>
 <h2>Changelog</h2>
 <p>
+    <strong>𝖁𝖊𝖗𝖘𝖎𝖔𝖓 յ.Յճ but cooler (December 12, 2024)</strong><br>
+- made the site more 𝒆𝒍𝒆𝒈𝒂𝒏𝒕<br>
+</p>
 <strong>Version 1.36 (December 12, 2024)</strong><br>
 - Improved the fast mode AI making it significantly better and worth using (the fast mode is a seperate ai model btw if you didn't know) and I fixed that one file upload bug.<br>
 </p>
@@ -378,6 +449,8 @@ contact clifton.roberson@utstudents.net for bug reports, feature requests, or an
 </p>
 </div>
 </div>
+
+<p id="last-updated">Last updated: December 12, 2024, 2:00 PM</p>
 
 <script>
 const API_KEYS = [
@@ -477,7 +550,6 @@ async function fetchWithKeyStream(apiKey, contents, model, botMessage) {
     return botMessageText;
 }
 
-
 async function sendMessage() {
     const userMessageText = inputBox.value.trim();
     const file = fileInput.files[0];
@@ -562,13 +634,13 @@ async function continueSendMessage(contents) {
         botMessage.textContent = "I'm sorry, I'm currently unable to process your request. Please try again later.";
     }
 
-
     // Update message history only after the message has been successfully sent
     if (contents.length > 0) {
         messageHistory.push(...contents);
     }
 
     typingIndicator.style.display = 'none';
+    addCopyButtonToCodeBlocks();
 }
 
 async function uploadFile(file) {
@@ -616,7 +688,6 @@ async function uploadFile(file) {
         }
     });
 }
-
 
 // Last Updated Label
 const lastUpdated = document.createElement('p');
@@ -677,6 +748,35 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+function addCopyButtonToCodeBlocks() {
+    const botMessages = document.querySelectorAll('.bot-message');
+    botMessages.forEach(message => {
+        const codeBlocks = message.querySelectorAll('pre code');
+        codeBlocks.forEach(codeBlock => {
+            const preElement = codeBlock.parentElement;
+            if (!preElement.querySelector('.copy-button')) {
+                const copyButton = document.createElement('button');
+                copyButton.className = 'copy-button';
+                copyButton.innerHTML = `📋`; // Simplified copy icon
+                copyButton.title = "Copy code";
+                copyButton.addEventListener('click', () => {
+                    const textToCopy = codeBlock.innerText;
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        // Optional: Display a success message or change the icon briefly
+                        copyButton.innerHTML = `✅`;
+                        setTimeout(() => {
+                            copyButton.innerHTML = `📋`;
+                        }, 1000);
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+                });
+                preElement.style.position = 'relative';
+                preElement.appendChild(copyButton);
+            }
+        });
+    });
+}
 </script>
 </body>
 </html>
