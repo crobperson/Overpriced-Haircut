@@ -270,31 +270,12 @@ right: 10px;
 font-size: 12px;
 color: #999;
 }
-#update-available {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    padding: 5px 10px;
-    background-color: #f44336; /* Red */
-    color: white;
-    border-radius: 4px;
-    font-size: 14px;
-    display: none; /* Hidden by default */
-    cursor: pointer; /* Make it look clickable */
-}
 
-#update-available a {
-    color: white; /* Ensure link color is white */
-    text-decoration: none; /* Remove underline from link */
-}
 
-#update-available a:hover {
-    text-decoration: underline; /* Add underline on hover for better UX */
-}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> </head>
 <body>
-<div id="update-available"><a href="https://github.com/crobperson/Overpriced-Haircut" target="_blank">Update Available</a></div>
 <div class="container">
 <div class="header">
 <div style="display:flex; align-items:center;">
@@ -393,25 +374,6 @@ let messageHistory = [];
 let currentModel = 'gemini-exp-1206';
 const currentCodeName = 'Google V1.35.html';
 
-// Function to check if the current file is in the specified GitHub repository
-async function checkGitHubStatus() {
-    try {
-        const response = await fetch('https://api.github.com/repos/crobperson/Overpriced-Haircut/contents/');
-        const data = await response.json();
-
-        // Check if the current file exists in the repository
-        const fileExists = data.some(file => file.name === currentCodeName);
-
-        if (!fileExists) {
-            document.getElementById('update-available').style.display = 'block';
-        }
-    } catch (error) {
-        console.error('Error checking GitHub status:', error);
-    }
-}
-
-// Call the function to check GitHub status on page load
-checkGitHubStatus();
 
 modelToggle.addEventListener('change', () => {
 if (modelToggle.checked) {
