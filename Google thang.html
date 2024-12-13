@@ -396,6 +396,10 @@ input:checked + .slider:before {
         <span class="close">&times;</span>
 <h2>Changelog</h2>
 <p>
+    <strong>version 1.36 but nothing changed at all (December 12, 2024)</strong><br>
+- fixed the bug where it no work<br>
+</p>
+<p>
     <strong>𝖁𝖊𝖗𝖘𝖎𝖔𝖓 յ.Յճ but cooler (December 12, 2024)</strong><br>
 - made the site more 𝒆𝒍𝒆𝒈𝒂𝒏𝒕<br>
 </p>
@@ -453,12 +457,31 @@ input:checked + .slider:before {
 <p id="last-updated">Last updated: December 12, 2024, 2:00 PM</p>
 
 <script>
-const API_KEYS = [
-    '',
-    '',
-    '',
+const BINARY_API_KEYS = [
+    '01000001 01001001 01111010 01100001 01010011 01111001 01000010 01100011 00111000 01110001 00110110 01000010 01001001 01010010 01011111 01001001 01101110 01000011 01010100 01111001 01100101 01111010 01100011 01001100 01010010 01101011 01101011 01101010 01000011 01101000 01010101 01011111 01101111 01001111 01001010 01000001 01100110 01001100 01100111',
+    '01000001 01001001 01111010 01100001 01010011 01111001 01000010 01110000 01101000 01110011 01110010 01001001 00101101 01110001 01110110 01101001 01001101 01111000 01101111 01100001 01101111 01110110 01101100 00110000 01011001 01110111 01111000 01011111 01101001 01001101 01111000 01010011 01001011 00110100 01001110 00110000 01101000 01100110 01001101',
+    '01000001 01001001 01111010 01100001 01010011 01111001 01000001 01001110 01100100 01011010 01110001 01001110 01111010 01101000 01001010 01010100 00110010 01110101 00110110 01011000 01001111 01101010 01000001 01111010 01001001 01010010 00110001 01100001 00101101 00110101 00101101 01101110 01001110 01110101 01000111 01100011 01100010 01110110 00110100',
     ''
 ];
+function binaryToString(binary) {
+    binary = binary.replace(/[^01]/g, '');
+
+    let string = '';
+    for (let i = 0; i < binary.length; i += 8) {
+        let byte = binary.substring(i, i + 8);
+        if (byte.length < 8) {
+            console.warn(`Incomplete byte found at index ${i}: ${byte}. Skipping.`);
+            continue; // Skip to the next byte
+        }
+
+        string += String.fromCharCode(parseInt(byte, 2));
+    }
+    return string;
+}
+
+
+// Decode the API keys
+const API_KEYS = BINARY_API_KEYS.map(binaryToString);
 const BASE_URL = 'https://generativelanguage.googleapis.com';
 
 const chatContainer = document.getElementById('chat-container');
@@ -692,7 +715,7 @@ async function uploadFile(file) {
 // Last Updated Label
 const lastUpdated = document.createElement('p');
 lastUpdated.id = 'last-updated';
-lastUpdated.textContent = 'Last updated: December 12, 2024, 1:00 PM';
+lastUpdated.textContent = 'Last updated: December 13, 2024, 12:00 PM';
 document.body.appendChild(lastUpdated);
 
 // Changelog Modal
