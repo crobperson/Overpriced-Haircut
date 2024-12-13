@@ -6,6 +6,7 @@
 body {
   font-family: sans-serif;
   display: flex;
+  flex-direction: column; /* Stack elements vertically */
   justify-content: center;
   align-items: center;
   min-height: 100vh;
@@ -24,6 +25,7 @@ button {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
   cursor: pointer;
   transition: all 0.2s ease; /* Smooth hover effect */
+  margin-bottom: 20px; /* Space between button and toggle */
 }
 
 button:hover {
@@ -35,16 +37,79 @@ button:active {
   transform: translateY(1px); /* Button moves down slightly when clicked */
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2); /* Smaller shadow when clicked */
 }
+
+/* Styles for the toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #4285f4;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #4285f4;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
 </style>
 </head>
 <body>
 
 <button id="launchButton">Click To Run Google By Clifton</button>
 
+<!-- Toggle Switch -->
+<label class="switch">
+  <input type="checkbox" id="autoLaunchToggle">
+  <span class="slider"></span>
+</label>
+<div style="margin-top: 10px;">Auto-Launch</div>
+
 <script>
 const launchButton = document.getElementById("launchButton");
+const autoLaunchToggle = document.getElementById("autoLaunchToggle");
 
-launchButton.addEventListener("click", () => {
+// Function to fetch and display HTML
+function launchGoogle() {
   const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/refs/heads/main/Google%20thang.html";
 
   fetch(url)
@@ -64,6 +129,31 @@ launchButton.addEventListener("click", () => {
       console.error("Error fetching or displaying HTML:", error);
       alert("Error loading HTML. See console for details.");
     });
+}
+
+// Load auto-launch preference from localStorage
+window.addEventListener("load", () => {
+  const isAutoLaunch = localStorage.getItem("autoLaunch") === "true";
+  autoLaunchToggle.checked = isAutoLaunch;
+
+  if (isAutoLaunch) {
+    launchGoogle();
+  }
+});
+
+// Manual launch
+launchButton.addEventListener("click", () => {
+  launchGoogle();
+});
+
+// Update auto-launch preference in localStorage
+autoLaunchToggle.addEventListener("change", () => {
+  const isAutoLaunch = autoLaunchToggle.checked;
+  localStorage.setItem("autoLaunch", isAutoLaunch);
+
+  if (isAutoLaunch) {
+    launchGoogle();
+  }
 });
 </script>
 
