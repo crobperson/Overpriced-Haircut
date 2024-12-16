@@ -2,358 +2,358 @@
 <html>
 <head>
 <title>Google</title>
-<link rel="icon" href="https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true" type="image/png"> 
+<link rel="icon" href="https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true" type="image/png">
 <style>
 body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f8f9fa;
+font-family: 'Arial', sans-serif;
+margin: 0;
+padding: 0;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+background-color: #f8f9fa;
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
-    width: 90%;
-    max-width: 700px;
-    height: 90vh;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
+display: flex;
+flex-direction: column;
+width: 90%;
+max-width: 700px;
+height: 90vh;
+background-color: #fff;
+border-radius: 10px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+overflow: hidden;
 }
 
 .header {
-    padding: 15px 25px;
-    background-color: #e9ecef;
-    border-bottom: 1px solid #ced4da;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
+padding: 15px 25px;
+background-color: #e9ecef;
+border-bottom: 1px solid #ced4da;
+display: flex;
+justify-content: space-between;
+align-items: center;
+flex-wrap: wrap;
 }
 
 .toggle-container {
-    display: flex;
-    align-items: center;
-    margin: 5px 0;
+display: flex;
+align-items: center;
+margin: 5px 0;
 }
 
 .toggle-container label {
-    margin-right: 10px;
-    font-size: 14px;
-    color: #495057;
+margin-right: 10px;
+font-size: 14px;
+color: #495057;
 }
 
 .switch {
-    position: relative;
-    display: inline-block;
-    width: 46px;
-    height: 24px;
+position: relative;
+display: inline-block;
+width: 46px;
+height: 24px;
 }
 
 .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+opacity: 0;
+width: 0;
+height: 0;
 }
 
 .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 24px;
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #ccc;
+transition: 0.4s;
+border-radius: 24px;
 }
 
 .slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 2px;
-    bottom: 2px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
+position: absolute;
+content: "";
+height: 20px;
+width: 20px;
+left: 2px;
+bottom: 2px;
+background-color: white;
+transition: 0.4s;
+border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: #3498db;
+background-color: #3498db;
 }
 
 input:checked + .slider:before {
-    transform: translateX(22px);
+transform: translateX(22px);
 }
 
 #chat-container {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    background-color: #f8f9fa;
-    display: flex;
-    flex-direction: column;
+flex: 1;
+padding: 20px;
+overflow-y: auto;
+background-color: #f8f9fa;
+display: flex;
+flex-direction: column;
 }
 
 .message {
-    padding: 12px 18px;
-    margin-bottom: 15px;
-    border-radius: 20px;
-    max-width: 75%;
-    word-wrap: break-word;
-    position: relative;
-    white-space: pre-line;
-    line-height: 1.4;
-    font-size: 15px;
+padding: 12px 18px;
+margin-bottom: 15px;
+border-radius: 20px;
+max-width: 75%;
+word-wrap: break-word;
+position: relative;
+white-space: pre-line;
+line-height: 1.4;
+font-size: 15px;
 }
 
 .user-message {
-    background-color: #dcf8c6;
-    align-self: flex-end;
-    text-align: right;
+background-color: #dcf8c6;
+align-self: flex-end;
+text-align: right;
 }
 
 .bot-message {
-    background-color: #fff;
-    align-self: flex-start;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+background-color: #fff;
+align-self: flex-start;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .copy-button {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    z-index: 10;
-    opacity: 0.7;
-    transition: opacity 0.3s;
+position: absolute;
+top: 8px;
+right: 8px;
+background-color: transparent;
+border: none;
+cursor: pointer;
+z-index: 10;
+opacity: 0.7;
+transition: opacity 0.3s;
 }
 
 .copy-button:hover {
-    opacity: 1;
+opacity: 1;
 }
 
 .copy-button svg {
-    width: 18px;
-    height: 18px;
-    fill: #666;
+width: 18px;
+height: 18px;
+fill: #666;
 }
 
 #input-area {
-    display: flex;
-    padding: 15px 20px;
-    border-top: 1px solid #ced4da;
-    background-color: #e9ecef;
-    align-items: center;
+display: flex;
+padding: 15px 20px;
+border-top: 1px solid #ced4da;
+background-color: #e9ecef;
+align-items: center;
 }
 
 #input-box {
-    flex-grow: 1;
-    padding: 12px 15px;
-    border: 1px solid #ced4da;
-    border-radius: 25px;
-    resize: none;
-    font-size: 15px;
-    outline: none;
-    background-color: #fff;
-    line-height: 1.5;
+flex-grow: 1;
+padding: 12px 15px;
+border: 1px solid #ced4da;
+border-radius: 25px;
+resize: none;
+font-size: 15px;
+outline: none;
+background-color: #fff;
+line-height: 1.5;
 }
 
 #send-button {
-    padding: 10px 25px;
-    margin-left: 15px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 15px;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+padding: 10px 25px;
+margin-left: 15px;
+background-color: #007bff;
+color: #fff;
+border: none;
+border-radius: 25px;
+cursor: pointer;
+font-size: 15px;
+transition: background-color 0.3s ease;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #send-button:hover {
-    background-color: #0056b3;
+background-color: #0056b3;
 }
 
 .file-upload-label {
-    display: inline-block;
-    padding: 10px 20px;
-    margin-right: 10px;
-    background-color: #6c757d;
-    color: #fff;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 15px;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+display: inline-block;
+padding: 10px 20px;
+margin-right: 10px;
+background-color: #6c757d;
+color: #fff;
+border: none;
+border-radius: 25px;
+cursor: pointer;
+font-size: 15px;
+transition: background-color 0.3s ease;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .file-upload-label:hover {
-    background-color: #5a6268;
+background-color: #5a6268;
 }
 
 #file-input {
-    display: none;
+display: none;
 }
 
 #typing-indicator {
-    padding: 10px 20px;
-    font-style: italic;
-    color: #777;
-    background-color: #e9ecef;
-    border-top: 1px solid #ced4da;
-    display: none;
-    font-size: 14px;
+padding: 10px 20px;
+font-style: italic;
+color: #777;
+background-color: #e9ecef;
+border-top: 1px solid #ced4da;
+display: none;
+font-size: 14px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .container {
-        width: 95%;
-        height: 95vh;
-    }
+.container {
+width: 95%;
+height: 95vh;
+}
 
-    .message {
-        max-width: 85%;
-    }
+.message {
+max-width: 85%;
+}
 }
 
 @media (max-width: 480px) {
-    .header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+.header {
+flex-direction: column;
+align-items: flex-start;
+}
 
-    .toggle-container {
-        width: 100%;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
+.toggle-container {
+width: 100%;
+justify-content: space-between;
+margin-bottom: 10px;
+}
 
-    #send-button {
-        padding: 10px 15px;
-    }
+#send-button {
+padding: 10px 15px;
+}
 
-    .file-upload-label {
-        padding: 10px 15px;
-    }
+.file-upload-label {
+padding: 10px 15px;
+}
 }
 
 /* Modal Styles */
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 100;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+display: none;
+position: fixed;
+z-index: 100;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-content {
-    background-color: #fff;
-    margin: 10% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 600px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+background-color: #fff;
+margin: 10% auto;
+padding: 20px;
+border: 1px solid #888;
+width: 80%;
+max-width: 600px;
+border-radius: 8px;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+color: #aaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+cursor: pointer;
 }
 
 .close:hover,
 .close:focus {
-    color: black;
+color: black;
 }
 
 /* Button Styles */
 .button-primary {
-    padding: 8px 16px;
-    margin: 10px 5px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
+padding: 8px 16px;
+margin: 10px 5px;
+background-color: #28a745;
+color: white;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+font-size: 14px;
+transition: background-color 0.3s ease;
 }
 
 .button-primary:hover {
-    background-color: #218838;
+background-color: #218838;
 }
 
 .button-secondary {
-    padding: 8px 16px;
-    margin: 10px 5px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
+padding: 8px 16px;
+margin: 10px 5px;
+background-color: #dc3545;
+color: white;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+font-size: 14px;
+transition: background-color 0.3s ease;
 }
 
 .button-secondary:hover {
-    background-color: #c82333;
+background-color: #c82333;
 }
 
 /* Last Updated & Footer */
 #last-updated {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    font-size: 12px;
-    color: #999;
+position: fixed;
+top: 10px;
+right: 10px;
+font-size: 12px;
+color: #999;
 }
 
 .footer-text {
-    font-size: 12px;
-    text-align: center;
-    color: #888;
-    padding: 10px;
+font-size: 12px;
+text-align: center;
+color: #888;
+padding: 10px;
 }
 /* Popup Message Style */
 .popup-message {
-    position: fixed;
-    top: -60px; /* Start above the viewport */
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.5s ease-out, top 0.5s ease-out; /* Smooth fade and slide */
+position: fixed;
+top: -60px; /* Start above the viewport */
+left: 50%;
+transform: translateX(-50%);
+background-color: #28a745;
+color: white;
+padding: 10px 20px;
+border-radius: 5px;
+z-index: 1000;
+opacity: 0;
+transition: opacity 0.5s ease-out, top 0.5s ease-out; /* Smooth fade and slide */
 }
 
 .popup-message.show {
-    opacity: 1;
-    top: 20px; /* Move into view */
+opacity: 1;
+top: 20px; /* Move into view */
 }
 
 </style>
@@ -364,44 +364,48 @@ input:checked + .slider:before {
 </head>
 <body>
 <div class="container">
-    <div class="header">
-        <div class="toggle-container">
-            <label for="modelToggle">Fast Mode:</label>
-            <label class="switch">
-                <input type="checkbox" id="modelToggle">
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div>
-            <button id="changelog-button" class="button-primary">Changelog</button>
-            <button id="clear-chat-button" class="button-secondary">Clear Chat</button>
-        </div>
-    </div>
-    <div id="chat-container"></div>
-    <div id="typing-indicator">Gemini is typing...</div>
-    <div id="input-area">
-        <label for="file-input" class="file-upload-label">Choose File</label>
-        <input type="file" id="file-input" accept=".html,image/*,application/pdf,audio/*">
-        <textarea id="input-box" placeholder="Enter your message..." rows="1"></textarea>
-        <button id="send-button">Send</button>
-    </div>
-    <p class="footer-text">
-        Contact clifton.roberson@utstudents.net for bug reports, feature requests, or an overpriced haircut
-    </p>
+<div class="header">
+<div class="toggle-container">
+<label for="modelToggle">Fast Mode:</label>
+<label class="switch">
+<input type="checkbox" id="modelToggle">
+<span class="slider"></span>
+</label>
+</div>
+<div>
+<button id="changelog-button" class="button-primary">Changelog</button>
+<button id="clear-chat-button" class="button-secondary">Clear Chat</button>
+</div>
+</div>
+<div id="chat-container"></div>
+<div id="typing-indicator">Gemini is typing...</div>
+<div id="input-area">
+<label for="file-input" class="file-upload-label">Choose File</label>
+<input type="file" id="file-input" accept=".html,image/*,application/pdf,audio/*" multiple>
+<textarea id="input-box" placeholder="Enter your message..." rows="1"></textarea>
+<button id="send-button">Send</button>
+</div>
+<p class="footer-text">
+Contact clifton.roberson@utstudents.net for bug reports, feature requests, or an overpriced haircut
+</p>
 </div>
 <div id="popup-container"></div>
 
 <!-- The Modal -->
 <div id="changelogModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
+<div class="modal-content">
+<span class="close">&times;</span>
 <h2>Changelog</h2>
 <p>
-    <strong>version 1.36 but nothing really changed at all (December 13, 2024)</strong><br>
+<strong>Version 1.4 (December 16, 2024)</strong><br>
+- Added the ability to send multiple files at once (i forgot to do this) <br>
+</p>
+<p>
+<strong>version 1.36 but nothing really changed at all (December 13, 2024)</strong><br>
 - fixed the bug where it no work<br>
 </p>
 <p>
-    <strong>𝖁𝖊𝖗𝖘𝖎𝖔𝖓 յ.Յճ but cooler (December 12, 2024)</strong><br>
+<strong>𝖁𝖊𝖗𝖘𝖎𝖔𝖓 յ.Յճ but cooler (December 12, 2024)</strong><br>
 - made the site more 𝒆𝒍𝒆𝒈𝒂𝒏𝒕<br>
 </p>
 <strong>Version 1.36 (December 12, 2024)</strong><br>
@@ -455,30 +459,28 @@ input:checked + .slider:before {
 </div>
 </div>
 
-
 <script>
 const BINARY_API_KEYS = [
-    '01000001 01001001 01111010 01100001 01010011 01111001 01000010 01100011 00111000 01110001 00110110 01000010 01001001 01010010 01011111 01001001 01101110 01000011 01010100 01111001 01100101 01111010 01100011 01001100 01010010 01101011 01101011 01101010 01000011 01101000 01010101 01011111 01101111 01001111 01001010 01000001 01100110 01001100 01100111',
-    '01000001 01001001 01111010 01100001 01010011 01111001 01000010 01110000 01101000 01110011 01110010 01001001 00101101 01110001 01110110 01101001 01001101 01111000 01101111 01100001 01101111 01110110 01101100 00110000 01011001 01110111 01111000 01011111 01101001 01001101 01111000 01010011 01001011 00110100 01001110 00110000 01101000 01100110 01001101',
-    '01000001 01001001 01111010 01100001 01010011 01111001 01000001 01001110 01100100 01011010 01110001 01001110 01111010 01101000 01001010 01010100 00110010 01110101 00110110 01011000 01001111 01101010 01000001 01111010 01001001 01010010 00110001 01100001 00101101 00110101 00101101 01101110 01001110 01110101 01000111 01100011 01100010 01110110 00110100',
-    ''
+'01000001 01001001 01111010 01100001 01010011 01111001 01000010 01100011 00111000 01110001 00110110 01000010 01001001 01010010 01011111 01001001 01101110 01000011 01010100 01111001 01100101 01111010 01100011 01001100 01010010 01101011 01101011 01101010 01000011 01101000 01010101 01011111 01101111 01001111 01001010 01000001 01100110 01001100 01100111',
+'01000001 01001001 01111010 01100001 01010011 01111001 01000010 01110000 01101000 01110011 01110010 01001001 00101101 01110001 01110110 01101001 01001101 01111000 01101111 01100001 01101111 01110110 01101100 00110000 01011001 01110111 01111000 01011111 01101001 01001101 01111000 01010011 01001011 00110100 01001110 00110000 01101000 01100110 01001101',
+'01000001 01001001 01111010 01100001 01010011 01111001 01000001 01001110 01100100 01011010 01110001 01001110 01111010 01101000 01001010 01010100 00110010 01110101 00110110 01011000 01001111 01101010 01000001 01111010 01001001 01010010 00110001 01100001 00101101 00110101 00101101 01101110 01001110 01110101 01000111 01100011 01100010 01110110 00110100',
+''
 ];
 function binaryToString(binary) {
-    binary = binary.replace(/[^01]/g, '');
+binary = binary.replace(/[^01]/g, '');
 
-    let string = '';
-    for (let i = 0; i < binary.length; i += 8) {
-        let byte = binary.substring(i, i + 8);
-        if (byte.length < 8) {
-            console.warn(`Incomplete byte found at index ${i}: ${byte}. Skipping.`);
-            continue; // Skip to the next byte
-        }
-
-        string += String.fromCharCode(parseInt(byte, 2));
-    }
-    return string;
+let string = '';
+for (let i = 0; i < binary.length; i += 8) {
+let byte = binary.substring(i, i + 8);
+if (byte.length < 8) {
+console.warn(`Incomplete byte found at index ${i}: ${byte}. Skipping.`);
+continue; // Skip to the next byte
 }
 
+string += String.fromCharCode(parseInt(byte, 2));
+}
+return string;
+}
 
 // Decode the API keys
 const API_KEYS = BINARY_API_KEYS.map(binaryToString);
@@ -497,225 +499,237 @@ const currentCodeName = 'Google V1.35.html';
 let sendErrorMessages = false;
 
 modelToggle.addEventListener('change', () => {
-    if (modelToggle.checked) {
-        currentModel = 'gemini-2.0-flash-exp';
-    } else {
-        currentModel = 'gemini-exp-1206';
-    }
-    console.log(`Model switched to: ${currentModel}`);
+if (modelToggle.checked) {
+currentModel = 'gemini-2.0-flash-exp';
+} else {
+currentModel = 'gemini-exp-1206';
+}
+console.log(`Model switched to: ${currentModel}`);
 });
 
 sendButton.addEventListener('click', sendMessage);
 
 inputBox.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        sendMessage();
-    }
+if (event.key === 'Enter' && !event.shiftKey) {
+event.preventDefault();
+sendMessage();
+}
 });
 function displayError(errorMessage) {
-    if (sendErrorMessages) {
-        const errorDiv = document.createElement('div');
-        errorDiv.classList.add('message', 'bot-message');
-        errorDiv.textContent = `Error: ${errorMessage}`;
-        chatContainer.appendChild(errorDiv);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
+if (sendErrorMessages) {
+const errorDiv = document.createElement('div');
+errorDiv.classList.add('message', 'bot-message');
+errorDiv.textContent = `Error: ${errorMessage}`;
+chatContainer.appendChild(errorDiv);
+chatContainer.scrollTop = chatContainer.scrollHeight;
+}
 }
 async function fetchWithKeyStream(apiKey, contents, model, botMessage) {
-    const response = await fetch(`${BASE_URL}/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            contents: contents,
-            generationConfig: {
-                temperature: 1,
-                topK: 40,
-                topP: 0.95,
-                maxOutputTokens: 8192,
-                responseMimeType: 'text/plain'
-            }
-        })
-    });
+const response = await fetch(`${BASE_URL}/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({
+contents: contents,
+generationConfig: {
+temperature: 1,
+topK: 40,
+topP: 0.95,
+maxOutputTokens: 8092,
+responseMimeType: 'text/plain'
+}
+})
+});
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Unknown API error');
-    }
+if (!response.ok) {
+const errorData = await response.json();
+throw new Error(errorData.error?.message || 'Unknown API error');
+}
 
-    const reader = response.body.getReader();
-    let buffer = '';
-    let botMessageText = '';
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+const reader = response.body.getReader();
+let buffer = '';
+let botMessageText = '';
+while (true) {
+const { done, value } = await reader.read();
+if (done) break;
 
-        buffer += new TextDecoder().decode(value);
-        let newlineIndex;
-        while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
-            const line = buffer.substring(0, newlineIndex);
-            buffer = buffer.substring(newlineIndex + 1);
-            if (line.startsWith('data:')) {
-                const jsonData = JSON.parse(line.substring(5));
-                if (jsonData.candidates && jsonData.candidates[0].content && jsonData.candidates[0].content.parts) {
-                    const textChunk = jsonData.candidates[0].content.parts[0].text;
-                    if (textChunk) {
-                        botMessageText += textChunk;
-                        botMessage.innerHTML = marked.parse(botMessageText);
-                    }
-                }
-            }
-        }
-    }
+buffer += new TextDecoder().decode(value);
+let newlineIndex;
+while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
+const line = buffer.substring(0, newlineIndex);
+buffer = buffer.substring(newlineIndex + 1);
+if (line.startsWith('data:')) {
+const jsonData = JSON.parse(line.substring(5));
+if (jsonData.candidates && jsonData.candidates[0].content && jsonData.candidates[0].content.parts) {
+const textChunk = jsonData.candidates[0].content.parts[0].text;
+if (textChunk) {
+botMessageText += textChunk;
+botMessage.innerHTML = marked.parse(botMessageText);
+}
+}
+}
+}
+}
 
-    return botMessageText;
+return botMessageText;
 }
 
 async function sendMessage() {
-    const userMessageText = inputBox.value.trim();
-    const file = fileInput.files[0];
+  const userMessageText = inputBox.value.trim();
+  const files = Array.from(fileInput.files);
 
-    if (userMessageText === '' && !file) return;
+  if (userMessageText === '' && files.length === 0) return;
 
-    const userMessage = document.createElement('div');
-    userMessage.classList.add('message', 'user-message');
-    userMessage.textContent = userMessageText || 'Sent a file';
-    chatContainer.appendChild(userMessage);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+  const userMessage = document.createElement('div');
+  userMessage.classList.add('message', 'user-message');
+  userMessage.textContent = userMessageText || 'Sent files';
+  chatContainer.appendChild(userMessage);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    inputBox.value = '';
-    fileInput.value = '';
+  inputBox.value = '';
+  fileInput.value = '';
 
-    typingIndicator.style.display = 'block';
+  typingIndicator.style.display = 'block';
 
-    let fileData = null;
-    const contents = [];
-
-    for (const msg of messageHistory) {
-        contents.push(msg);
+  let fileContents = [];
+  for (const file of files) {
+    try {
+      if (file.type === 'text/html' || file.type.startsWith('text/')) {
+        const textContent = await readFileAsText(file);
+        fileContents.push({ role: 'user', parts: [{ text: `File content: ${textContent}` }] });
+      } else {
+        const fileData = await uploadFile(file);
+        fileContents.push({ role: 'user', parts: [{ file_data: { mime_type: file.type, file_uri: fileData.file.uri } }] });
+      }
+    } catch (error) {
+      console.error('File processing error:', error);
+      typingIndicator.style.display = 'none';
+      alert('Failed to process file: ' + error.message);
+      return;
     }
+  }
 
-    if (userMessageText) {
-        contents.push({ role: 'user', parts: [{ text: userMessageText }] });
-    }
+  const contents = [...messageHistory, ...fileContents];
+  if (userMessageText) {
+    contents.push({ role: 'user', parts: [{ text: userMessageText }] });
+  }
 
-    if (file) {
-        try {
-            fileData = await uploadFile(file);
-            if (file.type === 'text/html') {
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    const htmlContent = e.target.result;
-                    contents.push({ role: 'user', parts: [{ text: `HTML file content: ${htmlContent}` }] });
-                    await continueSendMessage(contents);
-                };
-                reader.onerror = (error) => {
-                    console.error('Error reading HTML file:', error);
-                    typingIndicator.style.display = 'none';
-                    alert('Failed to read HTML file.');
-                };
-                reader.readAsText(file);
-                return;
-            } else {
-                contents.push({ role: 'user', parts: [{ file_data: { mime_type: file.type, file_uri: fileData.file.uri } }] });
-            }
-        } catch (error) {
-            console.error('File upload error:', error);
-            typingIndicator.style.display = 'none';
-            alert('Failed to upload file: ' + error.message);
-            return;
-        }
-    }
+  await continueSendMessage(contents);
+}
 
-    await continueSendMessage(contents);
+function removeCommentsFromText(content, mimeType) {
+  if (mimeType === 'text/html') {
+    // Remove HTML comments
+    return content.replace(/<!--[\s\S]*?-->/g, '');
+  } else if (mimeType === 'text/javascript' || mimeType === 'application/javascript') {
+    // Remove JavaScript comments (// and /**/)
+    return content.replace(/\/\/[^\n]*|\/\*[\s\S]*?\*\//g, '');
+  } else if (mimeType === 'text/css') {
+    // Remove CSS comments (/**/)
+    return content.replace(/\/\*[\s\S]*?\*\//g, '');
+  } else if (mimeType === 'text/python') {
+      // Remove Python comments (#)
+      return content.replace(/#[^\n]*/g, '');
+  } else {
+    // Default: return content as is
+    return content;
+  }
+}
+
+function readFileAsText(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = (error) => reject(error);
+    reader.readAsText(file);
+  });
 }
 
 async function continueSendMessage(contents) {
-    let success = false;
-    const botMessage = document.createElement('div');
-    botMessage.classList.add('message', 'bot-message');
-    chatContainer.appendChild(botMessage);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+let success = false;
+const botMessage = document.createElement('div');
+botMessage.classList.add('message', 'bot-message');
+chatContainer.appendChild(botMessage);
+chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    for (const apiKey of API_KEYS) {
-        try {
-            const botMessageText = await fetchWithKeyStream(apiKey, contents, currentModel, botMessage);
-             if (botMessageText) {
-                messageHistory.push({ role: 'model', parts: [{ text: botMessageText }] });
-            }
-            success = true;
-            break;
-        } catch (error) {
-            console.error(`Error with API key:`, error.message);
-            displayError(error.message);
-        }
-    }
+for (const apiKey of API_KEYS) {
+try {
+const botMessageText = await fetchWithKeyStream(apiKey, contents, currentModel, botMessage);
+if (botMessageText) {
+messageHistory.push({ role: 'model', parts: [{ text: botMessageText }] });
+}
+success = true;
+break;
+} catch (error) {
+console.error(`Error with API key:`, error.message);
+displayError(error.message);
+}
+}
 
-    if (!success) {
-        botMessage.textContent = "I'm sorry, I'm currently unable to process your request. Please try again later.";
-    }
+if (!success) {
+botMessage.textContent = "I'm sorry, I'm currently unable to process your request. Please try again later.";
+}
 
-    // Update message history only after the message has been successfully sent
-    if (contents.length > 0) {
-        messageHistory.push(...contents);
-    }
+// Update message history only after the message has been successfully sent
+if (contents.length > 0) {
+messageHistory.push(...contents);
+}
 
-    typingIndicator.style.display = 'none';
-    addCopyButtonToCodeBlocks();
+typingIndicator.style.display = 'none';
+addCopyButtonToCodeBlocks();
 }
 
 async function uploadFile(file) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const apiKey = API_KEYS[0];
-            const startResponse = await fetch(`${BASE_URL}/upload/v1beta/files?key=${apiKey}`, {
-                method: 'POST',
-                headers: {
-                    'X-Goog-Upload-Protocol': 'resumable',
-                    'X-Goog-Upload-Command': 'start',
-                    'X-Goog-Upload-Header-Content-Length': file.size,
-                    'X-Goog-Upload-Header-Content-Type': file.type,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ file: { display_name: file.name } })
-            });
+return new Promise(async (resolve, reject) => {
+try {
+const apiKey = API_KEYS[0];
+const startResponse = await fetch(`${BASE_URL}/upload/v1beta/files?key=${apiKey}`, {
+method: 'POST',
+headers: {
+'X-Goog-Upload-Protocol': 'resumable',
+'X-Goog-Upload-Command': 'start',
+'X-Goog-Upload-Header-Content-Length': file.size,
+'X-Goog-Upload-Header-Content-Type': file.type,
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({ file: { display_name: file.name } })
+});
 
-            const uploadUrl = startResponse.headers.get('X-Goog-Upload-URL');
-            if (!uploadUrl) {
-                throw new Error('Failed to get upload URL');
-            }
+const uploadUrl = startResponse.headers.get('X-Goog-Upload-URL');
+if (!uploadUrl) {
+throw new Error('Failed to get upload URL');
+}
 
-            const uploadResponse = await fetch(uploadUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Length': file.size,
-                    'X-Goog-Upload-Offset': '0',
-                    'X-Goog-Upload-Command': 'upload, finalize'
-                },
-                body: file
-            });
+const uploadResponse = await fetch(uploadUrl, {
+method: 'POST',
+headers: {
+'Content-Length': file.size,
+'X-Goog-Upload-Offset': '0',
+'X-Goog-Upload-Command': 'upload, finalize'
+},
+body: file
+});
 
-            if (!uploadResponse.ok) {
-                const errorData = await uploadResponse.json();
-                throw new Error(errorData.error?.message || 'Unknown upload error');
-            }
+if (!uploadResponse.ok) {
+const errorData = await uploadResponse.json();
+throw new Error(errorData.error?.message || 'Unknown upload error');
+}
 
-            const fileData = await uploadResponse.json();
+const fileData = await uploadResponse.json();
 
-            resolve(fileData);
+resolve(fileData);
 
-        } catch (error) {
-            reject(error);
-        }
-    });
+} catch (error) {
+reject(error);
+}
+});
 }
 
 // Last Updated Label
 const lastUpdated = document.createElement('p');
 lastUpdated.id = 'last-updated';
-lastUpdated.textContent = 'Last updated: December 16, 2024, 11:00 PM';
+lastUpdated.textContent = 'Last updated: December 16, 2024, 1:00 PM';
 document.body.appendChild(lastUpdated);
 
 // Changelog Modal
@@ -724,81 +738,81 @@ const btn = document.getElementById("changelog-button");
 const span = document.getElementsByClassName("close")[0];
 
 btn.onclick = function() {
-    changelogModal.style.display = "block";
+changelogModal.style.display = "block";
 }
 
 span.onclick = function() {
-    changelogModal.style.display = "none";
+changelogModal.style.display = "none";
 }
 
 window.onclick = function(event) {
-    if (event.target == changelogModal) {
-        changelogModal.style.display = "none";
-    }
+if (event.target == changelogModal) {
+changelogModal.style.display = "none";
+}
 }
 
 const clearChatButton = document.getElementById('clear-chat-button');
 clearChatButton.addEventListener('click', () => {
-    chatContainer.innerHTML = '';
-    messageHistory = [];
+chatContainer.innerHTML = '';
+messageHistory = [];
 });
 
 function showPopupMessage(message) {
-    const popupMessage = document.createElement('div');
-    popupMessage.classList.add('popup-message');
-    popupMessage.textContent = message;
-    popupContainer.appendChild(popupMessage);
-    // Force a reflow, which forces a CSS redraw before starting animation
-     void popupMessage.offsetWidth;
+const popupMessage = document.createElement('div');
+popupMessage.classList.add('popup-message');
+popupMessage.textContent = message;
+popupContainer.appendChild(popupMessage);
+// Force a reflow, which forces a CSS redraw before starting animation
+void popupMessage.offsetWidth;
 
-    popupMessage.classList.add('show');
-    setTimeout(() => {
-        popupMessage.classList.remove('show');
-        setTimeout(() => {
-             popupMessage.remove();
+popupMessage.classList.add('show');
+setTimeout(() => {
+popupMessage.classList.remove('show');
+setTimeout(() => {
+popupMessage.remove();
 
-        }, 300); // Wait for the transition to end
-    }, 2000); // Show the message for 2 seconds
+}, 300); // Wait for the transition to end
+}, 2000); // Show the message for 2 seconds
 
 }
 
 document.addEventListener('keydown', function(event) {
-    if (event.ctrlKey && event.shiftKey && event.altKey) {
-        sendErrorMessages = !sendErrorMessages;
-        const message = sendErrorMessages ? 'Error messages enabled' : 'Error messages disabled';
-       showPopupMessage(message);
+if (event.ctrlKey && event.shiftKey && event.altKey) {
+sendErrorMessages = !sendErrorMessages;
+const message = sendErrorMessages ? 'Error messages enabled' : 'Error messages disabled';
+showPopupMessage(message);
 
-    }
+}
 });
 
 function addCopyButtonToCodeBlocks() {
-    const botMessages = document.querySelectorAll('.bot-message');
-    botMessages.forEach(message => {
-        const codeBlocks = message.querySelectorAll('pre code');
-        codeBlocks.forEach(codeBlock => {
-            const preElement = codeBlock.parentElement;
-            if (!preElement.querySelector('.copy-button')) {
-                const copyButton = document.createElement('button');
-                copyButton.className = 'copy-button';
-                copyButton.innerHTML = `📋`; // Simplified copy icon
-                copyButton.title = "Copy code";
-                copyButton.addEventListener('click', () => {
-                    const textToCopy = codeBlock.innerText;
-                    navigator.clipboard.writeText(textToCopy).then(() => {
-                        // Optional: Display a success message or change the icon briefly
-                        copyButton.innerHTML = `✅`;
-                        setTimeout(() => {
-                            copyButton.innerHTML = `📋`;
-                        }, 1000);
-                    }).catch(err => {
-                        console.error('Failed to copy text: ', err);
-                    });
-                });
-                preElement.style.position = 'relative';
-                preElement.appendChild(copyButton);
-            }
-        });
-    });
+const botMessages = document.querySelectorAll('.bot-message');
+botMessages.forEach(message => {
+const codeBlocks = message.querySelectorAll('pre code');
+codeBlocks.forEach(codeBlock => {
+const preElement = codeBlock.parentElement;
+if (!preElement.querySelector('.copy-button')) {
+const copyButton = document.createElement('button');
+copyButton.className = 'copy-button';
+copyButton.innerHTML = `📋`; // Simplified copy icon
+copyButton.title = "Copy code";
+copyButton.addEventListener('click', () => {
+const textToCopy = codeBlock.innerText;
+navigator.clipboard.writeText(textToCopy).then(() => {
+// Optional: Display a success message or change the icon briefly
+copyButton.innerHTML = `✅`;
+setTimeout(() => {
+copyButton.innerHTML = `📋`;
+}, 1000);
+}).catch(err => {
+console.error('Failed to copy text: ', err);
+});
+});
+preElement.style.position = 'relative';
+preElement.appendChild(copyButton);
+}
+});
+});
 }
 </script>
 </body>
