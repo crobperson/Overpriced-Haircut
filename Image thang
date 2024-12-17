@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="icon" href="https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true" type="image/png">
+<title>Google</title>
+<style>
+body {
+  font-family: 'Arial', sans-serif; /* More modern font */
+  background-color: #181818; /* Dark background */
+  color: #eee; /* Light text color */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+#container {
+  background-color: #282828; /* Slightly lighter container background */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+  padding: 30px;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+}
+
+h1 {
+  color: #4285f4; /* Google blue accent color */
+  margin-bottom: 20px;
+  font-size: 2em;
+}
+
+#prompt {
+  width: calc(100% - 22px); /* Adjust width for padding */
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #5f6368; /* Darker border */
+  border-radius: 25px; /* More rounded input field */
+  background-color: #3c4043; /* Dark input background */
+  color: #eee;
+  font-size: 1em;
+  outline: none; /* Remove default focus outline */
+}
+
+#generate {
+  background-color: #4285f4; /* Google blue button */
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 25px; /* Rounded button */
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s; /* Smooth transition on hover */
+}
+
+#generate:hover {
+  background-color: #5891f5; /* Slightly lighter blue on hover */
+}
+
+#imageContainer {
+  margin-top: 30px;
+  min-height: 100px; /* Placeholder height while loading */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#imageContainer p {
+  color: #9aa0a6; /* Lighter text for loading/error messages */
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px; /* Rounded image corners */
+}
+</style>
+</head>
+<body>
+<div id="container">
+  <h1>Here Acosta</h1>
+  <input type="text" id="prompt" placeholder="Enter your prompt here...">
+  <button id="generate">Generate Image</button>
+  <div id="imageContainer"></div>
+</div>
+
+<script>
+const generateButton = document.getElementById('generate');
+const promptInput = document.getElementById('prompt');
+const imageContainer = document.getElementById('imageContainer');
+
+// Array of API keys
+const apiKeys = [
+  '63c8b8a1afmsh98391331fb04032p1c52edjsnc84ba9ea94d9',
+  '05924b6103msh528e2437fed4a68p13c324jsnd1c62f22bc98',
+  '53f4765d7amshea0273d2352bed1p197b0ejsn9706548ead8b',
+  '1f651ef8d6msh880cc0cbe8a0882p1117dejsn5fe54ece5713',
+];
+let currentApiKeyIndex = 0; // Keep track of the current API key
+
+async function generateImage(prompt) {
+  imageContainer.innerHTML = '<p>Generating image...</p>';
+
+  const url = 'https://sdxl.p.rapidapi.com/v1/txt2img';
+  const options = {
+    method: 'POST',
+    headers: {
+      'x-rapidapi-key': apiKeys[currentApiKeyIndex],
+      'x-rapidapi-host': 'sdxl.p.rapidapi.com',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ prompt })
+  };
+
+  try {
+    const response = await fetch(url, options);
+    const result = await response.json();
+
+    if (Array.isArray(result) && result.length > 0 && result[0].startsWith('http')) {
+      imageContainer.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = result[0];
+      img.alt = 'Generated Image';
+      imageContainer.appendChild(img);
+      return true; // Indicate successful image generation
+    } else {
+      // Handle API error (e.g., rate limit, invalid key)
+      console.error('API Error:', result);
+      return false; // Indicate failure
+    }
+  } catch (error) {
+    console.error('Network or other error:', error);
+    return false; // Indicate failure
+  }
+}
+
+generateButton.addEventListener('click', async () => {
+  const prompt = promptInput.value;
+  if (!prompt) {
+    alert('Please enter a prompt.');
+    return;
+  }
+
+  let success = false;
+  while (!success && currentApiKeyIndex < apiKeys.length) {
+    success = await generateImage(prompt);
+    if (!success) {
+      currentApiKeyIndex++; // Move to the next API key
+      if (currentApiKeyIndex < apiKeys.length) {
+          imageContainer.innerHTML = '<p>Retrying with a different API key...</p>';
+      } else {
+          imageContainer.innerHTML = '<p>All API keys failed. Please try again later.</p>';
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
