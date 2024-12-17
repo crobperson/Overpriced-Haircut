@@ -75,6 +75,12 @@ img {
   height: auto;
   border-radius: 10px; /* Rounded image corners */
 }
+.footer-text {
+font-size: 12px;
+text-align: center;
+color: #888;
+padding: 10px;
+}
 </style>
 </head>
 <body>
@@ -82,8 +88,13 @@ img {
   <h1>Here Acosta</h1>
   <input type="text" id="prompt" placeholder="Enter your prompt here...">
   <button id="generate">Generate Image</button>
+  <p class="footer-text">
+Contact clifton.roberson@utstudents.net for bug reports, feature requests, or an overpriced haircut
+</p>
   <div id="imageContainer"></div>
+  
 </div>
+
 
 <script>
 const generateButton = document.getElementById('generate');
