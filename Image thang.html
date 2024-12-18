@@ -5,86 +5,105 @@
 <title>Google</title>
 <style>
 body {
-  font-family: 'Roboto', sans-serif; /* More modern font */
-  background-color: #181818; /* Dark background */
-  color: #eee; /* Light text color */
+  font-family: 'Roboto', sans-serif;
+  background-color: #181818;
+  color: #eee;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   margin: 0;
+  transition: background-color 0.3s ease; /* Smooth background transition */
 }
 
 #container {
-  background-color: #282828; /* Slightly lighter container background */
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+  background-color: #282828;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   padding: 30px;
   text-align: center;
   max-width: 500px;
   width: 90%;
+  transition: box-shadow 0.3s ease; /* Smooth shadow transition */
 }
 
 h1 {
-  color: #4285f4; /* Google blue accent color */
+  color: #4285f4;
   margin-bottom: 20px;
-  font-size: 2.5em; /* Increased font size for title */
-  font-weight: 500; /* Slightly bolder title */
+  font-size: 2.5em;
+  font-weight: 500;
+  transition: color 0.3s ease; /* Smooth color transition */
 }
 
 #prompt {
-  width: calc(100% - 22px); /* Adjust width for padding */
-  padding: 12px; /* Increased padding */
+  width: calc(100% - 24px); /* Adjust for padding */
+  padding: 12px;
   margin-bottom: 20px;
-  border: 1px solid #5f6368; /* Darker border */
-  border-radius: 25px; /* More rounded input field */
-  background-color: #3c4043; /* Dark input background */
+  border: 1px solid #5f6368;
+  border-radius: 25px;
+  background-color: #3c4043;
   color: #eee;
-  font-size: 1.1em; /* Increased font size */
-  outline: none; /* Remove default focus outline */
+  font-size: 1.1em;
+  outline: none;
+  transition: border-color 0.3s ease, background-color 0.3s ease; /* Smooth border/background transition */
+}
+
+#prompt:focus {
+  border-color: #4285f4; /* Highlight border on focus */
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.3); /* Add a subtle outline on focus */
 }
 
 #generate {
-  background-color: #4285f4; /* Google blue button */
+  background-color: #4285f4;
   color: white;
   padding: 12px 25px;
   border: none;
-  border-radius: 25px; /* Rounded button */
+  border-radius: 25px;
   cursor: pointer;
-  font-size: 1.1em; /* Increased font size */
-  transition: background-color 0.2s, box-shadow 0.2s; /* Smooth transition on hover */
+  font-size: 1.1em;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transition on hover */
 }
 
 #generate:hover {
-  background-color: #5891f5; /* Slightly lighter blue on hover */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); /* Add a subtle shadow on hover */
+  background-color: #5891f5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+#generate:active {
+  transform: translateY(1px); /* Slightly depress button on click */
 }
 
 #imageContainer {
   margin-top: 30px;
-  min-height: 100px; /* Placeholder height while loading */
+  min-height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 #imageContainer p {
-  color: #9aa0a6; /* Lighter text for loading/error messages */
+  color: #9aa0a6;
 }
 
 img {
   max-width: 100%;
   height: auto;
-  border-radius: 10px; /* Rounded image corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add a shadow to the image */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.3s ease, transform 0.2s ease, opacity 0.5s ease; /* Add opacity to transitions */
+}
+
+img:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5); /* Enhance shadow on hover */
+  transform: scale(1.02); /* Slightly enlarge image on hover */
 }
 
 .footer-text {
-  font-size: 0.8em; /* Slightly smaller font size */
+  font-size: 0.8em;
   text-align: center;
-  color: #9aa0a6; /* Lighter color */
+  color: #9aa0a6;
   padding: 10px;
-  margin-top: 20px; /* Add some space above the footer */
+  margin-top: 20px;
 }
 
 /* Loading animation */
@@ -95,7 +114,7 @@ img {
   border: 3px solid #ccc;
   border-radius: 50%;
   border-top-color: #4285f4;
-  animation: spin 1s ease-in-out infinite;
+  animation: spin 1s linear infinite; /* Use linear for smoother spin */
   margin-left: 10px;
 }
 
@@ -106,13 +125,13 @@ img {
 </head>
 <body>
 <div id="container">
-  <h1>Here Acosta</h1>
-  <input type="text" id="prompt" placeholder="Enter your prompt here...">
-  <button id="generate">Generate Image</button>
-  <div id="imageContainer"></div>
-  <p class="footer-text">
-    Contact clifton.roberson@utstudents.net for bug reports, feature requests, or an overpriced haircut
-  </p>
+<h1>Here Acosta</h1>
+<input type="text" id="prompt" placeholder="Enter your prompt here...">
+<button id="generate">Generate Image</button>
+<div id="imageContainer"></div>
+<p class="footer-text">
+Contact clifton.roberson@utstudents.net for bug reports, feature requests, or an overpriced haircut
+</p>
 </div>
 
 <script>
@@ -120,17 +139,23 @@ const generateButton = document.getElementById('generate');
 const promptInput = document.getElementById('prompt');
 const imageContainer = document.getElementById('imageContainer');
 
-// Array of API keys
+// Array of API keys (Consider storing these securely on the server-side)
 const apiKeys = [
   '63c8b8a1afmsh98391331fb04032p1c52edjsnc84ba9ea94d9',
   '05924b6103msh528e2437fed4a68p13c324jsnd1c62f22bc98',
   '53f4765d7amshea0273d2352bed1p197b0ejsn9706548ead8b',
   '1f651ef8d6msh880cc0cbe8a0882p1117dejsn5fe54ece5713',
 ];
-let currentApiKeyIndex = 0; // Keep track of the current API key
+let currentApiKeyIndex = 0;
 
 async function generateImage(prompt) {
-  // Show loading message with spinner
+  // Fade out existing image
+  const existingImg = imageContainer.querySelector('img');
+  if (existingImg) {
+    existingImg.style.opacity = 0;
+    await new Promise(resolve => setTimeout(resolve, 500)); // Wait for fade out
+  }
+
   imageContainer.innerHTML = '<p>Generating image<span class="loading"></span></p>';
 
   const url = 'https://sdxl.p.rapidapi.com/v1/txt2img';
@@ -149,41 +174,64 @@ async function generateImage(prompt) {
     const result = await response.json();
 
     if (Array.isArray(result) && result.length > 0 && result[0].startsWith('http')) {
-      imageContainer.innerHTML = ''; // Clear loading message
       const img = document.createElement('img');
       img.src = result[0];
       img.alt = 'Generated Image';
+      // Add a fade-in effect for the image
+      img.style.opacity = 0;
+      img.onload = () => {
+        img.style.transition = "opacity 0.5s ease";
+        img.style.opacity = 1;
+      };
+      imageContainer.innerHTML = '';
       imageContainer.appendChild(img);
-      return true; // Indicate successful image generation
+      return true;
     } else {
-      // Handle API error (e.g., rate limit, invalid key)
       console.error('API Error:', result);
-      return false; // Indicate failure
+      return false;
     }
   } catch (error) {
     console.error('Network or other error:', error);
-    return false; // Indicate failure
+    return false;
   }
 }
 
-generateButton.addEventListener('click', async () => {
-  const prompt = promptInput.value;
+// Function to handle image generation (called by click and Enter key)
+async function handleGenerate() {
+  const prompt = promptInput.value.trim();
   if (!prompt) {
     alert('Please enter a prompt.');
     return;
   }
 
+  generateButton.disabled = true;
+  generateButton.style.cursor = 'wait';
+
   let success = false;
   while (!success && currentApiKeyIndex < apiKeys.length) {
     success = await generateImage(prompt);
     if (!success) {
-      currentApiKeyIndex++; // Move to the next API key
+      currentApiKeyIndex++;
       if (currentApiKeyIndex < apiKeys.length) {
         imageContainer.innerHTML = '<p>Retrying with a different API key<span class="loading"></span></p>';
       } else {
         imageContainer.innerHTML = '<p>All API keys failed. Please try again later.</p>';
       }
     }
+  }
+
+  generateButton.disabled = false;
+  generateButton.style.cursor = 'pointer';
+}
+
+// Event listener for button click
+generateButton.addEventListener('click', handleGenerate);
+
+// Event listener for Enter key press in prompt input
+promptInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault(); // Prevent form submission or other default behavior
+    handleGenerate();
   }
 });
 </script>
