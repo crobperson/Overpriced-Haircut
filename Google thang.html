@@ -365,6 +365,7 @@
     <div class=model-select-container><label for=model-select>AI Model:</label> <select id=model-select>
         <option value=gemini-exp-1206>Gemini Pro (Default)</option>
         <option value=gemini-2.0-flash-exp>Gemini Flash (Fast)</option>
+        <option value=gemini-2.0-flash-thinking-exp>Gemini Flash Thinking</option>
       </select></div>
     <div class=temperature-container><label for=temperature-slider>Temp:</label> <input id=temperature-slider
         type=range max=1 min=0 step=0.1 value=1> <span id=temperature-value>1.0</span></div>
@@ -384,7 +385,7 @@
 <div class=modal id=changelogModal>
   <div class=modal-content><span class=close>×</span>
     <h2>Changelog</h2>
-    <p><strong>Version 1.65 (January 16, 2025)</strong><br>- Message Regeneration<br><p><strong>Version 1.6 (January 14, 2025)</strong><br>- Fixed bug!!!<br>
+    <p><strong>Version 1.7 (January 22, 2025)</strong><br>- The Thinker is back... (Currently the best model)<br><p><strong>Version 1.65 (January 16, 2025)</strong><br>- Message Regeneration<br><p><strong>Version 1.6 (January 14, 2025)</strong><br>- Fixed bug!!!<br>
   </div>
 </div>
 <script>
@@ -579,7 +580,7 @@
     "Enter" !== e.key || e.shiftKey || (e.preventDefault(), a())
   }));
   const ld = document.createElement("p");
-  ld.id = "last-updated", ld.textContent = "Last updated: January 16, 2025, 1:55 PM", document.body.appendChild(ld);
+  ld.id = "last-updated", ld.textContent = "Last updated: January 22. 2025, 8:00 AM", document.body.appendChild(ld);
   const ch = document.getElementById("changelogModal"),
     bb = document.getElementById("changelog-button"),
     cl = document.getElementsByClassName("close")[0];
@@ -650,3 +651,4 @@
     }
   });
 </script>
+</html>
