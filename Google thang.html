@@ -422,20 +422,32 @@
     }
   }
   async function g(e, t, n, o) {
+    const safetySettings = [
+        { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
+        { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
+        { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
+        { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" },
+        { "category": "HARM_CATEGORY_CIVIC_INTEGRITY", "threshold": "BLOCK_NONE" }
+    ];
+
+    const apiRequestBody = {
+        contents: t,
+        generationConfig: {
+            temperature: temp,
+            topP: .95,
+            maxOutputTokens: 8092,
+            responseMimeType: "text/plain"
+        },
+        safetySettings: safetySettings // Include safety settings here
+    };
+
+
     const s = await fetch(`${u}/v1beta/models/${n}:streamGenerateContent?alt=sse&key=${e}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        contents: t,
-        generationConfig: {
-          temperature: temp,
-          topP: .95,
-          maxOutputTokens: 8092,
-          responseMimeType: "text/plain"
-        }
-      })
+      body: JSON.stringify(apiRequestBody)
     });
     if (!s.ok) {
       const e = await s.json();
