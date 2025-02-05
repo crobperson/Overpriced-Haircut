@@ -43,4 +43,4 @@
 01/10/2025  08:24 PM             2,196 Wave.lnk
 02/02/2025  07:36 PM             1,074 Waves Applications V15.lnk
               32 File(s)    226,315,642 bytes
-               7 Dir(s)  146,553,446,400 bytes free
+               7 Dir(s)  146,553,380,864 bytes free
