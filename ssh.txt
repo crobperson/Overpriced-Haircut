@@ -1,1 +1,46 @@
-ssh.exe                      12416 Console                    1      9,444 K
+ Volume in drive C is Windows
+ Volume Serial Number is 2633-4503
+
+ Directory of C:\Users\diddy\Desktop
+
+02/03/2025  10:43 AM    <DIR>          .
+02/03/2025  10:43 AM    <DIR>          ..
+01/27/2025  06:25 AM            57,085 Authorize.auz
+01/27/2025  06:24 AM               741 Authorizing Ableton Live Offline.txt
+01/05/2025  03:11 PM             1,768 Bloxstrap.lnk
+01/03/2025  07:53 AM               938 Cheat Engine.lnk
+01/18/2025  04:07 AM    <DIR>          configs
+02/02/2025  07:36 PM             1,259 COSMOS.lnk
+01/18/2025  04:27 AM               219 Counter-Strike 2.url
+01/12/2025  03:39 AM    <DIR>          d
+01/01/2025  08:51 PM             9,560 Electra3.t2k
+01/27/2025  06:11 AM    <DIR>          Finished Fl Projects
+01/02/2025  12:52 AM               222 Geometry Dash.url
+02/02/2025  11:57 PM            60,185 HEDD HEDDphone Wired Average.swhp
+01/09/2025  04:52 PM             1,162 MSI Afterburner.lnk
+01/19/2025  03:35 PM             2,190 MuMu MultiPlayer 12.lnk
+01/19/2025  03:35 PM             2,123 MuMu Player 12.lnk
+02/01/2025  10:06 AM            17,781 New Text Documen - Copy (2) - Copy.py
+01/21/2025  03:47 AM            54,797 New Text Documen - Copy (2).py
+02/03/2025  09:16 AM            10,171 New Text Document.html
+02/03/2025  08:59 AM                38 New Text Document.txt
+01/22/2025  05:55 AM            19,233 newest ai.html
+02/01/2025  01:32 PM         6,283,043 OVERMOTIONED 141.mp3
+01/04/2025  12:42 AM               223 People Playground.url
+01/10/2025  07:26 PM    <DIR>          Reddit beat
+01/10/2025  07:27 PM        48,147,977 Reddit beat.rar
+01/10/2025  07:27 PM        86,000,953 Reddit beat.zip
+01/05/2025  10:21 PM        77,193,183 RedditBeat_1_5_25.zip
+02/03/2025  10:43 AM             1,398 Roblox Player.lnk
+02/03/2025  10:42 AM             1,226 Roblox Studio.lnk
+01/10/2025  10:43 PM           156,612 S2U3 Campanada 2 - Hybrid_Virtual.pdf
+01/30/2025  06:40 PM         8,230,733 SECRET SAUCE 140 CLIFF.mp3
+02/05/2025  02:46 PM            16,053 server.js
+01/25/2025  01:00 AM               417 target.png
+01/05/2025  06:57 PM    <DIR>          test
+01/18/2025  04:07 AM            39,675 Untitled.ahk
+01/12/2025  02:11 AM             1,407 Visual Studio Code.lnk
+01/10/2025  08:24 PM             2,196 Wave.lnk
+02/02/2025  07:36 PM             1,074 Waves Applications V15.lnk
+              32 File(s)    226,315,642 bytes
+               7 Dir(s)  146,553,446,400 bytes free
