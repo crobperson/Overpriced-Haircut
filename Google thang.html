@@ -378,6 +378,59 @@ vertical-align: middle
 #overlay-image.show {
     display: block;
 }
+ /* Style for the preview area next to the input */
+ #file-preview-container {
+     display: flex; /* Arrange previews horizontally */
+     gap: 5px;      /* Space between previews */
+     margin-left: 10px;
+     margin-right: 5px; /* Space before text area */
+     max-height: 45px; /* Limit height of container */
+     overflow: hidden; /* Hide overflow if too many previews */
+     align-items: center;
+ }
+
+ /* Style for individual preview thumbnails */
+ .file-preview-image {
+     max-height: 40px; /* Thumbnail size */
+     max-width: 40px;
+     height: 40px;    /* Fixed height */
+     width: 40px;     /* Fixed width */
+     border-radius: 4px;
+     object-fit: cover; /* Crop image to fit */
+     border: 1px solid #eee; /* Subtle border */
+ }
+
+ /* Style for images within the chat message */
+ .message-image {
+     max-width: 150px; /* Max width in chat */
+     max-height: 150px; /* Max height in chat */
+     border-radius: 8px;
+     margin-top: 8px; /* Space above image if text exists */
+     cursor: pointer; /* Optional: hint it might be interactive */
+     display: block; /* Ensure it takes its own line if needed */
+ }
+
+ /* Style for image container within the user message */
+ .user-message .images-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+    justify-content: flex-end; /* Align images to the right */
+ }
+
+ /* Make sure user message text aligns correctly when images are present */
+ .user-message {
+    /* display: flex; /* Use flexbox for alignment */
+    /* flex-direction: column; /* Stack text and images vertically */
+    /* align-items: flex-end; /* Align content to the right */
+    /* text-align: right; /* Ensure text is right-aligned */
+ }
+
+ .user-message > p { /* Style for the text part */
+     margin-bottom: 5px; /* Space between text and image container */
+ }
+
 </style>
 <script src=https://cdn.jsdelivr.net/npm/marked/marked.min.js></script>
 <div class=container>
@@ -398,322 +451,669 @@ type=range max=1 min=0 step=0.1 value=1> <span id=temperature-value>1.0</span></
 <div id=chat-container></div>
 <div id=typing-indicator>Gemini is typing...</div>
 <div id=input-area><label for=file-input class=file-upload-label>Choose File</label> <input id=file-input type=file
-accept=.html,image/*,application/pdf,audio/* multiple> <span id=file-names></span> <textarea id=input-box
+accept=.html,image/*,application/pdf,audio/* multiple> <span id=file-names></span> <div id="file-preview-container"></div><textarea id=input-box
 placeholder="Enter your message..." rows=1></textarea> <button id=send-button>Send</button></div>
 <p class=footer-text>Clifton® is not affiliated with Google in anyway!</div>
 <div id=popup-container></div>
 <div class=modal id=changelogModal>
 <div class=modal-content><span class=close>×</span>
 <h2>Changelog</h2>
-<p><strong>Version 1.82 (March 31, 2025)</strong><br>- Improved the gemini pro and flash model (I like chicken)<br><p><strong>Version 1.81 (Feb 6, 2025)</strong><br>- Improved the gemini pro model (I've ran out of ideas)<br><p><strong>Version 1.8 (January 31, 2025)</strong><br>- Press ctrl 3 times<br><p><strong>Version 1.7 (January 22, 2025)</strong><br>- The Thinker is back... (Currently the best model)<br><p><strong>Version 1.65 (January 16, 2025)</strong><br>- Message Regeneration<br><p><strong>Version 1.6 (January 14, 2025)</strong><br>- Fixed bug!!!<br>
+<p><strong>Version 1.83 (April 9, 2025)</strong><br>- Added Image Previews Along With General Improvements<br><p><strong>Version 1.82 (March 31, 2025)</strong><br>- Improved the gemini pro and flash model (I like chicken)<br><p><strong>Version 1.81 (Feb 6, 2025)</strong><br>- Improved the gemini pro model (I've ran out of ideas)<br><p><strong>Version 1.8 (January 31, 2025)</strong><br>- Press ctrl 3 times<br><p><strong>Version 1.7 (January 22, 2025)</strong><br>- The Thinker is back... (Currently the best model)<br><p><strong>Version 1.65 (January 16, 2025)</strong><br>- Message Regeneration<br><p><strong>Version 1.6 (January 14, 2025)</strong><br>- Fixed bug!!!<br>
 </div>
 </div>
 <div id="overlay-image"></div>
 <script>
 const b = ["01000001 01001001 01111010 01100001 01010011 01111001 01000010 01100011 00111000 01110001 00110110 01000010 01001001 01010010 01011111 01001001 01101110 01000011 01010100 01111001 01100101 01111010 01100011 01001100 01010010 01101011 01101011 01101010 01000011 01101000 01010101 01011111 01101111 01001111 01001010 01000001 01100110 01001100 01100111", "01000001 01001001 01111010 01100001 01010011 01111001 01000010 01110000 01101000 01110011 01110010 01001001 00101101 01110001 01110110 01101001 01001101 01111000 01101111 01100001 01101111 01110110 01101100 00110000 01011001 01110111 01111000 01011111 01101001 01001101 01111000 01010011 01001011 00110100 01001110 00110000 01101000 01100110 01001101", "01000001 01001001 01111010 01100001 01010011 01111001 01000001 01001110 01100100 01011010 01110001 01001110 01111010 01101000 01001010 01010100 00110010 01110101 00110110 01011000 01001111 01101010 01000001 01111010 01001001 01010010 00110001 01100001 00101101 00110101 00101101 01101110 01001110 01110101 01000111 01100011 01100010 01110110 00110100", ""];
 function str(e) {
-e = e.replace(/[^01]/g, "");
-let t = "";
-for (let n = 0; n < e.length; n += 8) {
-let o = e.substring(n, n + 8);
-o.length < 8 ? console.warn(`Incomplete byte found at index ${n}: ${o}. Skipping.`) : t += String.fromCharCode(parseInt(o, 2))
-}
-return t
+    e = e.replace(/[^01]/g, "");
+    let t = "";
+    for (let n = 0; n < e.length; n += 8) {
+        let o = e.substring(n, n + 8);
+        o.length < 8 ? console.warn(`Incomplete byte found at index ${n}: ${o}. Skipping.`) : t += String.fromCharCode(parseInt(o, 2))
+    }
+    return t
 }
 const k = b.map(str),
-u = "https://generativelanguage.googleapis.com",
-c = document.getElementById("chat-container"),
-i = document.getElementById("input-box"),
-m = document.getElementById("send-button"),
-t = document.getElementById("typing-indicator"),
-s = document.getElementById("model-select"),
-f = document.getElementById("file-input"),
-p = document.getElementById("popup-container"),
-fileNamesSpan = document.getElementById("file-names");
-let h = [],
-n = "gemini-2.5-pro-exp-03-25",
-v = !1,
-temp = 1;
+    u = "https://generativelanguage.googleapis.com",
+    c = document.getElementById("chat-container"),
+    i = document.getElementById("input-box"),
+    m = document.getElementById("send-button"),
+    t = document.getElementById("typing-indicator"),
+    s = document.getElementById("model-select"),
+    f = document.getElementById("file-input"), // file input element
+    p = document.getElementById("popup-container"),
+    fileNamesSpan = document.getElementById("file-names"),
+    filePreviewContainer = document.getElementById("file-preview-container"); // Get the new preview container
+
+let h = [], // Chat history
+    n = "gemini-2.5-pro-exp-03-25", // Default model
+    v = !1, // Error messages enabled/disabled flag
+    temp = 1; // Temperature setting
+
+// NEW: Store data URLs for currently selected image previews
+let currentImagePreviews = [];
+
 const tempSlider = document.getElementById("temperature-slider"),
-tempValueDisplay = document.getElementById("temperature-value");
-function d(e) {
-if (v) {
-const t = document.createElement("div");
-t.classList.add("message", "bot-message"), t.textContent = `Error: ${e}`, c.appendChild(t), c.scrollTop = c.scrollHeight
-}
-}
-async function g(e, t, n, o) {
-const safetySettings = [
-{ "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
-{ "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
-{ "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
-{ "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" },
-{ "category": "HARM_CATEGORY_CIVIC_INTEGRITY", "threshold": "BLOCK_NONE" }
-];
+    tempValueDisplay = document.getElementById("temperature-value");
 
-const apiRequestBody = {
-contents: t,
-generationConfig: {
-temperature: temp,
-topP: .95,
-maxOutputTokens: 80920,
-responseMimeType: "text/plain"
-},
-safetySettings: safetySettings
-};
-
-
-const s = await fetch(`${u}/v1beta/models/${n}:streamGenerateContent?alt=sse&key=${e}`, {
-method: "POST",
-headers: {
-"Content-Type": "application/json"
-},
-body: JSON.stringify(apiRequestBody)
-});
-if (!s.ok) {
-const e = await s.json();
-throw new Error(e.error?.message || "Unknown API error")
-}
-const a = s.body.getReader();
-let r = "",
-l = "";
-for (; ;) {
-const {
-done: e,
-value: t
-} = await a.read();
-if (e) break;
-let n;
-for (r += (new TextDecoder).decode(t); -1 !== (n = r.indexOf("\n"));) {
-const e = r.substring(0, n);
-if (r = r.substring(n + 1), e.startsWith("data:")) {
-const t = JSON.parse(e.substring(5));
-if (t.candidates && t.candidates[0].content && t.candidates[0].content.parts) {
-const e = t.candidates[0].content.parts[0].text;
-e && (l += e, o.innerHTML = marked.parse(l))
-}
-}
-}
-}
-return l
-}
-async function a() {
-const e = i.value.trim(),
-n = Array.from(f.files);
-if ("" === e && 0 === n.length) return;
-const o = document.createElement("div");
-o.classList.add("message", "user-message"), o.textContent = e || "Sent files", c.appendChild(o), c.scrollTop = c.scrollHeight, i.value = "", f.value = "", t.style.display = "block";
-let s = [];
-for (const o of n) try {
-if ("text/html" === o.type || o.type.startsWith("text/")) {
-const e = await fT(o);
-s.push({
-role: "user",
-parts: [{
-text: `File content: ${e}`
-}]
-})
-} else {
-const e = await z(o);
-s.push({
-role: "user",
-parts: [{
-file_data: {
-mime_type: o.type,
-file_uri: e.file.uri
-}
-}]
-})
-}
-} catch (e) {
-return console.error("File processing error:", e), t.style.display = "none", void alert("Failed to process file: " + e.message)
-}
-const a = [...h, ...s];
-e && a.push({
-role: "user",
-parts: [{
-text: e
-}]
-}), await w(a), fileNamesSpan.textContent = ""
-}
-function fT(e) {
-return new Promise(((t, n) => {
-const o = new FileReader;
-o.onload = e => t(e.target.result), o.onerror = e => e(e), o.readAsText(e)
-}))
-}
-let lastApiCall = [];
-async function w(e) {
-lastApiCall = e;
-let o = !1;
-const s = document.createElement("div");
-s.classList.add("message", "bot-message"), c.appendChild(s), c.scrollTop = c.scrollHeight;
-for (const t of k) try {
-const a = await g(t, e, n, s);
-a && h.push({
-role: "model",
-parts: [{
-text: a
-}]
-}), o = !0;
-break
-} catch (e) {
-console.error("Error with API key:", e.message), d(e.message)
-}
-o || (s.textContent = "I'm sorry, I'm currently unable to process your request. Please try again later."), e.length > 0 && h.push(...e), t.style.display = "none", cC()
-}
-async function z(e) {
-return new Promise((async (t, n) => {
-try {
-const n = k[0],
-o = (await fetch(`${u}/upload/v1beta/files?key=${n}`, {
-method: "POST",
-headers: {
-"X-Goog-Upload-Protocol": "resumable",
-"X-Goog-Upload-Command": "start",
-"X-Goog-Upload-Header-Content-Length": e.size,
-"X-Goog-Upload-Header-Content-Type": e.type,
-"Content-Type": "application/json"
-},
-body: JSON.stringify({
-file: {
-display_name: e.name
-}
-})
-})).headers.get("X-Goog-Upload-URL");
-if (!o) throw new Error("Failed to get upload URL");
-const s = await fetch(o, {
-method: "POST",
-headers: {
-"Content-Length": e.size,
-"X-Goog-Upload-Offset": "0",
-"X-Goog-Upload-Command": "upload, finalize"
-},
-body: e
-});
-if (!s.ok) {
-const e = await s.json();
-throw new Error(e.error?.message || "Unknown upload error")
-}
-t({
-file: {
-uri: (await s.json()).file.uri
-}
-})
-} catch (e) {
-n(e)
-}
-}))
-}
-tempSlider.addEventListener("input", (() => {
-temp = parseFloat(tempSlider.value), tempValueDisplay.textContent = temp.toFixed(1)
-})), s.addEventListener("change", (() => {
-n = s.value, console.log(`Model switched to: ${n}`)
-})), m.addEventListener("click", a), i.addEventListener("keydown", (e => {
-"Enter" !== e.key || e.shiftKey || (e.preventDefault(), a())
-}));
-const ld = document.createElement("p");
-ld.id = "last-updated", ld.textContent = "Last updated: March 31, 2025, 9:47 AM", document.body.appendChild(ld);
-const ch = document.getElementById("changelogModal"),
-bb = document.getElementById("changelog-button"),
-cl = document.getElementsByClassName("close")[0];
-bb.onclick = function () {
-ch.style.display = "block"
-}, cl.onclick = function () {
-ch.style.display = "none"
-}, window.onclick = function (e) {
-e.target == ch && (ch.style.display = "none")
-};
-const cb = document.getElementById("clear-chat-button");
-function sp(e) {
-const t = document.createElement("div");
-t.classList.add("popup-message"), t.textContent = e, p.appendChild(t), t.offsetWidth, t.classList.add("show"), setTimeout((() => {
-t.classList.remove("show"), setTimeout((() => {
-t.remove()
-}), 300)
-}), 2e3)
-}
-function cC() {
-document.querySelectorAll(".bot-message").forEach((e => {
-e.querySelectorAll("pre code").forEach((e => {
-const t = e.parentElement;
-if (!t.querySelector(".copy-button")) {
-const n = document.createElement("button");
-n.className = "copy-button", n.innerHTML = "📋", n.title = "Copy code", n.addEventListener("click", (() => {
-const t = e.innerText;
-navigator.clipboard.writeText(t).then((() => {
-n.innerHTML = "✅", setTimeout((() => {
-n.innerHTML = "📋"
-}), 1e3)
-})).catch((e => {
-console.error("Failed to copy text: ", e)
-}))
-})), t.style.position = "relative", t.appendChild(n)
-}
-}))
-}))
-}
-cb.addEventListener("click", (() => {
-c.innerHTML = "", h = []
-})), document.addEventListener("keydown", (function (e) {
-e.ctrlKey && e.shiftKey && e.altKey && (v = !v, sp(v ? "Error messages enabled" : "Error messages disabled"))
-})), f.addEventListener("change", (function () {
-let e = "";
-if (f.files && f.files.length > 0)
-for (let t = 0; t < f.files.length; t++) e += f.files[t].name, t < f.files.length - 1 && (e += ", ");
-fileNamesSpan.textContent = e
-}));
-
-const regenerateButton = document.getElementById("regenerate-button");
-regenerateButton.addEventListener("click", async () => {
-if (lastApiCall.length > 0) {
-
-const botMessages = document.querySelectorAll(".bot-message");
-if (botMessages.length > 0) {
-const lastBotMessage = botMessages[botMessages.length - 1];
-c.removeChild(lastBotMessage);
+function d(e) { // Display error message in chat if v is true
+    if (v) {
+        const t = document.createElement("div");
+        t.classList.add("message", "bot-message"), t.textContent = `Error: ${e}`, c.appendChild(t), c.scrollTop = c.scrollHeight
+    }
 }
 
+// Function to make the API call
+async function g(apiKey, contents, modelName, outputElement) {
+    const safetySettings = [
+        { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
+        { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
+        { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
+        { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" },
 
-if (h.length > 0 && h[h.length - 1].role === "model") {
-h.pop();
-}
+    ];
 
-t.style.display = "block";
-await w(lastApiCall);
-}
-});
+    const apiRequestBody = {
+        contents: contents, 
+        generationConfig: {
+            temperature: temp,
+            topP: .95,
+            maxOutputTokens: 81920, 
+            responseMimeType: "text/plain"
+        },
+        safetySettings: safetySettings
+    };
 
-let ctrlCount = 0;
-let ctrlPressedTimeout;
-const overlayImage = document.getElementById('overlay-image');
+    const response = await fetch(`${u}/v1beta/models/${modelName}:streamGenerateContent?alt=sse&key=${apiKey}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(apiRequestBody)
+    });
 
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Control' || event.key === 'Meta') { 
-        ctrlCount++;
-
-        if (ctrlCount === 1) {
-            ctrlPressedTimeout = setTimeout(() => {
-                ctrlCount = 0;
-            }, 1000);
-        } else if (ctrlCount === 2) {
-            clearTimeout(ctrlPressedTimeout); 
-            ctrlPressedTimeout = setTimeout(() => {
-                ctrlCount = 0; 
-            }, 1000);
-        } else if (ctrlCount >= 3) {
-            clearTimeout(ctrlPressedTimeout);
-            ctrlCount = 0;
-            overlayImage.classList.toggle('show'); 
+    if (!response.ok) {
+        let errorMsg = "Unknown API error";
+        try {
+            const errorData = await response.json();
+            errorMsg = errorData.error?.message || JSON.stringify(errorData);
+        } catch (e) {
+            errorMsg = `API request failed with status ${response.status}: ${response.statusText}`;
         }
+        throw new Error(errorMsg);
+    }
+
+    const reader = response.body.getReader();
+    let accumulatedResponse = "";
+    let decodedChunk = "";
+    outputElement.innerHTML = ""; // Clear previous content
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        decodedChunk += new TextDecoder().decode(value);
+
+        // Process lines separated by newline
+        let newlineIndex;
+        while ((newlineIndex = decodedChunk.indexOf('\n')) >= 0) {
+            const line = decodedChunk.substring(0, newlineIndex).trim();
+            decodedChunk = decodedChunk.substring(newlineIndex + 1);
+
+            if (line.startsWith("data:")) {
+                try {
+                    const jsonData = JSON.parse(line.substring(5));
+                    if (jsonData.candidates && jsonData.candidates[0]?.content?.parts) {
+                        const textPart = jsonData.candidates[0].content.parts[0]?.text;
+                        if (textPart) {
+                            accumulatedResponse += textPart;
+                             // Update progressively using marked.js
+                            outputElement.innerHTML = marked.parse(accumulatedResponse);
+                            c.scrollTop = c.scrollHeight; // Keep scrolled down
+                        }
+                    }
+                     // Handle potential finish reason or safety ratings if needed
+                    if (jsonData.candidates && jsonData.candidates[0]?.finishReason && jsonData.candidates[0].finishReason !== "STOP") {
+                        console.warn("Stream stopped for reason:", jsonData.candidates[0].finishReason);
+                         // Optionally display a message about why it stopped
+                    }
+                     if (jsonData.promptFeedback?.blockReason) {
+                         console.error("Request blocked:", jsonData.promptFeedback.blockReason);
+                         throw new Error(`Request blocked due to safety settings: ${jsonData.promptFeedback.blockReason}`);
+                    }
+
+                } catch (e) {
+                    console.error("Error parsing SSE data line:", e, "Line:", line);
+                }
+            }
+        }
+    }
+    // Final update with the complete parsed content
+    outputElement.innerHTML = marked.parse(accumulatedResponse);
+    cC(); // Ensure copy buttons are added after final render
+    return accumulatedResponse;
+}
+
+// Function to send message (Main User Action)
+async function a() {
+    const textInput = i.value.trim();
+    const actualFiles = Array.from(f.files); // Get the actual File objects
+    // Use the stored preview data for displaying in the user message
+    const previewsToShow = [...currentImagePreviews];
+
+    if (textInput === "" && actualFiles.length === 0) return; // Don't send empty
+
+    // --- 1. Create and display the user message bubble ---
+    const userMessageDiv = document.createElement("div");
+    userMessageDiv.classList.add("message", "user-message");
+
+    // Add text part if exists
+    if (textInput) {
+        const textElement = document.createElement('p');
+        textElement.textContent = textInput;
+        userMessageDiv.appendChild(textElement);
+    }
+
+    // Add image previews if they exist from the selection
+    if (previewsToShow.length > 0) {
+        const imageContainer = document.createElement('div');
+        imageContainer.className = 'images-container'; // Use class for styling
+        previewsToShow.forEach(previewData => {
+            const img = document.createElement('img');
+            img.src = previewData.dataUrl;
+            img.classList.add('message-image'); // Style for in-chat preview
+            img.title = previewData.name;
+            img.alt = previewData.name; // Accessibility
+            imageContainer.appendChild(img);
+        });
+        userMessageDiv.appendChild(imageContainer);
+    }
+
+    // If no text and no image previews, but other files were selected
+    if (!textInput && previewsToShow.length === 0 && actualFiles.length > 0) {
+         const fileInfoElement = document.createElement('p');
+         fileInfoElement.textContent = `Attached ${actualFiles.length} file(s): ${actualFiles.map(file => file.name).join(', ')}`;
+         userMessageDiv.appendChild(fileInfoElement);
+    }
+
+    c.appendChild(userMessageDiv);
+    c.scrollTop = c.scrollHeight;
+
+    // --- 2. Clear input fields and previews ---
+    i.value = "";
+    f.value = ""; // Clear the file input element
+    fileNamesSpan.textContent = ''; // Clear file names display
+    filePreviewContainer.innerHTML = ''; // Clear the thumbnail previews
+    currentImagePreviews = []; // Clear the stored preview data
+
+    // --- 3. Prepare data for the API call ---
+    t.style.display = "block"; // Show typing indicator
+
+    let newUserParts = [];
+    // Add text part for API
+    if (textInput) {
+        newUserParts.push({ text: textInput });
+    }
+
+    // Process actual files for API upload/embedding
+    let fileProcessingPromises = actualFiles.map(async (file) => {
+        try {
+            // Handle text-based files
+            if (file.type.startsWith('text/') || file.type === 'text/html' || file.type === 'application/json' || file.type === 'application/xml') {
+                const content = await fT(file); // Read text content
+                // Embed content directly for smaller files, or add note for larger ones? Gemini prefers direct data.
+                return { text: `--- File Start: ${file.name} ---\n${content}\n--- File End: ${file.name} ---` };
+            }
+            // Handle files supported by the File API (Images, Audio, PDF, Video likely)
+            else if (file.type.startsWith('image/') || file.type.startsWith('audio/') || file.type === 'application/pdf' || file.type.startsWith('video/')) {
+                 const uploadedFile = await z(file); // Upload file via File API, get URI
+                 return { file_data: { mime_type: file.type, file_uri: uploadedFile.file.uri } };
+            }
+            // Handle other file types - just mention them?
+            else {
+                 console.warn(`Unsupported file type for direct API processing: ${file.name} (${file.type}). Sending as text note.`);
+                 return { text: `[Attached file: ${file.name} (${file.type}) - Content not processed]` };
+                 // return null; // Or skip entirely
+            }
+        } catch (error) {
+            console.error(`Error processing file ${file.name}:`, error);
+             // Add error message to chat?
+             d(`Failed to process file ${file.name}: ${error.message}`); // Use the error display function
+             return null; // Indicate failure for this file
+        }
+    });
+
+    const filePartsForApi = (await Promise.all(fileProcessingPromises)).filter(p => p !== null); // Filter out nulls from errors
+    newUserParts.push(...filePartsForApi); // Add successfully processed file parts
+
+    // --- 4. Update History and Call API ---
+    if (newUserParts.length > 0) { // Only proceed if there's text or successfully processed files
+        const newUserMessage = { role: "user", parts: newUserParts };
+
+        // Prepare the full history for the API call
+        const historyForApi = [...h, newUserMessage]; // Combine existing history + new user message
+
+        // Add the user message to local history *before* the API call
+        // This ensures it's there even if the API call fails.
+        h.push(newUserMessage);
+
+        // Call the main API interaction function
+        await w(historyForApi); // Pass the updated history to w
     } else {
-        ctrlCount = 0; 
-        clearTimeout(ctrlPressedTimeout); 
+        // If only text was entered and it was just whitespace, or all files failed processing
+        console.log("No valid content (text or processed files) to send.");
+        t.style.display = "none"; // Hide typing indicator as nothing is being sent
+    }
+}
+
+
+// Read file as text
+function fT(file) { // fileToText
+    return new Promise(((resolve, reject) => {
+        const reader = new FileReader;
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = e => reject(e);
+        reader.readAsText(file);
+    }))
+}
+
+// Main function to handle conversation flow and API calls
+let lastApiCallHistory = []; // Store history *sent* to API for regeneration
+async function w(conversationHistory) { // Renamed from 'w' to be more descriptive (processAndRespond)
+    lastApiCallHistory = [...conversationHistory]; // Store the history being sent for potential regeneration
+    let botReplied = false;
+    const botMessageDiv = document.createElement("div");
+    botMessageDiv.classList.add("message", "bot-message");
+    // Add placeholder before API call starts
+    botMessageDiv.innerHTML = "<i>Clifton is typing...</i>";
+    c.appendChild(botMessageDiv);
+    c.scrollTop = c.scrollHeight;
+    t.style.display = 'block'; // Ensure typing indicator is shown
+
+    // Try API keys sequentially
+    for (const apiKey of k) {
+        try {
+            // Call the API streaming function
+            const botResponseText = await g(apiKey, conversationHistory, n, botMessageDiv); // Pass history and output element
+
+            // If successful response received
+            if (botResponseText !== null && botResponseText.trim() !== "") {
+                 // Update local history 'h' with the bot's response
+                 // Ensure we don't add duplicate model responses if regeneration happened quickly
+                 if (h.length === 0 || h[h.length - 1].role !== 'model') {
+                     h.push({ role: "model", parts: [{ text: botResponseText }] });
+                 } else {
+                     // Update the last model message if needed (e.g., after regeneration)
+                     h[h.length - 1] = { role: "model", parts: [{ text: botResponseText }] };
+                 }
+
+                botReplied = true;
+                break; // Exit loop on success
+            } else if (botResponseText === "") {
+                 console.log("Received empty but successful response from API.");
+                 botMessageDiv.innerHTML = "<i>Received an empty response.</i>";
+                 // Decide if you want to add this empty response to history 'h'
+                 // h.push({ role: "model", parts: [{ text: "" }] });
+                 botReplied = true; // Consider it handled
+                 break;
+            }
+            // If botResponseText is null (error handled within g), the loop continues
+        } catch (error) {
+            console.error(`Error during API call with key [...]: ${error.message}`);
+            d(error.message); // Display error in chat if enabled
+             // Update the placeholder message div with the error
+            botMessageDiv.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+            // Don't break the loop, try the next key
+        }
+    }
+
+    // If no API key worked and no specific error was already displayed in the div
+    if (!botReplied && !botMessageDiv.innerHTML.includes("Error:")) {
+        botMessageDiv.textContent = "I'm sorry, I'm currently unable to process your request after trying all available resources. Please try again later.";
+        // Don't add this failure message to history 'h'
+    }
+
+    t.style.display = "none"; // Hide typing indicator
+    c.scrollTop = c.scrollHeight; // Scroll down after response
+    cC(); // Add copy buttons to the final message
+}
+
+
+// Upload file using Google's resumable upload
+async function z(file) { // uploadFileToGoogle
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Use the first API key for uploads (assuming it has upload permissions)
+            const uploadApiKey = k[0];
+            if (!uploadApiKey) return reject(new Error("No API key available for file uploads."));
+
+            // 1. Start Resumable Upload - Get Upload URL
+            const startResponse = await fetch(`${u}/upload/v1beta/files?key=${uploadApiKey}`, {
+                method: "POST",
+                headers: {
+                    "X-Goog-Upload-Protocol": "resumable",
+                    "X-Goog-Upload-Command": "start",
+                    "X-Goog-Upload-Header-Content-Length": file.size.toString(),
+                    "X-Goog-Upload-Header-Content-Type": file.type,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    file: { display_name: file.name }
+                })
+            });
+
+            if (!startResponse.ok || startResponse.status !== 200) {
+                let errorMsg = `Failed to start upload (Status: ${startResponse.status})`;
+                try { errorMsg = (await startResponse.json()).error?.message || errorMsg; } catch (_) {}
+                return reject(new Error(errorMsg));
+            }
+
+            const uploadUrl = startResponse.headers.get("X-Goog-Upload-URL");
+            if (!uploadUrl) {
+                return reject(new Error("Failed to get upload URL from start response."));
+            }
+
+            // 2. Upload File Content
+            const uploadResponse = await fetch(uploadUrl, {
+                method: "POST", // Changed to POST as per common practice for resumable finalization
+                headers: {
+                    "Content-Length": file.size.toString(), // Required by some servers
+                     "X-Goog-Upload-Offset": "0", // Required? Maybe not if sending all at once
+                    "X-Goog-Upload-Command": "upload, finalize" // Upload data and finalize
+                },
+                body: file // Send the file blob directly
+            });
+
+            if (!uploadResponse.ok) {
+                 let errorMsg = `File upload failed (Status: ${uploadResponse.status})`;
+                 try {
+                    const errorData = await uploadResponse.json();
+                     errorMsg = errorData.error?.message || JSON.stringify(errorData) || errorMsg;
+                 } catch (_) {
+                     errorMsg += `: ${uploadResponse.statusText}`;
+                 }
+                 return reject(new Error(errorMsg));
+             }
+
+            const uploadResult = await uploadResponse.json();
+
+            // 3. Return the File URI
+             if (!uploadResult.file?.uri) {
+                 return reject(new Error("Upload succeeded but response did not contain file URI."));
+             }
+            resolve({ file: { uri: uploadResult.file.uri } }); // Resolve with the structure expected
+
+        } catch (error) {
+            console.error("File Upload z() Error:", error);
+            reject(error);
+        }
+    });
+}
+
+// --- Event Listeners ---
+
+// Temperature Slider
+tempSlider.addEventListener("input", () => {
+    temp = parseFloat(tempSlider.value);
+    tempValueDisplay.textContent = temp.toFixed(1);
+});
+
+// Model Selection
+s.addEventListener("change", () => {
+    n = s.value;
+    console.log(`Model switched to: ${n}`);
+    // Optionally clear history or notify user when model changes?
+    // h = [];
+    // c.innerHTML = '';
+    // sp(`Model changed to ${n}. Chat history cleared.`);
+});
+
+// Send Button
+m.addEventListener("click", a);
+
+// Input Box Enter Key
+i.addEventListener("keydown", (e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        a();
+    }
+}));
+
+// File Input Change (for Previews)
+f.addEventListener('change', function() {
+    fileNamesSpan.textContent = ''; // Clear previous file names
+    filePreviewContainer.innerHTML = ''; // Clear previous previews
+    currentImagePreviews = []; // Clear stored previews
+    let nonImageFileNames = [];
+
+    if (f.files && f.files.length > 0) {
+        const filePromises = Array.from(f.files).map(file => {
+            return new Promise((resolve) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const dataUrl = e.target.result;
+                        // Store preview data
+                        currentImagePreviews.push({ name: file.name, dataUrl: dataUrl });
+
+                        // Create and display thumbnail
+                        const img = document.createElement('img');
+                        img.src = dataUrl;
+                        img.classList.add('file-preview-image');
+                        img.title = file.name; // Tooltip with filename
+                        filePreviewContainer.appendChild(img);
+                        resolve();
+                    };
+                    reader.onerror = () => {
+                        console.error("Error reading file:", file.name);
+                        nonImageFileNames.push(file.name + " (preview failed)");
+                        resolve();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // Collect names of non-image files
+                    nonImageFileNames.push(file.name);
+                    resolve();
+                }
+            });
+        });
+
+        // After all files are processed (including reading images)
+        Promise.all(filePromises).then(() => {
+            // Display names of non-image files
+            if (nonImageFileNames.length > 0) {
+                fileNamesSpan.textContent = nonImageFileNames.join(', ');
+            }
+             // Update layout if previews are shown
+             filePreviewContainer.style.display = currentImagePreviews.length > 0 ? 'flex' : 'none';
+        });
+    } else {
+         filePreviewContainer.style.display = 'none'; // Hide preview container if no files
     }
 });
 
 
-const preloadImage = new Image();
-preloadImage.src = 'https://github.com/crobperson/Overpriced-Haircut/blob/main/Screenshot.png?raw=true';
+// --- Buttons and Modals ---
+
+// Last Updated Timestamp
+const ld = document.createElement("p");
+ld.id = "last-updated";
+// Find the latest date in the changelog (optional, more dynamic)
+// Or keep it static:
+ld.textContent = "Last updated: April 9th, 2025, 9:47 AM";
+document.body.appendChild(ld);
+
+// Changelog Modal
+const ch = document.getElementById("changelogModal"),
+    bb = document.getElementById("changelog-button"),
+    cl = document.getElementsByClassName("close")[0];
+if (bb && ch && cl) {
+    bb.onclick = function() { ch.style.display = "block" };
+    cl.onclick = function() { ch.style.display = "none" };
+    window.onclick = function(event) {
+        if (event.target == ch) { ch.style.display = "none"; }
+    };
+} else {
+    console.warn("Changelog modal elements not found.");
+}
+
+
+// Popup Message Function
+function sp(message) { // showPopup
+    const popup = document.createElement("div");
+    popup.classList.add("popup-message");
+    popup.textContent = message;
+    p.appendChild(popup);
+    // Trigger reflow to enable transition
+    popup.offsetWidth;
+    popup.classList.add("show");
+    setTimeout(() => {
+        popup.classList.remove("show");
+        setTimeout(() => {
+            if (popup.parentNode) { // Check if it's still in the DOM
+                popup.remove();
+            }
+        }, 500); // Wait for fade out transition
+    }, 2500); // Duration visible
+}
+
+// Add Copy Buttons to Code Blocks
+function cC() { // createCopyButtons
+     // Use querySelectorAll on the chat container for efficiency
+     c.querySelectorAll(".bot-message pre > code").forEach((codeBlock => {
+        const preElement = codeBlock.parentElement;
+        if (preElement && !preElement.querySelector(".copy-button")) { // Check if button exists
+            const button = document.createElement("button");
+            button.className = "copy-button";
+            button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>'; // Clipboard icon
+            button.title = "Copy code";
+            button.addEventListener("click", () => {
+                const codeToCopy = codeBlock.innerText;
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                     button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>'; // Checkmark icon
+                     button.title = "Copied!";
+                    setTimeout(() => {
+                         button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+                         button.title = "Copy code";
+                    }, 1500); // Reset after 1.5 seconds
+                }).catch(err => {
+                    console.error("Failed to copy code: ", err);
+                     button.title = "Copy failed!";
+                    // Optionally show an error indication
+                });
+            });
+            // Style pre for positioning context if not already done
+            if (getComputedStyle(preElement).position === 'static') {
+                preElement.style.position = "relative";
+            }
+            preElement.appendChild(button);
+        }
+    }));
+}
+
+// Clear Chat Button
+const cb = document.getElementById("clear-chat-button");
+if (cb) {
+    cb.addEventListener("click", () => {
+        c.innerHTML = ""; // Clear chat display
+        h = []; // Clear history array
+        lastApiCallHistory = []; // Clear regeneration history
+        sp("Chat cleared."); // Show confirmation
+    });
+}
+
+// Regenerate Button
+const regenerateButton = document.getElementById("regenerate-button");
+if (regenerateButton) {
+     regenerateButton.addEventListener("click", async () => {
+         // Find the index of the last user message in the *main* history `h`
+         let lastUserMessageIndex = -1;
+         for (let i = h.length - 1; i >= 0; i--) {
+             if (h[i].role === 'user') {
+                 lastUserMessageIndex = i;
+                 break;
+             }
+         }
+
+         // Check if there's a user message and a bot message potentially following it
+         if (lastUserMessageIndex !== -1) {
+             // Check if the last message in history is indeed a model response
+             if (h.length > 0 && h[h.length - 1].role === 'model') {
+                 // Remove the last bot message from history `h`
+                 h.pop();
+
+                 // Remove the last bot message element from the DOM
+                 const botMessages = c.querySelectorAll(".message.bot-message");
+                 if (botMessages.length > 0) {
+                     c.removeChild(botMessages[botMessages.length - 1]);
+                 }
+
+                 // Now, the history 'h' ends with the last user message. Call w again.
+                 // We pass the current state of 'h' which is ready for the API call.
+                 sp("Regenerating response...");
+                 await w(h); // Pass the history ending with the user message
+             } else {
+                  console.log("Last message is not from the bot, nothing to regenerate.");
+                  sp("Nothing to regenerate."); // Inform user
+             }
+         } else {
+             console.log("No user message found in history to regenerate from.");
+             sp("Nothing to regenerate."); // Inform user
+         }
+     });
+} else {
+    console.warn("Regenerate button not found.");
+}
+
+
+// Error Message Toggle (Ctrl+Shift+Alt)
+document.addEventListener("keydown", (function(event) {
+    // Use Alt key + Shift + E (for Error) as Ctrl+Shift+Alt might conflict
+    if (event.altKey && event.shiftKey && event.key === 'E') {
+        v = !v; // Toggle the flag
+        sp(v ? "Error messages will be shown in chat." : "Error messages hidden.");
+    }
+}));
+
+
+// Ctrl+Ctrl+Ctrl Easter Egg
+let ctrlCount = 0;
+let ctrlPressedTimeout;
+const overlayImage = document.getElementById('overlay-image');
+
+if (overlayImage) {
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Control' || event.key === 'Meta') { // Meta for Mac Command key
+            ctrlCount++;
+
+            // Clear previous timeout on each press
+            clearTimeout(ctrlPressedTimeout);
+
+             if (ctrlCount >= 3) {
+                 ctrlCount = 0; // Reset count
+                 overlayImage.classList.toggle('show'); // Toggle the image overlay
+             } else {
+                 // Set a timeout to reset count if presses are too far apart
+                 ctrlPressedTimeout = setTimeout(() => {
+                     ctrlCount = 0;
+                 }, 500); // Reset if no new Ctrl press within 500ms
+             }
+        } else if (!event.ctrlKey && !event.metaKey) { // Reset if another key is pressed
+            // Don't reset if it's just releasing Ctrl/Meta
+             if (event.key !== 'Control' && event.key !== 'Meta') {
+                ctrlCount = 0;
+                clearTimeout(ctrlPressedTimeout);
+             }
+        }
+    });
+
+    // Preload the overlay image
+    const preloadImage = new Image();
+    preloadImage.src = 'https://github.com/crobperson/Overpriced-Haircut/blob/main/Screenshot.png?raw=true';
+} else {
+    console.warn("Overlay image element not found.");
+}
+
+cC(); 
 </script>
 </html>
