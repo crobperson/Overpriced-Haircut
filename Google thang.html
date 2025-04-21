@@ -436,9 +436,8 @@ vertical-align: middle
 <div class=container>
 <div class=header>
 <div class=model-select-container><label for=model-select>AI Model:</label> <select id=model-select>
-<option value=gemini-2.0-flash>Clifton Flash</option>
+<option value=gemini-2.5-flash-preview-04-17>Clifton Flash</option>
 <option value=gemini-2.5-pro-exp-03-25>Clifton Pro</option>
-<option value=gemini-2.0-flash-thinking-exp-01-21>Clifton Flash Thinking</option>
 </select></div>
 <div class=temperature-container><label for=temperature-slider>Temp:</label> <input id=temperature-slider
 type=range max=1 min=0 step=0.1 value=1> <span id=temperature-value>1.0</span></div>
@@ -486,7 +485,7 @@ const k = b.map(str),
     filePreviewContainer = document.getElementById("file-preview-container"); // Get the new preview container
 
 let h = [], // Chat history
-    n = "gemini-2.0-flash", // Default model
+    n = "gemini-2.5-flash-preview-04-17", // Default model
     v = !1, // Error messages enabled/disabled flag
     temp = 1; // Temperature setting
 
@@ -1022,11 +1021,9 @@ if (cb) {
     });
 }
 
-// Regenerate Button
 const regenerateButton = document.getElementById("regenerate-button");
 if (regenerateButton) {
      regenerateButton.addEventListener("click", async () => {
-         // Find the index of the last user message in the *main* history `h`
          let lastUserMessageIndex = -1;
          for (let i = h.length - 1; i >= 0; i--) {
              if (h[i].role === 'user') {
@@ -1034,43 +1031,31 @@ if (regenerateButton) {
                  break;
              }
          }
-
-         // Check if there's a user message and a bot message potentially following it
          if (lastUserMessageIndex !== -1) {
-             // Check if the last message in history is indeed a model response
              if (h.length > 0 && h[h.length - 1].role === 'model') {
-                 // Remove the last bot message from history `h`
                  h.pop();
-
-                 // Remove the last bot message element from the DOM
                  const botMessages = c.querySelectorAll(".message.bot-message");
                  if (botMessages.length > 0) {
                      c.removeChild(botMessages[botMessages.length - 1]);
                  }
-
-                 // Now, the history 'h' ends with the last user message. Call w again.
-                 // We pass the current state of 'h' which is ready for the API call.
                  sp("Regenerating response...");
-                 await w(h); // Pass the history ending with the user message
+                 await w(h);
              } else {
                   console.log("Last message is not from the bot, nothing to regenerate.");
-                  sp("Nothing to regenerate."); // Inform user
+                  sp("Nothing to regenerate.");
              }
          } else {
              console.log("No user message found in history to regenerate from.");
-             sp("Nothing to regenerate."); // Inform user
+             sp("Nothing to regenerate.");
          }
      });
 } else {
     console.warn("Regenerate button not found.");
 }
 
-
-// Error Message Toggle (Ctrl+Shift+Alt)
 document.addEventListener("keydown", (function(event) {
-    // Use Alt key + Shift + E (for Error) as Ctrl+Shift+Alt might conflict
     if (event.altKey && event.shiftKey && event.key === 'E') {
-        v = !v; // Toggle the flag
+        v = !v;
         sp(v ? "Error messages will be shown in chat." : "Error messages hidden.");
     }
 }));
@@ -1083,20 +1068,20 @@ const overlayImage = document.getElementById('overlay-image');
 
 if (overlayImage) {
     document.addEventListener('keydown', function(event) {
-        if (event.key === 'Control' || event.key === 'Meta') { // Meta for Mac Command key
+        if (event.key === 'Control' || event.key === 'Meta') {
             ctrlCount++;
 
             // Clear previous timeout on each press
             clearTimeout(ctrlPressedTimeout);
 
              if (ctrlCount >= 3) {
-                 ctrlCount = 0; // Reset count
-                 overlayImage.classList.toggle('show'); // Toggle the image overlay
+                 ctrlCount = 0;
+                 overlayImage.classList.toggle('show');
              } else {
                  // Set a timeout to reset count if presses are too far apart
                  ctrlPressedTimeout = setTimeout(() => {
                      ctrlCount = 0;
-                 }, 500); // Reset if no new Ctrl press within 500ms
+                 }, 500);
              }
         } else if (!event.ctrlKey && !event.metaKey) { // Reset if another key is pressed
             // Don't reset if it's just releasing Ctrl/Meta
