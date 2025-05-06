@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to PNG (1080p Height) Converter</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #0056b3;
+        }
+        input[type="file"] {
+            display: block;
+            margin: 10px auto 20px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="file"]:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+        button {
+            display: block;
+            margin: 15px auto;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
+            background-color: #218838;
+        }
+        #status {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 1.2em; /* Reserve space */
+        }
+        #status.status-info { color: #555; }
+        #status.status-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 5px; border-radius: 4px;}
+        #status.status-error { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 5px; border-radius: 4px;}
+
+        #output {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .page-output {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fafafa;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between image and link */
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+        }
+        .page-output img {
+            max-width: 100px; /* Smaller preview */
+            height: auto;
+            border: 1px solid #ccc;
+        }
+        .page-output a, #combinedOutput a {
+            color: #0056b3;
+            text-decoration: none;
+            font-weight: normal;
+        }
+        .page-output a:hover, #combinedOutput a:hover {
+            text-decoration: underline;
+        }
+        #combineSection {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed #ccc;
+        }
+        #combinedOutput {
+             margin-top: 10px;
+             font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>PDF to PNG Converter</h1>
+
+        <p>Select a PDF file to convert its pages to PNG images (scaled to 1080px height). After conversion, you can download individual pages or combine them into one long PNG.</p>
+
+        <input type="file" id="pdfFileInput" accept="application/pdf">
+
+        <div id="status">Select a PDF file to start.</div>
+
+        <div id="output">
+            <!-- Converted images/links will appear here -->
+        </div>
+
+        <div id="combineSection" style="display: none;">
+             <button id="combineButton" disabled>Combine All Pages into One PNG</button>
+             <div id="combinedOutput">
+                 <!-- Combined PNG download link will appear here -->
+             </div>
+        </div>
+    </div>
+
+    <!-- Include PDF.js library from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module"></script>
+
+    <script type="module">
+        // PDF.js setup
+        import { getDocument, GlobalWorkerOptions } from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs';
+        GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
+
+        // DOM Elements
+        const pdfFileInput = document.getElementById('pdfFileInput');
+        const statusDiv = document.getElementById('status');
+        const outputDiv = document.getElementById('output');
+        const combineSection = document.getElementById('combineSection');
+        const combineButton = document.getElementById('combineButton');
+        const combinedOutputDiv = document.getElementById('combinedOutput');
+
+        // Configuration
+        const TARGET_HEIGHT = 1080; // Desired height for output images
+        const DEFAULT_FILENAME_BASE = 'output';
+
+        // State
+        let pageData = []; // Array to store { url: imageDataUrl, width: number, height: number } for each page
+        let currentFileNameBase = DEFAULT_FILENAME_BASE;
+
+
+        function updateStatus(message, type = 'info') {
+            statusDiv.textContent = message;
+            statusDiv.className = `status-${type}`; // Applies status-info, status-success, or status-error
+        }
+
+        /**
+         * Resets the UI to its initial state.
+         */
+        function resetUI() {
+            updateStatus('Select a PDF file to start.', 'info');
+            outputDiv.innerHTML = '';
+            combinedOutputDiv.innerHTML = '';
+            combineSection.style.display = 'none';
+            combineButton.disabled = true;
+            pdfFileInput.value = ''; // Clear the file input
+            pageData = [];
+            currentFileNameBase = DEFAULT_FILENAME_BASE;
+        }
+
+
+        function setLoadingState(isLoading) {
+            pdfFileInput.disabled = isLoading;
+            // Combine button's disabled state is managed based on pageData and its own processing
+        }
+
+        function displayPageOutput(pageNum, imageDataUrl) {
+            const pageOutputDiv = document.createElement('div');
+            pageOutputDiv.classList.add('page-output');
+
+            const img = document.createElement('img');
+            img.src = imageDataUrl;
+            img.alt = `Page ${pageNum} Preview`;
+            img.title = `Page ${pageNum} Preview`;
+
+            const link = document.createElement('a');
+            link.href = imageDataUrl;
+            link.download = `${currentFileNameBase}_page_${pageNum}_h${TARGET_HEIGHT}.png`;
+            link.textContent = `Download Page ${pageNum} (PNG)`;
+
+            pageOutputDiv.appendChild(img);
+            pageOutputDiv.appendChild(link);
+            outputDiv.appendChild(pageOutputDiv);
+        }
+
+
+        async function renderPageToPng(pdfPage) {
+            const originalViewport = pdfPage.getViewport({ scale: 1 });
+            const scale = TARGET_HEIGHT / originalViewport.height;
+            const scaledViewport = pdfPage.getViewport({ scale: scale });
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = Math.floor(scaledViewport.width);
+            canvas.height = Math.floor(scaledViewport.height);
+
+            context.fillStyle = '#ffffff'; // Fill background with white
+            context.fillRect(0, 0, canvas.width, canvas.height);
+
+            const renderContext = {
+                canvasContext: context,
+                viewport: scaledViewport
+            };
+            await pdfPage.render(renderContext).promise;
+
+            return {
+                url: canvas.toDataURL('image/png'),
+                width: canvas.width,
+                height: canvas.height
+            };
+        }
+
+        async function processPdfPages(pdfData) {
+            updateStatus('Loading PDF...', 'info');
+            const loadingTask = getDocument({ data: pdfData });
+            const pdfDocument = await loadingTask.promise;
+            const numPages = pdfDocument.numPages;
+
+            if (numPages === 0) {
+                updateStatus('PDF has no pages.', 'info');
+                return;
+            }
+            updateStatus(`PDF loaded. Total pages: ${numPages}. Starting conversion...`, 'info');
+
+            for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+                updateStatus(`Converting page ${pageNum} of ${numPages}...`, 'info');
+                try {
+                    const page = await pdfDocument.getPage(pageNum);
+                    const pageImageInfo = await renderPageToPng(page);
+                    pageData.push(pageImageInfo);
+                    displayPageOutput(pageNum, pageImageInfo.url);
+                } catch (pageError) {
+                    console.error(`Error converting page ${pageNum}:`, pageError);
+                    updateStatus(`Error converting page ${pageNum}: ${pageError.message}`, 'error');
+                }
+            }
+
+            if (pageData.length > 0) {
+                updateStatus(`Conversion complete. ${pageData.length} page(s) converted.`, 'success');
+                combineSection.style.display = 'block';
+                combineButton.disabled = false;
+            } else if (numPages > 0) {
+                updateStatus('Conversion finished, but no pages were successfully processed.', 'error');
+            }
+        }
+
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            resetUI(); // Reset UI for new file or if no file selected
+
+            if (!file) {
+                return; // No file selected
+            }
+
+            if (file.type !== 'application/pdf') {
+                updateStatus('Please select a PDF file.', 'error');
+                return;
+            }
+
+            currentFileNameBase = file.name.replace(/\.[^/.]+$/, "") || DEFAULT_FILENAME_BASE;
+            setLoadingState(true);
+            updateStatus('Reading file...', 'info');
+
+            try {
+                const arrayBuffer = await file.arrayBuffer(); // Simpler way to get ArrayBuffer
+                await processPdfPages(arrayBuffer);
+            } catch (error) {
+                console.error('Error processing PDF:', error);
+                updateStatus(`Error: ${error.message}`, 'error');
+                resetUI(); // Ensure UI is reset on critical error
+            } finally {
+                setLoadingState(false);
+            }
+        }
+        function loadImage(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = (err) => {
+                    console.error(`Image load error for src starting with: ${src.substring(0, 60)}...`, err);
+                    reject(new Error('Failed to load an image for combining.'));
+                };
+                img.src = src;
+            });
+        }
+
+        /**
+         * Creates a single combined PNG from all converted page images.
+         */
+        async function createCombinedImage() {
+            if (pageData.length === 0) {
+                updateStatus('No pages available to combine.', 'error');
+                return;
+            }
+
+            updateStatus('Combining pages... Please wait.', 'info');
+            combineButton.disabled = true;
+            combinedOutputDiv.innerHTML = '<i>Processing...</i>';
+
+            try {
+                let totalHeight = 0;
+                let maxWidth = 0;
+                pageData.forEach(page => {
+                    totalHeight += page.height;
+                    maxWidth = Math.max(maxWidth, page.width);
+                });
+
+                const combinedCanvas = document.createElement('canvas');
+                combinedCanvas.width = maxWidth;
+                combinedCanvas.height = totalHeight;
+                const ctx = combinedCanvas.getContext('2d');
+
+                ctx.fillStyle = '#ffffff'; // Fill background with white
+                ctx.fillRect(0, 0, maxWidth, totalHeight);
+
+                let currentYOffset = 0;
+                for (const pageInfo of pageData) { // Iterate in page order
+                    const img = await loadImage(pageInfo.url); // Wait for this specific image
+                    const xOffset = (maxWidth - img.width) / 2; // Center image
+                    ctx.drawImage(img, xOffset, currentYOffset, img.width, img.height);
+                    currentYOffset += img.height;
+                }
+
+                const combinedImageDataUrl = combinedCanvas.toDataURL('image/png');
+                const combinedLink = document.createElement('a');
+                combinedLink.href = combinedImageDataUrl;
+                combinedLink.download = `${currentFileNameBase}_combined_all_pages_h${TARGET_HEIGHT}.png`;
+                combinedLink.textContent = `Download Combined PNG (${pageData.length} pages)`;
+
+                combinedOutputDiv.innerHTML = '';
+                combinedOutputDiv.appendChild(combinedLink);
+                updateStatus('Combined image ready for download.', 'success');
+
+            } catch (error) {
+                console.error('Combining error:', error);
+                updateStatus(`Error combining pages: ${error.message}`, 'error');
+                combinedOutputDiv.innerHTML = '<i style="color: red;">Combining failed. Check console.</i>';
+            } finally {
+            }
+        }
+        pdfFileInput.addEventListener('change', handleFileSelect);
+        combineButton.addEventListener('click', createCombinedImage);
+        resetUI();
+
+    </script>
+
+</body>
+</html>
