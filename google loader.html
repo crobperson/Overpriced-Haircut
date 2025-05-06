@@ -44,10 +44,12 @@ button:active {
 
 <button id="launchButton">Click To Run Google By Clifton</button>
 <button id="launchImageButton">Click To Run Image Gen By Clifton</button>
+<button id="launchPDFButton">Click To Run Clifton's PDF To PNG Converter</button>
 
 <script>
 const launchButton = document.getElementById("launchButton");
 const launchImageButton = document.getElementById("launchImageButton");
+const launchPDFButton = document.getElementById("launchPDFButton");
 
 // Function to fetch and display Google HTML
 function launchGoogle() {
@@ -58,6 +60,11 @@ function launchGoogle() {
 // Function to fetch and display Image Thang HTML
 function launchImageThang() {
   const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/main/Image%20thang.html";
+  fetchAndDisplay(url);
+}
+// Function to fetch and display Image Thang HTML
+function launchPDFThang() {
+  const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/refs/heads/main/PDF%20thang.html";
   fetchAndDisplay(url);
 }
 
@@ -90,6 +97,9 @@ launchButton.addEventListener("click", () => {
 // Manual launch for Image Thang
 launchImageButton.addEventListener("click", () => {
   launchImageThang();
+});
+launchPDFButton.addEventListener("click", () => {
+  launchPDFThang();
 });
 </script>
 
