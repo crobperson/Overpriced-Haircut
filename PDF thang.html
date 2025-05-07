@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google</title>
+    <title>Google</title> <!-- Consider changing title to "PDF to PNG Converter" -->
     <style>
         body {
             font-family: sans-serif;
@@ -23,6 +23,28 @@
         h1 {
             text-align: center;
             color: #0056b3;
+        }
+        .options-bar {
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+        .options-bar label {
+            margin-right: 5px;
+            font-weight: bold;
+        }
+        .options-bar select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 0.95em;
+        }
+        .options-bar select:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
         }
         input[type="file"] {
             display: block;
@@ -109,7 +131,15 @@
     <div class="container">
         <h1>PDF to PNG Converter</h1>
 
-        <p>Select a PDF file to convert its pages to PNG images (scaled to 1080px height). After conversion, you can download individual pages or combine them into one long PNG.</p>
+        <p>Select a PDF file to convert its pages to PNG images. Choose your desired output resolution (height) below. After conversion, you can download individual pages or combine them into one long PNG.</p>
+
+        <div class="options-bar">
+            <label for="resolutionSelect">Output Resolution (Height):</label>
+            <select id="resolutionSelect">
+                <option value="1080" selected>1080p (Full HD)</option>
+                <option value="2160">4K (UHD - 2160p)</option>
+            </select>
+        </div>
 
         <input type="file" id="pdfFileInput" accept="application/pdf">
 
@@ -137,6 +167,7 @@
 
         // DOM Elements
         const pdfFileInput = document.getElementById('pdfFileInput');
+        const resolutionSelect = document.getElementById('resolutionSelect');
         const statusDiv = document.getElementById('status');
         const outputDiv = document.getElementById('output');
         const combineSection = document.getElementById('combineSection');
@@ -144,40 +175,41 @@
         const combinedOutputDiv = document.getElementById('combinedOutput');
 
         // Configuration
-        const TARGET_HEIGHT = 1080; // Desired height for output images
+        const RESOLUTION_OPTIONS = {
+            '1080': 1080, // Full HD
+            '2160': 2160  // 4K UHD
+        };
         const DEFAULT_FILENAME_BASE = 'output';
 
         // State
         let pageData = []; // Array to store { url: imageDataUrl, width: number, height: number } for each page
         let currentFileNameBase = DEFAULT_FILENAME_BASE;
+        let actualProcessedTargetHeight = RESOLUTION_OPTIONS[resolutionSelect.value]; // Store the height used for the current batch
 
 
         function updateStatus(message, type = 'info') {
             statusDiv.textContent = message;
-            statusDiv.className = `status-${type}`; // Applies status-info, status-success, or status-error
+            statusDiv.className = `status-${type}`;
         }
 
-        /**
-         * Resets the UI to its initial state.
-         */
         function resetUI() {
             updateStatus('Select a PDF file to start.', 'info');
             outputDiv.innerHTML = '';
             combinedOutputDiv.innerHTML = '';
             combineSection.style.display = 'none';
             combineButton.disabled = true;
-            pdfFileInput.value = ''; // Clear the file input
+            pdfFileInput.value = '';
             pageData = [];
             currentFileNameBase = DEFAULT_FILENAME_BASE;
+            // actualProcessedTargetHeight will be updated when a new file is processed
         }
-
 
         function setLoadingState(isLoading) {
             pdfFileInput.disabled = isLoading;
-            // Combine button's disabled state is managed based on pageData and its own processing
+            resolutionSelect.disabled = isLoading;
         }
 
-        function displayPageOutput(pageNum, imageDataUrl) {
+        function displayPageOutput(pageNum, imageDataUrl, targetHeight) {
             const pageOutputDiv = document.createElement('div');
             pageOutputDiv.classList.add('page-output');
 
@@ -188,7 +220,7 @@
 
             const link = document.createElement('a');
             link.href = imageDataUrl;
-            link.download = `${currentFileNameBase}_page_${pageNum}_h${TARGET_HEIGHT}.png`;
+            link.download = `${currentFileNameBase}_page_${pageNum}_h${targetHeight}.png`;
             link.textContent = `Download Page ${pageNum} (PNG)`;
 
             pageOutputDiv.appendChild(img);
@@ -196,10 +228,9 @@
             outputDiv.appendChild(pageOutputDiv);
         }
 
-
-        async function renderPageToPng(pdfPage) {
+        async function renderPageToPng(pdfPage, targetHeight) {
             const originalViewport = pdfPage.getViewport({ scale: 1 });
-            const scale = TARGET_HEIGHT / originalViewport.height;
+            const scale = targetHeight / originalViewport.height;
             const scaledViewport = pdfPage.getViewport({ scale: scale });
 
             const canvas = document.createElement('canvas');
@@ -223,7 +254,7 @@
             };
         }
 
-        async function processPdfPages(pdfData) {
+        async function processPdfPages(pdfData, targetHeightForThisRun) {
             updateStatus('Loading PDF...', 'info');
             const loadingTask = getDocument({ data: pdfData });
             const pdfDocument = await loadingTask.promise;
@@ -233,15 +264,15 @@
                 updateStatus('PDF has no pages.', 'info');
                 return;
             }
-            updateStatus(`PDF loaded. Total pages: ${numPages}. Starting conversion...`, 'info');
+            updateStatus(`PDF loaded. Total pages: ${numPages}. Starting conversion (h${targetHeightForThisRun}px)...`, 'info');
 
             for (let pageNum = 1; pageNum <= numPages; pageNum++) {
                 updateStatus(`Converting page ${pageNum} of ${numPages}...`, 'info');
                 try {
                     const page = await pdfDocument.getPage(pageNum);
-                    const pageImageInfo = await renderPageToPng(page);
+                    const pageImageInfo = await renderPageToPng(page, targetHeightForThisRun);
                     pageData.push(pageImageInfo);
-                    displayPageOutput(pageNum, pageImageInfo.url);
+                    displayPageOutput(pageNum, pageImageInfo.url, targetHeightForThisRun);
                 } catch (pageError) {
                     console.error(`Error converting page ${pageNum}:`, pageError);
                     updateStatus(`Error converting page ${pageNum}: ${pageError.message}`, 'error');
@@ -259,10 +290,10 @@
 
         async function handleFileSelect(event) {
             const file = event.target.files[0];
-            resetUI(); // Reset UI for new file or if no file selected
+            resetUI(); 
 
             if (!file) {
-                return; // No file selected
+                return; 
             }
 
             if (file.type !== 'application/pdf') {
@@ -271,20 +302,23 @@
             }
 
             currentFileNameBase = file.name.replace(/\.[^/.]+$/, "") || DEFAULT_FILENAME_BASE;
+            actualProcessedTargetHeight = RESOLUTION_OPTIONS[resolutionSelect.value]; // Capture resolution at time of processing
+
             setLoadingState(true);
             updateStatus('Reading file...', 'info');
 
             try {
-                const arrayBuffer = await file.arrayBuffer(); // Simpler way to get ArrayBuffer
-                await processPdfPages(arrayBuffer);
+                const arrayBuffer = await file.arrayBuffer();
+                await processPdfPages(arrayBuffer, actualProcessedTargetHeight);
             } catch (error) {
                 console.error('Error processing PDF:', error);
                 updateStatus(`Error: ${error.message}`, 'error');
-                resetUI(); // Ensure UI is reset on critical error
+                resetUI(); 
             } finally {
                 setLoadingState(false);
             }
         }
+
         function loadImage(src) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
@@ -297,17 +331,16 @@
             });
         }
 
-        /**
-         * Creates a single combined PNG from all converted page images.
-         */
         async function createCombinedImage() {
             if (pageData.length === 0) {
                 updateStatus('No pages available to combine.', 'error');
                 return;
             }
 
-            updateStatus('Combining pages... Please wait.', 'info');
+            const originalCombineButtonText = combineButton.textContent;
             combineButton.disabled = true;
+            combineButton.textContent = 'Combining...';
+            updateStatus('Combining pages... Please wait.', 'info');
             combinedOutputDiv.innerHTML = '<i>Processing...</i>';
 
             try {
@@ -323,13 +356,13 @@
                 combinedCanvas.height = totalHeight;
                 const ctx = combinedCanvas.getContext('2d');
 
-                ctx.fillStyle = '#ffffff'; // Fill background with white
+                ctx.fillStyle = '#ffffff'; 
                 ctx.fillRect(0, 0, maxWidth, totalHeight);
 
                 let currentYOffset = 0;
-                for (const pageInfo of pageData) { // Iterate in page order
-                    const img = await loadImage(pageInfo.url); // Wait for this specific image
-                    const xOffset = (maxWidth - img.width) / 2; // Center image
+                for (const pageInfo of pageData) { 
+                    const img = await loadImage(pageInfo.url); 
+                    const xOffset = (maxWidth - img.width) / 2; 
                     ctx.drawImage(img, xOffset, currentYOffset, img.width, img.height);
                     currentYOffset += img.height;
                 }
@@ -337,7 +370,7 @@
                 const combinedImageDataUrl = combinedCanvas.toDataURL('image/png');
                 const combinedLink = document.createElement('a');
                 combinedLink.href = combinedImageDataUrl;
-                combinedLink.download = `${currentFileNameBase}_combined_all_pages_h${TARGET_HEIGHT}.png`;
+                combinedLink.download = `${currentFileNameBase}_combined_all_pages_h${actualProcessedTargetHeight}.png`;
                 combinedLink.textContent = `Download Combined PNG (${pageData.length} pages)`;
 
                 combinedOutputDiv.innerHTML = '';
@@ -349,11 +382,24 @@
                 updateStatus(`Error combining pages: ${error.message}`, 'error');
                 combinedOutputDiv.innerHTML = '<i style="color: red;">Combining failed. Check console.</i>';
             } finally {
+                if (pageData.length > 0) {
+                    combineButton.disabled = false;
+                }
+                combineButton.textContent = originalCombineButtonText;
             }
         }
+
         pdfFileInput.addEventListener('change', handleFileSelect);
         combineButton.addEventListener('click', createCombinedImage);
+        
+        // Initialize UI
         resetUI();
+        // Ensure initial actualProcessedTargetHeight is set from the dropdown's default
+        actualProcessedTargetHeight = RESOLUTION_OPTIONS[resolutionSelect.value];
+        resolutionSelect.addEventListener('change', () => {
+            // If user changes resolution, it will apply to the *next* PDF processing.
+            // The `actualProcessedTargetHeight` is updated in `handleFileSelect`.
+        });
 
     </script>
 
