@@ -5,358 +5,512 @@
 <title>Google</title>
 <link href="https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true" rel=icon type=image/png>
 <style>
+/* Basic Scrollbar Styling for Webkit browsers (Optional but good for dark mode) */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #282828; /* Dark track */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #555; /* Darker thumb */
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #777; /* Lighter thumb on hover */
+}
+
+
 body {
-font-family: Arial, sans-serif;
-margin: 0;
-padding: 0;
-display: flex;
-justify-content: center;
-align-items: center;
-min-height: 100vh;
-background-color: #f8f9fa
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    /* Dark Mode Background */
+    background-color: #121212;
+    /* Dark Mode Text Color */
+    color: #e0e0e0;
 }
 
 .container {
-display: flex;
-flex-direction: column;
-width: 90%;
-max-width: 700px;
-height: 90vh;
-background-color: #fff;
-border-radius: 10px;
-box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
-overflow: hidden
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    max-width: 700px;
+    height: 90vh;
+    /* Dark Mode Container Background */
+    background-color: #282828;
+    border-radius: 10px;
+    /* Shadows are less effective in dark mode, often removed or subtle */
+    /* box-shadow: 0 4px 12px rgba(0, 0, 0, .15); */
+    overflow: hidden;
 }
 
 .header {
-padding: 15px 25px;
-background-color: #e9ecef;
-border-bottom: 1px solid #ced4da;
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-wrap: wrap
+    padding: 15px 25px;
+    /* Dark Mode Header Background */
+    background-color: #333;
+    /* Dark Mode Border */
+    border-bottom: 1px solid #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
-.model-select-container {
-display: flex;
-align-items: center;
-margin: 5px 0
+.model-select-container,
+.temperature-container,
+.ai-search-toggle-container {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
 }
 
-.model-select-container label {
-margin-right: 10px;
-font-size: 14px;
-color: #495057
+.model-select-container label,
+.temperature-container label,
+.ai-search-toggle-container > label:first-of-type {
+    margin-right: 10px;
+    font-size: 14px;
+    /* Dark Mode Label Color */
+    color: #bbbbbb;
 }
 
 #model-select {
-padding: 8px;
-border: 1px solid #ced4da;
-border-radius: 4px;
-font-size: 14px;
-color: #495057
+    padding: 8px;
+    /* Dark Mode Border */
+    border: 1px solid #555;
+    border-radius: 4px;
+    font-size: 14px;
+    /* Dark Mode Text Color */
+    color: #e0e0e0;
+    /* Dark Mode Background */
+    background-color: #444;
 }
 
+/* AI Search Toggle Switch Styles */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Dark Mode Slider Off Background */
+    background-color: #666;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    /* Slider Knob Color */
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    /* Dark Mode Slider On Background (Teal) */
+    background-color: #009688;
+}
+
+input:focus + .slider {
+    /* Dark Mode Focus Shadow Color */
+    box-shadow: 0 0 1px #009688;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 24px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+/* End AI Search Toggle Switch Styles */
+
+
 #chat-container {
-flex: 1;
-padding: 20px;
-overflow-y: auto;
-background-color: #f8f9fa;
-display: flex;
-flex-direction: column
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    /* Dark Mode Chat Background */
+    background-color: #1e1e1e;
+    display: flex;
+    flex-direction: column;
 }
 
 .message {
-padding: 12px 18px;
-margin-bottom: 15px;
-border-radius: 20px;
-max-width: 75%;
-word-wrap: break-word;
-position: relative;
-white-space: pre-line;
-line-height: 1.4;
-font-size: 15px
+    padding: 12px 18px;
+    margin-bottom: 15px;
+    border-radius: 20px;
+    max-width: 75%;
+    word-wrap: break-word;
+    position: relative;
+    white-space: pre-line;
+    line-height: 1.4;
+    font-size: 15px;
+    /* Remove shadows from messages in dark mode */
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, .1); */
 }
 
 .user-message {
-background-color: #dcf8c6;
-align-self: flex-end;
-text-align: right
+    /* Dark Mode User Message Background (Dark Teal) */
+    background-color: #004d40;
+    /* Dark Mode User Message Text Color */
+    color: #e0e0e0;
+    align-self: flex-end;
+    text-align: right;
 }
 
 .bot-message {
-background-color: #fff;
-align-self: flex-start;
-box-shadow: 0 2px 4px rgba(0, 0, 0, .1)
+    /* Dark Mode Bot Message Background (Dark Grey) */
+    background-color: #333;
+    /* Dark Mode Bot Message Text Color */
+    color: #e0e0e0;
+    align-self: flex-start;
+    /* Remove shadows from messages in dark mode */
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, .1); */
 }
 
+/* Style for code blocks within bot messages */
+.bot-message pre {
+    background-color: #444; /* Darker background for code */
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto; /* Ensure code blocks are scrollable */
+}
+
+.bot-message code {
+    color: #e0e0e0; /* Light text for code */
+}
+
+
 .copy-button {
-position: absolute;
-top: 8px;
-right: 8px;
-background-color: transparent;
-border: none;
-cursor: pointer;
-z-index: 10;
-opacity: .7;
-transition: opacity .3s
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    opacity: .7;
+    transition: opacity .3s;
 }
 
 .copy-button:hover {
-opacity: 1
+    opacity: 1;
 }
 
 .copy-button svg {
-width: 18px;
-height: 18px;
-fill: #666
+    width: 18px;
+    height: 18px;
+    /* Dark Mode Copy Button Icon Color */
+    fill: #bbb;
 }
 
 #input-area {
-display: flex;
-padding: 15px 20px;
-border-top: 1px solid #ced4da;
-background-color: #e9ecef;
-align-items: center
+    display: flex;
+    padding: 15px 20px;
+    /* Dark Mode Border */
+    border-top: 1px solid #444;
+    /* Dark Mode Input Area Background */
+    background-color: #333;
+    align-items: center;
 }
 
 #input-box {
-flex-grow: 1;
-padding: 12px 15px;
-border: 1px solid #ced4da;
-border-radius: 25px;
-resize: none;
-font-size: 15px;
-outline: 0;
-background-color: #fff;
-line-height: 1.5
+    flex-grow: 1;
+    padding: 12px 15px;
+    /* Dark Mode Border */
+    border: 1px solid #555;
+    border-radius: 25px;
+    resize: none;
+    font-size: 15px;
+    outline: 0;
+    /* Dark Mode Input Background */
+    background-color: #444;
+    /* Dark Mode Text Color */
+    color: #e0e0e0;
+    line-height: 1.5;
 }
 
+#input-box::placeholder {
+    /* Dark Mode Placeholder Color */
+    color: #bbb;
+}
+
+
 #send-button {
-padding: 10px 25px;
-margin-left: 15px;
-background-color: #007bff;
-color: #fff;
-border: none;
-border-radius: 25px;
-cursor: pointer;
-font-size: 15px;
-transition: background-color .3s ease;
-box-shadow: 0 2px 4px rgba(0, 0, 0, .1)
+    padding: 10px 25px;
+    margin-left: 15px;
+    /* Dark Mode Send Button Background (Teal) */
+    background-color: #009688;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color .3s ease;
+    /* Remove shadows */
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, .1); */
 }
 
 #send-button:hover {
-background-color: #0056b3
+    /* Dark Mode Send Button Hover Background */
+    background-color: #00796b;
 }
 
 .file-upload-label {
-display: inline-block;
-padding: 10px 20px;
-margin-right: 10px;
-background-color: #6c757d;
-color: #fff;
-border: none;
-border-radius: 25px;
-cursor: pointer;
-font-size: 15px;
-transition: background-color .3s ease;
-box-shadow: 0 2px 4px rgba(0, 0, 0, .1)
+    display: inline-block;
+    padding: 10px 20px;
+    margin-right: 10px;
+    /* Dark Mode File Upload Background */
+    background-color: #555;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color .3s ease;
+    /* Remove shadows */
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, .1); */
 }
 
 .file-upload-label:hover {
-background-color: #5a6268
+    /* Dark Mode File Upload Hover Background */
+    background-color: #666;
 }
 
 #file-input {
-display: none
+    display: none;
 }
 
 #typing-indicator {
-padding: 10px 20px;
-font-style: italic;
-color: #777;
-background-color: #e9ecef;
-border-top: 1px solid #ced4da;
-display: none;
-font-size: 14px
+    padding: 10px 20px;
+    font-style: italic;
+    /* Dark Mode Typing Indicator Color */
+    color: #bbb;
+    /* Dark Mode Typing Indicator Background */
+    background-color: #333;
+    /* Dark Mode Border */
+    border-top: 1px solid #444;
+    display: none;
+    font-size: 14px;
 }
 
 @media (max-width:768px) {
-.container {
-width: 95%;
-height: 95vh
-}
+    .container {
+        width: 95%;
+        height: 95vh;
+    }
 
-.message {
-max-width: 85%
-}
+    .message {
+        max-width: 85%;
+    }
 }
 
 @media (max-width:480px) {
-.header {
-flex-direction: column;
-align-items: flex-start
-}
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-.model-select-container {
-width: 100%;
-justify-content: space-between;
-margin-bottom: 10px
-}
+    .model-select-container,
+    .temperature-container,
+    .ai-search-toggle-container {
+        width: 100%;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
 
-#send-button {
-padding: 10px 15px
-}
+    #send-button {
+        padding: 10px 15px;
+    }
 
-.file-upload-label {
-padding: 10px 15px
-}
+    .file-upload-label {
+        padding: 10px 15px;
+    }
 }
 
 .modal {
-display: none;
-position: fixed;
-z-index: 100;
-left: 0;
-top: 0;
-width: 100%;
-height: 100%;
-overflow: auto;
-background-color: rgba(0, 0, 0, .4)
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    /* Dark Mode Modal Overlay Background */
+    background-color: rgba(0, 0, 0, .7);
 }
 
 .modal-content {
-background-color: #fff;
-margin: 10% auto;
-padding: 20px;
-border: 1px solid #888;
-width: 80%;
-max-width: 600px;
-border-radius: 8px;
-box-shadow: 0 4px 8px rgba(0, 0, 0, .1)
+    /* Dark Mode Modal Content Background */
+    background-color: #282828;
+    /* Dark Mode Text Color */
+    color: #e0e0e0;
+    margin: 10% auto;
+    padding: 20px;
+    /* Dark Mode Border */
+    border: 1px solid #444;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 8px;
+    /* Remove shadows */
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, .1); */
 }
 
 .close {
-color: #aaa;
-float: right;
-font-size: 28px;
-font-weight: 700;
-cursor: pointer
+    /* Dark Mode Close Button Color */
+    color: #bbb;
+    float: right;
+    font-size: 28px;
+    font-weight: 700;
+    cursor: pointer;
 }
 
 .close:focus,
 .close:hover {
-color: #000
+    /* Dark Mode Close Button Hover Color */
+    color: #fff;
 }
 
 .button-primary {
-padding: 8px 16px;
-margin: 10px 5px;
-background-color: #28a745;
-color: #fff;
-border: none;
-border-radius: 5px;
-cursor: pointer;
-font-size: 14px;
-transition: background-color .3s ease
+    padding: 8px 16px;
+    margin: 10px 5px;
+    /* Dark Mode Primary Button Background (Darker Green) */
+    background-color: #218838;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color .3s ease;
+    /* Remove shadows */
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, .1); */
 }
 
 .button-primary:hover {
-background-color: #218838
+    /* Dark Mode Primary Button Hover Background */
+    background-color: #1e7e34;
 }
 
 .button-secondary {
-padding: 8px 16px;
-margin: 10px 5px;
-background-color: #dc3545;
-color: #fff;
-border: none;
-border-radius: 5px;
-cursor: pointer;
-font-size: 14px;
-transition: background-color .3s ease
+    padding: 8px 16px;
+    margin: 10px 5px;
+    /* Dark Mode Secondary Button Background (Darker Red) */
+    background-color: #c82333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color .3s ease;
+    /* Remove shadows */
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, .1); */
 }
 
 .button-secondary:hover {
-background-color: #c82333
+    /* Dark Mode Secondary Button Hover Background */
+    background-color: #bd2130;
 }
 
 #last-updated {
-position: fixed;
-top: 10px;
-right: 10px;
-font-size: 12px;
-color: #999;
-background-color: rgba(255, 255, 255, .8);
-padding: 5px 10px;
-border-radius: 5px;
-box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
-font-weight: 700;
-z-index: 100
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    font-size: 12px;
+    /* Dark Mode Timestamp Color */
+    color: #bbb;
+    /* Dark Mode Timestamp Background (Dark Translucent) */
+    background-color: rgba(40, 40, 40, 0.8);
+    padding: 5px 10px;
+    border-radius: 5px;
+    /* Remove shadows */
+    /* box-shadow: 0 2px 5px rgba(0, 0, 0, .2); */
+    font-weight: 700;
+    z-index: 100;
 }
 
 .footer-text {
-font-size: 12px;
-text-align: center;
-color: #888;
-padding: 10px
+    font-size: 12px;
+    text-align: center;
+    /* Dark Mode Footer Text Color */
+    color: #aaa;
+    padding: 10px;
 }
 
 .popup-message {
-position: fixed;
-top: -60px;
-left: 50%;
-transform: translateX(-50%);
-background-color: #28a745;
-color: #fff;
-padding: 10px 20px;
-border-radius: 5px;
-z-index: 1000;
-opacity: 0;
-transition: opacity .5s ease-out, top .5s ease-out
+    position: fixed;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    /* Dark Mode Popup Background (Darker Green) */
+    background-color: #218838;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity .5s ease-out, top .5s ease-out;
 }
 
 .popup-message.show {
-opacity: 1;
-top: 20px
-}
-
-.temperature-container {
-display: flex;
-align-items: center;
-margin: 5px 0
-}
-
-.temperature-container label {
-margin-right: 10px;
-font-size: 14px;
-color: #495057
-}
-
-#temperature-slider {
-width: 150px;
-margin-right: 5px
+    opacity: 1;
+    top: 20px;
 }
 
 #temperature-value {
-font-size: 14px;
-color: #495057;
-width: 30px;
-text-align: right
+    font-size: 14px;
+    /* Dark Mode Temperature Value Color */
+    color: #bbbbbb;
+    width: 30px;
+    text-align: right;
 }
 
 #file-names {
-font-size: 14px;
-color: #495057;
-margin-left: 10px;
-margin-top: 5px;
-display: inline-block;
-max-width: 50%;
-overflow: hidden;
-text-overflow: ellipsis;
-white-space: nowrap;
-vertical-align: middle
+    font-size: 14px;
+    /* Dark Mode File Names Color */
+    color: #bbbbbb;
+    margin-left: 10px;
+    margin-top: 5px;
+    display: inline-block;
+    max-width: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
 }
 
 #overlay-image {
@@ -370,7 +524,7 @@ vertical-align: middle
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.5); /* Keep overlay dark */
     z-index: 1001;
     pointer-events: none;
 }
@@ -378,58 +532,53 @@ vertical-align: middle
 #overlay-image.show {
     display: block;
 }
- /* Style for the preview area next to the input */
- #file-preview-container {
-     display: flex; /* Arrange previews horizontally */
-     gap: 5px;      /* Space between previews */
-     margin-left: 10px;
-     margin-right: 5px; /* Space before text area */
-     max-height: 45px; /* Limit height of container */
-     overflow: hidden; /* Hide overflow if too many previews */
-     align-items: center;
- }
+/* Style for the preview area next to the input */
+#file-preview-container {
+    display: flex;
+    gap: 5px;
+    margin-left: 10px;
+    margin-right: 5px;
+    max-height: 45px;
+    overflow: hidden;
+    align-items: center;
+}
 
- /* Style for individual preview thumbnails */
- .file-preview-image {
-     max-height: 40px; /* Thumbnail size */
-     max-width: 40px;
-     height: 40px;    /* Fixed height */
-     width: 40px;     /* Fixed width */
-     border-radius: 4px;
-     object-fit: cover; /* Crop image to fit */
-     border: 1px solid #eee; /* Subtle border */
- }
+/* Style for individual preview thumbnails */
+.file-preview-image {
+    max-height: 40px;
+    max-width: 40px;
+    height: 40px;
+    width: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+    /* Dark Mode Preview Border */
+    border: 1px solid #555;
+}
 
- /* Style for images within the chat message */
- .message-image {
-     max-width: 150px; /* Max width in chat */
-     max-height: 150px; /* Max height in chat */
-     border-radius: 8px;
-     margin-top: 8px; /* Space above image if text exists */
-     cursor: pointer; /* Optional: hint it might be interactive */
-     display: block; /* Ensure it takes its own line if needed */
- }
+/* Style for images within the chat message */
+.message-image {
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 8px;
+    margin-top: 8px;
+    cursor: pointer;
+    display: block;
+    /* Dark Mode Message Image Border */
+    border: 1px solid #555;
+}
 
- /* Style for image container within the user message */
- .user-message .images-container {
+/* Style for image container within the user message */
+.user-message .images-container {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
     margin-top: 5px;
-    justify-content: flex-end; /* Align images to the right */
- }
+    justify-content: flex-end;
+}
 
- /* Make sure user message text aligns correctly when images are present */
- .user-message {
-    /* display: flex; /* Use flexbox for alignment */
-    /* flex-direction: column; /* Stack text and images vertically */
-    /* align-items: flex-end; /* Align content to the right */
-    /* text-align: right; /* Ensure text is right-aligned */
- }
-
- .user-message > p { /* Style for the text part */
-     margin-bottom: 5px; /* Space between text and image container */
- }
+.user-message > p {
+    margin-bottom: 5px;
+}
 
 </style>
 <script src=https://cdn.jsdelivr.net/npm/marked/marked.min.js></script>
@@ -441,6 +590,13 @@ vertical-align: middle
 </select></div>
 <div class=temperature-container><label for=temperature-slider>Temp:</label> <input id=temperature-slider
 type=range max=1 min=0 step=0.1 value=1> <span id=temperature-value>1.0</span></div>
+<div class="ai-search-toggle-container">
+<label for="ai-search-toggle">AI Search:</label>
+<label class="switch">
+<input type="checkbox" id="ai-search-toggle" checked>
+<span class="slider round"></span>
+</label>
+</div>
 <div>
 <button id=changelog-button class=button-primary>Changelog</button>
 <button id=clear-chat-button class=button-secondary>Clear Chat</button>
@@ -457,414 +613,423 @@ placeholder="Enter your message..." rows=1></textarea> <button id=send-button>Se
 <div class=modal id=changelogModal>
 <div class=modal-content><span class=close>×</span>
 <h2>Changelog</h2>
-<p><strong>Version 1.83 (April 9, 2025)</strong><br>- Added Image Previews Along With General Improvements<br><p><strong>Version 1.82 (March 31, 2025)</strong><br>- Improved the Clifton pro and flash model (I like chicken)<br><p><strong>Version 1.81 (Feb 6, 2025)</strong><br>- Improved the Clifton pro model (I've ran out of ideas)<br><p><strong>Version 1.8 (January 31, 2025)</strong><br>- Press ctrl 3 times<br><p><strong>Version 1.7 (January 22, 2025)</strong><br>- The Thinker is back... (Currently the best model)<br><p><strong>Version 1.65 (January 16, 2025)</strong><br>- Message Regeneration<br><p><strong>Version 1.6 (January 14, 2025)</strong><br>- Fixed bug!!!<br>
+<p><strong>Version 2.0 (May 9, 2025)</strong><br>- Added AI Search (finally). Revamped the S**tty UI.<br><p><strong>Version 1.83 (April 9, 2025)</strong><br>- Added Image Previews Along With General Improvements<br><p><strong>Version 1.82 (March 31, 2025)</strong><br>- Improved the Clifton pro and flash model (I like chicken)<br><p><strong>Version 1.81 (Feb 6, 2025)</strong><br>- Improved the Clifton pro model (I've ran out of ideas)<br><p><strong>Version 1.8 (January 31, 2025)</strong><br>- Press ctrl 3 times<br><p><strong>Version 1.7 (January 22, 2025)</strong><br>- The Thinker is back... (Currently the best model)<br><p><strong>Version 1.65 (January 16, 2025)</strong><br>- Message Regeneration<br><p><strong>Version 1.6 (January 14, 2025)</strong><br>- Fixed bug!!!<br>
 </div>
 </div>
 <div id="overlay-image"></div>
 <script>
-const b = ["01000001 01001001 01111010 01100001 01010011 01111001 01000010 01100011 00111000 01110001 00110110 01000010 01001001 01010010 01011111 01001001 01101110 01000011 01010100 01111001 01100101 01111010 01100011 01001100 01010010 01101011 01101011 01101010 01000011 01101000 01010101 01011111 01101111 01001111 01001010 01000001 01100110 01001100 01100111", "01000001 01001001 01111010 01100001 01010011 01111001 01000010 01110000 01101000 01110011 01110010 01001001 00101101 01110001 01110110 01101001 01001101 01111000 01101111 01100001 01101111 01110110 01101100 00110000 01011001 01110111 01111000 01011111 01101001 01001101 01111000 01010011 01001011 00110100 01001110 00110000 01101000 01100110 01001101", "01000001 01001001 01111010 01100001 01010011 01111001 01000001 01001110 01100100 01011010 01110001 01001110 01111010 01101000 01001010 01010100 00110010 01110101 00110110 01011000 01001111 01101010 01000001 01111010 01001001 01010010 00110001 01100001 00101101 00110101 00101101 01101110 01001110 01110101 01000111 01100011 01100010 01110110 00110100", ""];
+const b = ["01000001 01001001 01111010 01100001 01010011 01111001 01000010 01110000 01101000 01110011 01110010 01001001 00101101 01110001 01110110 01101001 01001101 01111000 01101111 01100001 01101111 01110110 01101100 00110000 01011001 01110111 01111000 01011111 01101001 01001101 01111000 01010011 01001011 00110100 01001110 00110000 01101000 01100110 01001101", "01000001 01001001 01111010 01100001 01010011 01111001 01000001 01001110 01100100 01011010 01110001 01001110 01111010 01101000 01001010 01010100 00110010 01110101 00110110 01011000 01001111 01101010 01000001 01111010 01001001 01010010 00110001 01100001 00101101 00110101 00101101 01101110 01001110 01110101 01000111 01100011 01100010 01110110 00110100"];
 function str(e) {
-    e = e.replace(/[^01]/g, "");
-    let t = "";
-    for (let n = 0; n < e.length; n += 8) {
-        let o = e.substring(n, n + 8);
-        o.length < 8 ? console.warn(`Incomplete byte found at index ${n}: ${o}. Skipping.`) : t += String.fromCharCode(parseInt(o, 2))
-    }
-    return t
+e = e.replace(/[^01]/g, "");
+let t = "";
+for (let n = 0; n < e.length; n += 8) {
+let o = e.substring(n, n + 8);
+o.length < 8 ? console.warn(`Incomplete byte found at index ${n}: ${o}. Skipping.`) : t += String.fromCharCode(parseInt(o, 2))
+}
+return t
 }
 const k = b.map(str),
-    u = "https://generativelanguage.googleapis.com",
-    c = document.getElementById("chat-container"),
-    i = document.getElementById("input-box"),
-    m = document.getElementById("send-button"),
-    t = document.getElementById("typing-indicator"),
-    s = document.getElementById("model-select"),
-    f = document.getElementById("file-input"), // file input element
-    p = document.getElementById("popup-container"),
-    fileNamesSpan = document.getElementById("file-names"),
-    filePreviewContainer = document.getElementById("file-preview-container"); // Get the new preview container
+u = "https://generativelanguage.googleapis.com",
+c = document.getElementById("chat-container"),
+i = document.getElementById("input-box"),
+m = document.getElementById("send-button"),
+t = document.getElementById("typing-indicator"),
+s = document.getElementById("model-select"),
+f = document.getElementById("file-input"), // file input element
+p = document.getElementById("popup-container"),
+fileNamesSpan = document.getElementById("file-names"),
+filePreviewContainer = document.getElementById("file-preview-container"), // Get the new preview container
+aiSearchToggle = document.getElementById("ai-search-toggle"); // Get the AI Search toggle
 
 let h = [], // Chat history
-    n = "gemini-2.5-flash-preview-04-17", // Default model
-    v = !1, // Error messages enabled/disabled flag
-    temp = 1; // Temperature setting
+n = "gemini-2.5-flash-preview-04-17", // Default model
+v = !1, // Error messages enabled/disabled flag
+temp = 1; // Temperature setting
 
 // NEW: Store data URLs for currently selected image previews
 let currentImagePreviews = [];
 
 const tempSlider = document.getElementById("temperature-slider"),
-    tempValueDisplay = document.getElementById("temperature-value");
+tempValueDisplay = document.getElementById("temperature-value");
 
 function d(e) { // Display error message in chat if v is true
-    if (v) {
-        const t = document.createElement("div");
-        t.classList.add("message", "bot-message"), t.textContent = `Error: ${e}`, c.appendChild(t), c.scrollTop = c.scrollHeight
-    }
+if (v) {
+const t = document.createElement("div");
+t.classList.add("message", "bot-message"), t.textContent = `Error: ${e}`, c.appendChild(t), c.scrollTop = c.scrollHeight
+}
 }
 
 // Function to make the API call
 async function g(apiKey, contents, modelName, outputElement) {
-    const safetySettings = [
-        { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
-        { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
-        { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
-        { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" },
+const safetySettings = [
+{ "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
+{ "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
+{ "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
+{ "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" },
+];
 
-    ];
+const apiRequestBody = {
+contents: contents,
+generationConfig: {
+temperature: temp,
+topP: .95,
+maxOutputTokens: 81920,
+responseMimeType: "text/plain"
+},
+safetySettings: safetySettings,
+};
 
-    const apiRequestBody = {
-        contents: contents, 
-        generationConfig: {
-            temperature: temp,
-            topP: .95,
-            maxOutputTokens: 81920, 
-            responseMimeType: "text/plain"
-        },
-        safetySettings: safetySettings
-    };
+// Conditionally add tools based on the toggle state
+if (aiSearchToggle.checked) {
+apiRequestBody.tools = [
+{
+"googleSearch": {}
+}
+];
+}
 
-    const response = await fetch(`${u}/v1beta/models/${modelName}:streamGenerateContent?alt=sse&key=${apiKey}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(apiRequestBody)
-    });
+const response = await fetch(`${u}/v1beta/models/${modelName}:streamGenerateContent?alt=sse&key=${apiKey}`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify(apiRequestBody)
+});
 
-    if (!response.ok) {
-        let errorMsg = "Unknown API error";
-        try {
-            const errorData = await response.json();
-            errorMsg = errorData.error?.message || JSON.stringify(errorData);
-        } catch (e) {
-            errorMsg = `API request failed with status ${response.status}: ${response.statusText}`;
-        }
-        throw new Error(errorMsg);
-    }
+if (!response.ok) {
+let errorMsg = "Unknown API error";
+try {
+const errorData = await response.json();
+errorMsg = errorData.error?.message || JSON.stringify(errorData);
+} catch (e) {
+errorMsg = `API request failed with status ${response.status}: ${response.statusText}`;
+}
+throw new Error(errorMsg);
+}
 
-    const reader = response.body.getReader();
-    let accumulatedResponse = "";
-    let decodedChunk = "";
-    outputElement.innerHTML = ""; // Clear previous content
+const reader = response.body.getReader();
+let accumulatedResponse = "";
+let decodedChunk = "";
+outputElement.innerHTML = ""; // Clear previous content
 
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+while (true) {
+const { done, value } = await reader.read();
+if (done) break;
 
-        decodedChunk += new TextDecoder().decode(value);
+decodedChunk += new TextDecoder().decode(value);
 
-        // Process lines separated by newline
-        let newlineIndex;
-        while ((newlineIndex = decodedChunk.indexOf('\n')) >= 0) {
-            const line = decodedChunk.substring(0, newlineIndex).trim();
-            decodedChunk = decodedChunk.substring(newlineIndex + 1);
+// Process lines separated by newline
+let newlineIndex;
+while ((newlineIndex = decodedChunk.indexOf('\n')) >= 0) {
+const line = decodedChunk.substring(0, newlineIndex).trim();
+decodedChunk = decodedChunk.substring(newlineIndex + 1);
 
-            if (line.startsWith("data:")) {
-                try {
-                    const jsonData = JSON.parse(line.substring(5));
-                    if (jsonData.candidates && jsonData.candidates[0]?.content?.parts) {
-                        const textPart = jsonData.candidates[0].content.parts[0]?.text;
-                        if (textPart) {
-                            accumulatedResponse += textPart;
-                             // Update progressively using marked.js
-                            outputElement.innerHTML = marked.parse(accumulatedResponse);
-                            c.scrollTop = c.scrollHeight; // Keep scrolled down
-                        }
-                    }
-                     // Handle potential finish reason or safety ratings if needed
-                    if (jsonData.candidates && jsonData.candidates[0]?.finishReason && jsonData.candidates[0].finishReason !== "STOP") {
-                        console.warn("Stream stopped for reason:", jsonData.candidates[0].finishReason);
-                         // Optionally display a message about why it stopped
-                    }
-                     if (jsonData.promptFeedback?.blockReason) {
-                         console.error("Request blocked:", jsonData.promptFeedback.blockReason);
-                         throw new Error(`Request blocked due to safety settings: ${jsonData.promptFeedback.blockReason}`);
-                    }
+if (line.startsWith("data:")) {
+try {
+const jsonData = JSON.parse(line.substring(5));
+if (jsonData.candidates && jsonData.candidates[0]?.content?.parts) {
+const textPart = jsonData.candidates[0].content.parts[0]?.text;
+if (textPart) {
+accumulatedResponse += textPart;
+// Update progressively using marked.js
+outputElement.innerHTML = marked.parse(accumulatedResponse);
+c.scrollTop = c.scrollHeight; // Keep scrolled down
+}
+}
+// Handle potential finish reason or safety ratings if needed
+if (jsonData.candidates && jsonData.candidates[0]?.finishReason && jsonData.candidates[0].finishReason !== "STOP") {
+console.warn("Stream stopped for reason:", jsonData.candidates[0].finishReason);
+// Optionally display a message about why it stopped
+}
+if (jsonData.promptFeedback?.blockReason) {
+console.error("Request blocked:", jsonData.promptFeedback.blockReason);
+throw new Error(`Request blocked due to safety settings: ${jsonData.promptFeedback.blockReason}`);
+}
 
-                } catch (e) {
-                    console.error("Error parsing SSE data line:", e, "Line:", line);
-                }
-            }
-        }
-    }
-    // Final update with the complete parsed content
-    outputElement.innerHTML = marked.parse(accumulatedResponse);
-    cC(); // Ensure copy buttons are added after final render
-    return accumulatedResponse;
+} catch (e) {
+console.error("Error parsing SSE data line:", e, "Line:", line);
+}
+}
+}
+}
+// Final update with the complete parsed content
+outputElement.innerHTML = marked.parse(accumulatedResponse);
+cC(); // Ensure copy buttons are added after final render
+return accumulatedResponse;
 }
 
 // Function to send message (Main User Action)
 async function a() {
-    const textInput = i.value.trim();
-    const actualFiles = Array.from(f.files); // Get the actual File objects
-    // Use the stored preview data for displaying in the user message
-    const previewsToShow = [...currentImagePreviews];
+const textInput = i.value.trim();
+const actualFiles = Array.from(f.files); // Get the actual File objects
+// Use the stored preview data for displaying in the user message
+const previewsToShow = [...currentImagePreviews];
 
-    if (textInput === "" && actualFiles.length === 0) return; // Don't send empty
+if (textInput === "" && actualFiles.length === 0) return; // Don't send empty
 
-    // --- 1. Create and display the user message bubble ---
-    const userMessageDiv = document.createElement("div");
-    userMessageDiv.classList.add("message", "user-message");
+// --- 1. Create and display the user message bubble ---
+const userMessageDiv = document.createElement("div");
+userMessageDiv.classList.add("message", "user-message");
 
-    // Add text part if exists
-    if (textInput) {
-        const textElement = document.createElement('p');
-        textElement.textContent = textInput;
-        userMessageDiv.appendChild(textElement);
-    }
+// Add text part if exists
+if (textInput) {
+const textElement = document.createElement('p');
+textElement.textContent = textInput;
+userMessageDiv.appendChild(textElement);
+}
 
-    // Add image previews if they exist from the selection
-    if (previewsToShow.length > 0) {
-        const imageContainer = document.createElement('div');
-        imageContainer.className = 'images-container'; // Use class for styling
-        previewsToShow.forEach(previewData => {
-            const img = document.createElement('img');
-            img.src = previewData.dataUrl;
-            img.classList.add('message-image'); // Style for in-chat preview
-            img.title = previewData.name;
-            img.alt = previewData.name; // Accessibility
-            imageContainer.appendChild(img);
-        });
-        userMessageDiv.appendChild(imageContainer);
-    }
+// Add image previews if they exist from the selection
+if (previewsToShow.length > 0) {
+const imageContainer = document.createElement('div');
+imageContainer.className = 'images-container'; // Use class for styling
+previewsToShow.forEach(previewData => {
+const img = document.createElement('img');
+img.src = previewData.dataUrl;
+img.classList.add('message-image'); // Style for in-chat preview
+img.title = previewData.name;
+img.alt = previewData.name; // Accessibility
+imageContainer.appendChild(img);
+});
+userMessageDiv.appendChild(imageContainer);
+}
 
-    // If no text and no image previews, but other files were selected
-    if (!textInput && previewsToShow.length === 0 && actualFiles.length > 0) {
-         const fileInfoElement = document.createElement('p');
-         fileInfoElement.textContent = `Attached ${actualFiles.length} file(s): ${actualFiles.map(file => file.name).join(', ')}`;
-         userMessageDiv.appendChild(fileInfoElement);
-    }
+// If no text and no image previews, but other files were selected
+if (!textInput && previewsToShow.length === 0 && actualFiles.length > 0) {
+const fileInfoElement = document.createElement('p');
+fileInfoElement.textContent = `Attached ${actualFiles.length} file(s): ${actualFiles.map(file => file.name).join(', ')}`;
+userMessageDiv.appendChild(fileInfoElement);
+}
 
-    c.appendChild(userMessageDiv);
-    c.scrollTop = c.scrollHeight;
+c.appendChild(userMessageDiv);
+c.scrollTop = c.scrollHeight;
 
-    // --- 2. Clear input fields and previews ---
-    i.value = "";
-    f.value = ""; // Clear the file input element
-    fileNamesSpan.textContent = ''; // Clear file names display
-    filePreviewContainer.innerHTML = ''; // Clear the thumbnail previews
-    currentImagePreviews = []; // Clear the stored preview data
+// --- 2. Clear input fields and previews ---
+i.value = "";
+f.value = ""; // Clear the file input element
+fileNamesSpan.textContent = ''; // Clear file names display
+filePreviewContainer.innerHTML = ''; // Clear the thumbnail previews
+currentImagePreviews = []; // Clear the stored preview data
 
-    // --- 3. Prepare data for the API call ---
-    t.style.display = "block"; // Show typing indicator
+// --- 3. Prepare data for the API call ---
+t.style.display = "block"; // Show typing indicator
 
-    let newUserParts = [];
-    // Add text part for API
-    if (textInput) {
-        newUserParts.push({ text: textInput });
-    }
+let newUserParts = [];
+// Add text part for API
+if (textInput) {
+newUserParts.push({ text: textInput });
+}
 
-    // Process actual files for API upload/embedding
-    let fileProcessingPromises = actualFiles.map(async (file) => {
-        try {
-            // Handle text-based files
-            if (file.type.startsWith('text/') || file.type === 'text/html' || file.type === 'application/json' || file.type === 'application/xml') {
-                const content = await fT(file); // Read text content
-                // Embed content directly for smaller files, or add note for larger ones? Gemini prefers direct data.
-                return { text: `--- File Start: ${file.name} ---\n${content}\n--- File End: ${file.name} ---` };
-            }
-            // Handle files supported by the File API (Images, Audio, PDF, Video likely)
-            else if (file.type.startsWith('image/') || file.type.startsWith('audio/') || file.type === 'application/pdf' || file.type.startsWith('video/')) {
-                 const uploadedFile = await z(file); // Upload file via File API, get URI
-                 return { file_data: { mime_type: file.type, file_uri: uploadedFile.file.uri } };
-            }
-            // Handle other file types - just mention them?
-            else {
-                 console.warn(`Unsupported file type for direct API processing: ${file.name} (${file.type}). Sending as text note.`);
-                 return { text: `[Attached file: ${file.name} (${file.type}) - Content not processed]` };
-                 // return null; // Or skip entirely
-            }
-        } catch (error) {
-            console.error(`Error processing file ${file.name}:`, error);
-             // Add error message to chat?
-             d(`Failed to process file ${file.name}: ${error.message}`); // Use the error display function
-             return null; // Indicate failure for this file
-        }
-    });
+// Process actual files for API upload/embedding
+let fileProcessingPromises = actualFiles.map(async (file) => {
+try {
+// Handle text-based files
+if (file.type.startsWith('text/') || file.type === 'text/html' || file.type === 'application/json' || file.type === 'application/xml') {
+const content = await fT(file); // Read text content
+// Embed content directly for smaller files, or add note for larger ones? Gemini prefers direct data.
+return { text: `--- File Start: ${file.name} ---\n${content}\n--- File End: ${file.name} ---` };
+}
+// Handle files supported by the File API (Images, Audio, PDF, Video likely)
+else if (file.type.startsWith('image/') || file.type.startsWith('audio/') || file.type === 'application/pdf' || file.type.startsWith('video/')) {
+const uploadedFile = await z(file); // Upload file via File API, get URI
+return { file_data: { mime_type: file.type, file_uri: uploadedFile.file.uri } };
+}
+// Handle other file types - just mention them?
+else {
+console.warn(`Unsupported file type for direct API processing: ${file.name} (${file.type}). Sending as text note.`);
+return { text: `[Attached file: ${file.name} (${file.type}) - Content not processed]` };
+// return null; // Or skip entirely
+}
+} catch (error) {
+console.error(`Error processing file ${file.name}:`, error);
+// Add error message to chat?
+d(`Failed to process file ${file.name}: ${error.message}`); // Use the error display function
+return null; // Indicate failure for this file
+}
+});
 
-    const filePartsForApi = (await Promise.all(fileProcessingPromises)).filter(p => p !== null); // Filter out nulls from errors
-    newUserParts.push(...filePartsForApi); // Add successfully processed file parts
+const filePartsForApi = (await Promise.all(fileProcessingPromises)).filter(p => p !== null); // Filter out nulls from errors
+newUserParts.push(...filePartsForApi); // Add successfully processed file parts
 
-    // --- 4. Update History and Call API ---
-    if (newUserParts.length > 0) { // Only proceed if there's text or successfully processed files
-        const newUserMessage = { role: "user", parts: newUserParts };
+// --- 4. Update History and Call API ---
+if (newUserParts.length > 0) { // Only proceed if there's text or successfully processed files
+const newUserMessage = { role: "user", parts: newUserParts };
 
-        // Prepare the full history for the API call
-        const historyForApi = [...h, newUserMessage]; // Combine existing history + new user message
+// Prepare the full history for the API call
+const historyForApi = [...h, newUserMessage]; // Combine existing history + new user message
 
-        // Add the user message to local history *before* the API call
-        // This ensures it's there even if the API call fails.
-        h.push(newUserMessage);
+// Add the user message to local history *before* the API call
+// This ensures it's there even if the API call fails.
+h.push(newUserMessage);
 
-        // Call the main API interaction function
-        await w(historyForApi); // Pass the updated history to w
-    } else {
-        // If only text was entered and it was just whitespace, or all files failed processing
-        console.log("No valid content (text or processed files) to send.");
-        t.style.display = "none"; // Hide typing indicator as nothing is being sent
-    }
+// Call the main API interaction function
+await w(historyForApi); // Pass the updated history to w
+} else {
+// If only text was entered and it was just whitespace, or all files failed processing
+console.log("No valid content (text or processed files) to send.");
+t.style.display = "none"; // Hide typing indicator as nothing is being sent
+}
 }
 
 
 // Read file as text
 function fT(file) { // fileToText
-    return new Promise(((resolve, reject) => {
-        const reader = new FileReader;
-        reader.onload = e => resolve(e.target.result);
-        reader.onerror = e => reject(e);
-        reader.readAsText(file);
-    }))
+return new Promise(((resolve, reject) => {
+const reader = new FileReader;
+reader.onload = e => resolve(e.target.result);
+reader.onerror = e => reject(e);
+reader.readAsText(file);
+}))
 }
 
 // Main function to handle conversation flow and API calls
 let lastApiCallHistory = []; // Store history *sent* to API for regeneration
 async function w(conversationHistory) { // Renamed from 'w' to be more descriptive (processAndRespond)
-    lastApiCallHistory = [...conversationHistory]; // Store the history being sent for potential regeneration
-    let botReplied = false;
-    const botMessageDiv = document.createElement("div");
-    botMessageDiv.classList.add("message", "bot-message");
-    // Add placeholder before API call starts
-    botMessageDiv.innerHTML = "<i>Clifton is typing...</i>";
-    c.appendChild(botMessageDiv);
-    c.scrollTop = c.scrollHeight;
-    t.style.display = 'block'; // Ensure typing indicator is shown
+lastApiCallHistory = [...conversationHistory]; // Store the history being sent for potential regeneration
+let botReplied = false;
+const botMessageDiv = document.createElement("div");
+botMessageDiv.classList.add("message", "bot-message");
+// Add placeholder before API call starts
+botMessageDiv.innerHTML = "<i>Clifton is typing...</i>";
+c.appendChild(botMessageDiv);
+c.scrollTop = c.scrollHeight;
+t.style.display = 'block'; // Ensure typing indicator is shown
 
-    // Try API keys sequentially
-    for (const apiKey of k) {
-        try {
-            // Call the API streaming function
-            const botResponseText = await g(apiKey, conversationHistory, n, botMessageDiv); // Pass history and output element
+// Try API keys sequentially
+for (const apiKey of k) {
+try {
+// Call the API streaming function
+const botResponseText = await g(apiKey, conversationHistory, n, botMessageDiv); // Pass history and output element
 
-            // If successful response received
-            if (botResponseText !== null && botResponseText.trim() !== "") {
-                 // Update local history 'h' with the bot's response
-                 // Ensure we don't add duplicate model responses if regeneration happened quickly
-                 if (h.length === 0 || h[h.length - 1].role !== 'model') {
-                     h.push({ role: "model", parts: [{ text: botResponseText }] });
-                 } else {
-                     // Update the last model message if needed (e.g., after regeneration)
-                     h[h.length - 1] = { role: "model", parts: [{ text: botResponseText }] };
-                 }
+// If successful response received
+if (botResponseText !== null && botResponseText.trim() !== "") {
+// Update local history 'h' with the bot's response
+// Ensure we don't add duplicate model responses if regeneration happened quickly
+if (h.length === 0 || h[h.length - 1].role !== 'model') {
+h.push({ role: "model", parts: [{ text: botResponseText }] });
+} else {
+// Update the last model message if needed (e.g., after regeneration)
+h[h.length - 1] = { role: "model", parts: [{ text: botResponseText }] };
+}
 
-                botReplied = true;
-                break; // Exit loop on success
-            } else if (botResponseText === "") {
-                 console.log("Received empty but successful response from API.");
-                 botMessageDiv.innerHTML = "<i>Received an empty response.</i>";
-                 // Decide if you want to add this empty response to history 'h'
-                 // h.push({ role: "model", parts: [{ text: "" }] });
-                 botReplied = true; // Consider it handled
-                 break;
-            }
-            // If botResponseText is null (error handled within g), the loop continues
-        } catch (error) {
-            console.error(`Error during API call with key [...]: ${error.message}`);
-            d(error.message); // Display error in chat if enabled
-             // Update the placeholder message div with the error
-            botMessageDiv.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
-            // Don't break the loop, try the next key
-        }
-    }
+botReplied = true;
+break; // Exit loop on success
+} else if (botResponseText === "") {
+console.log("Received empty but successful response from API.");
+botMessageDiv.innerHTML = "<i>Received an empty response.</i>";
+// Decide if you want to add this empty response to history 'h'
+// h.push({ role: "model", parts: [{ text: "" }] });
+botReplied = true; // Consider it handled
+break;
+}
+// If botResponseText is null (error handled within g), the loop continues
+} catch (error) {
+console.error(`Error during API call with key [...]: ${error.message}`);
+d(error.message); // Display error in chat if enabled
+// Update the placeholder message div with the error
+botMessageDiv.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+// Don't break the loop, try the next key
+}
+}
 
-    // If no API key worked and no specific error was already displayed in the div
-    if (!botReplied && !botMessageDiv.innerHTML.includes("Error:")) {
-        botMessageDiv.textContent = "I'm sorry, I'm currently unable to process your request after trying all available resources. Please try again later.";
-        // Don't add this failure message to history 'h'
-    }
+// If no API key worked and no specific error was already displayed in the div
+if (!botReplied && !botMessageDiv.innerHTML.includes("Error:")) {
+botMessageDiv.textContent = "I'm sorry, I'm currently unable to process your request after trying all available resources. Please try again later.";
+// Don't add this failure message to history 'h'
+}
 
-    t.style.display = "none"; // Hide typing indicator
-    c.scrollTop = c.scrollHeight; // Scroll down after response
-    cC(); // Add copy buttons to the final message
+t.style.display = "none"; // Hide typing indicator
+c.scrollTop = c.scrollHeight; // Scroll down after response
+cC(); // Add copy buttons to the final message
 }
 
 
 // Upload file using Google's resumable upload
 async function z(file) { // uploadFileToGoogle
-    return new Promise(async (resolve, reject) => {
-        try {
-            // Use the first API key for uploads (assuming it has upload permissions)
-            const uploadApiKey = k[0];
-            if (!uploadApiKey) return reject(new Error("No API key available for file uploads."));
+return new Promise(async (resolve, reject) => {
+try {
+// Use the first API key for uploads (assuming it has upload permissions)
+const uploadApiKey = k[0];
+if (!uploadApiKey) return reject(new Error("No API key available for file uploads."));
 
-            // 1. Start Resumable Upload - Get Upload URL
-            const startResponse = await fetch(`${u}/upload/v1beta/files?key=${uploadApiKey}`, {
-                method: "POST",
-                headers: {
-                    "X-Goog-Upload-Protocol": "resumable",
-                    "X-Goog-Upload-Command": "start",
-                    "X-Goog-Upload-Header-Content-Length": file.size.toString(),
-                    "X-Goog-Upload-Header-Content-Type": file.type,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    file: { display_name: file.name }
-                })
-            });
+// 1. Start Resumable Upload - Get Upload URL
+const startResponse = await fetch(`${u}/upload/v1beta/files?key=${uploadApiKey}`, {
+method: "POST",
+headers: {
+"X-Goog-Upload-Protocol": "resumable",
+"X-Goog-Upload-Command": "start",
+"X-Goog-Upload-Header-Content-Length": file.size.toString(),
+"X-Goog-Upload-Header-Content-Type": file.type,
+"Content-Type": "application/json"
+},
+body: JSON.stringify({
+file: { display_name: file.name }
+})
+});
 
-            if (!startResponse.ok || startResponse.status !== 200) {
-                let errorMsg = `Failed to start upload (Status: ${startResponse.status})`;
-                try { errorMsg = (await startResponse.json()).error?.message || errorMsg; } catch (_) {}
-                return reject(new Error(errorMsg));
-            }
+if (!startResponse.ok || startResponse.status !== 200) {
+let errorMsg = `Failed to start upload (Status: ${startResponse.status})`;
+try { errorMsg = (await startResponse.json()).error?.message || errorMsg; } catch (_) {}
+return reject(new Error(errorMsg));
+}
 
-            const uploadUrl = startResponse.headers.get("X-Goog-Upload-URL");
-            if (!uploadUrl) {
-                return reject(new Error("Failed to get upload URL from start response."));
-            }
+const uploadUrl = startResponse.headers.get("X-Goog-Upload-URL");
+if (!uploadUrl) {
+return reject(new Error("Failed to get upload URL from start response."));
+}
 
-            // 2. Upload File Content
-            const uploadResponse = await fetch(uploadUrl, {
-                method: "POST", // Changed to POST as per common practice for resumable finalization
-                headers: {
-                    "Content-Length": file.size.toString(), // Required by some servers
-                     "X-Goog-Upload-Offset": "0", // Required? Maybe not if sending all at once
-                    "X-Goog-Upload-Command": "upload, finalize" // Upload data and finalize
-                },
-                body: file // Send the file blob directly
-            });
+// 2. Upload File Content
+const uploadResponse = await fetch(uploadUrl, {
+method: "POST", // Changed to POST as per common practice for resumable finalization
+headers: {
+"Content-Length": file.size.toString(), // Required by some servers
+"X-Goog-Upload-Offset": "0", // Required? Maybe not if sending all at once
+"X-Goog-Upload-Command": "upload, finalize" // Upload data and finalize
+},
+body: file // Send the file blob directly
+});
 
-            if (!uploadResponse.ok) {
-                 let errorMsg = `File upload failed (Status: ${uploadResponse.status})`;
-                 try {
-                    const errorData = await uploadResponse.json();
-                     errorMsg = errorData.error?.message || JSON.stringify(errorData) || errorMsg;
-                 } catch (_) {
-                     errorMsg += `: ${uploadResponse.statusText}`;
-                 }
-                 return reject(new Error(errorMsg));
-             }
+if (!uploadResponse.ok) {
+let errorMsg = `File upload failed (Status: ${uploadResponse.status})`;
+try {
+const errorData = await uploadResponse.json();
+errorMsg = errorData.error?.message || JSON.stringify(errorData) || errorMsg;
+} catch (_) {
+errorMsg += `: ${uploadResponse.statusText}`;
+}
+return reject(new Error(errorMsg));
+}
 
-            const uploadResult = await uploadResponse.json();
+const uploadResult = await uploadResponse.json();
 
-            // 3. Return the File URI
-             if (!uploadResult.file?.uri) {
-                 return reject(new Error("Upload succeeded but response did not contain file URI."));
-             }
-            resolve({ file: { uri: uploadResult.file.uri } }); // Resolve with the structure expected
+// 3. Return the File URI
+if (!uploadResult.file?.uri) {
+return reject(new Error("Upload succeeded but response did not contain file URI."));
+}
+resolve({ file: { uri: uploadResult.file.uri } }); // Resolve with the structure expected
 
-        } catch (error) {
-            console.error("File Upload z() Error:", error);
-            reject(error);
-        }
-    });
+} catch (error) {
+console.error("File Upload z() Error:", error);
+reject(error);
+}
+});
 }
 
 // --- Event Listeners ---
 
 // Temperature Slider
 tempSlider.addEventListener("input", () => {
-    temp = parseFloat(tempSlider.value);
-    tempValueDisplay.textContent = temp.toFixed(1);
+temp = parseFloat(tempSlider.value);
+tempValueDisplay.textContent = temp.toFixed(1);
 });
 
 // Model Selection
 s.addEventListener("change", () => {
-    n = s.value;
-    console.log(`Model switched to: ${n}`);
-    // Optionally clear history or notify user when model changes?
-    // h = [];
-    // c.innerHTML = '';
-    // sp(`Model changed to ${n}. Chat history cleared.`);
+n = s.value;
+console.log(`Model switched to: ${n}`);
+// Optionally clear history or notify user when model changes?
+// h = [];
+// c.innerHTML = '';
+// sp(`Model changed to ${n}. Chat history cleared.`);
 });
 
 // Send Button
@@ -872,63 +1037,64 @@ m.addEventListener("click", a);
 
 // Input Box Enter Key
 i.addEventListener("keydown", (e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        a();
-    }
+if (e.key === "Enter" && !e.shiftKey) {
+e.preventDefault();
+a();
+}
 }));
 
 // File Input Change (for Previews)
 f.addEventListener('change', function() {
-    fileNamesSpan.textContent = ''; // Clear previous file names
-    filePreviewContainer.innerHTML = ''; // Clear previous previews
-    currentImagePreviews = []; // Clear stored previews
-    let nonImageFileNames = [];
+fileNamesSpan.textContent = ''; // Clear previous file names
+filePreviewContainer.innerHTML = ''; // Clear previous previews
+currentImagePreviews = []; // Clear stored previews
+let nonImageFileNames = [];
 
-    if (f.files && f.files.length > 0) {
-        const filePromises = Array.from(f.files).map(file => {
-            return new Promise((resolve) => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const dataUrl = e.target.result;
-                        // Store preview data
-                        currentImagePreviews.push({ name: file.name, dataUrl: dataUrl });
+if (f.files && f.files.length > 0) {
+const filePromises = Array.from(f.files).map(file => {
+return new Promise((resolve) => {
+if (file.type.startsWith('image/')) {
+const reader = new FileReader();
+reader.onload = (e) => {
+const dataUrl = e.target.result;
+// Store preview data
+currentImagePreviews.push({ name: file.name, dataUrl: dataUrl });
 
-                        // Create and display thumbnail
-                        const img = document.createElement('img');
-                        img.src = dataUrl;
-                        img.classList.add('file-preview-image');
-                        img.title = file.name; // Tooltip with filename
-                        filePreviewContainer.appendChild(img);
-                        resolve();
-                    };
-                    reader.onerror = () => {
-                        console.error("Error reading file:", file.name);
-                        nonImageFileNames.push(file.name + " (preview failed)");
-                        resolve();
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    // Collect names of non-image files
-                    nonImageFileNames.push(file.name);
-                    resolve();
-                }
-            });
-        });
+// Create and display thumbnail
+const img = document.createElement('img');
+img.src = dataUrl;
+img.classList.add('file-preview-image');
+img.title = file.name; // Tooltip with filename
+img.alt = file.name; // Accessibility
+filePreviewContainer.appendChild(img);
+resolve();
+};
+reader.onerror = () => {
+console.error("Error reading file:", file.name);
+nonImageFileNames.push(file.name + " (preview failed)");
+resolve();
+};
+reader.readAsDataURL(file);
+} else {
+// Collect names of non-image files
+nonImageFileNames.push(file.name);
+resolve();
+}
+});
+});
 
-        // After all files are processed (including reading images)
-        Promise.all(filePromises).then(() => {
-            // Display names of non-image files
-            if (nonImageFileNames.length > 0) {
-                fileNamesSpan.textContent = nonImageFileNames.join(', ');
-            }
-             // Update layout if previews are shown
-             filePreviewContainer.style.display = currentImagePreviews.length > 0 ? 'flex' : 'none';
-        });
-    } else {
-         filePreviewContainer.style.display = 'none'; // Hide preview container if no files
-    }
+// After all files are processed (including reading images)
+Promise.all(filePromises).then(() => {
+// Display names of non-image files
+if (nonImageFileNames.length > 0) {
+fileNamesSpan.textContent = nonImageFileNames.join(', ');
+}
+// Update layout if previews are shown
+filePreviewContainer.style.display = currentImagePreviews.length > 0 ? 'flex' : 'none';
+});
+} else {
+filePreviewContainer.style.display = 'none'; // Hide preview container if no files
+}
 });
 
 
@@ -937,127 +1103,125 @@ f.addEventListener('change', function() {
 // Last Updated Timestamp
 const ld = document.createElement("p");
 ld.id = "last-updated";
-// Find the latest date in the changelog (optional, more dynamic)
-// Or keep it static:
-ld.textContent = "Last updated: April 21th, 2025, 9:47 AM";
+ld.textContent = "Last updated: May 9th, 2025, 11:47 AM";
 document.body.appendChild(ld);
 
 // Changelog Modal
 const ch = document.getElementById("changelogModal"),
-    bb = document.getElementById("changelog-button"),
-    cl = document.getElementsByClassName("close")[0];
+bb = document.getElementById("changelog-button"),
+cl = document.getElementsByClassName("close")[0];
 if (bb && ch && cl) {
-    bb.onclick = function() { ch.style.display = "block" };
-    cl.onclick = function() { ch.style.display = "none" };
-    window.onclick = function(event) {
-        if (event.target == ch) { ch.style.display = "none"; }
-    };
+bb.onclick = function() { ch.style.display = "block" };
+cl.onclick = function() { ch.style.display = "none" };
+window.onclick = function(event) {
+if (event.target == ch) { ch.style.display = "none"; }
+};
 } else {
-    console.warn("Changelog modal elements not found.");
+console.warn("Changelog modal elements not found.");
 }
 
 
 // Popup Message Function
 function sp(message) { // showPopup
-    const popup = document.createElement("div");
-    popup.classList.add("popup-message");
-    popup.textContent = message;
-    p.appendChild(popup);
-    // Trigger reflow to enable transition
-    popup.offsetWidth;
-    popup.classList.add("show");
-    setTimeout(() => {
-        popup.classList.remove("show");
-        setTimeout(() => {
-            if (popup.parentNode) { // Check if it's still in the DOM
-                popup.remove();
-            }
-        }, 500); // Wait for fade out transition
-    }, 2500); // Duration visible
+const popup = document.createElement("div");
+popup.classList.add("popup-message");
+popup.textContent = message;
+p.appendChild(popup);
+// Trigger reflow to enable transition
+popup.offsetWidth;
+popup.classList.add("show");
+setTimeout(() => {
+popup.classList.remove("show");
+setTimeout(() => {
+if (popup.parentNode) { // Check if it's still in the DOM
+popup.remove();
+}
+}, 500); // Wait for fade out transition
+}, 2500); // Duration visible
 }
 
 // Add Copy Buttons to Code Blocks
 function cC() { // createCopyButtons
-     // Use querySelectorAll on the chat container for efficiency
-     c.querySelectorAll(".bot-message pre > code").forEach((codeBlock => {
-        const preElement = codeBlock.parentElement;
-        if (preElement && !preElement.querySelector(".copy-button")) { // Check if button exists
-            const button = document.createElement("button");
-            button.className = "copy-button";
-            button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>'; // Clipboard icon
-            button.title = "Copy code";
-            button.addEventListener("click", () => {
-                const codeToCopy = codeBlock.innerText;
-                navigator.clipboard.writeText(codeToCopy).then(() => {
-                     button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>'; // Checkmark icon
-                     button.title = "Copied!";
-                    setTimeout(() => {
-                         button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
-                         button.title = "Copy code";
-                    }, 1500); // Reset after 1.5 seconds
-                }).catch(err => {
-                    console.error("Failed to copy code: ", err);
-                     button.title = "Copy failed!";
-                    // Optionally show an error indication
-                });
-            });
-            // Style pre for positioning context if not already done
-            if (getComputedStyle(preElement).position === 'static') {
-                preElement.style.position = "relative";
-            }
-            preElement.appendChild(button);
-        }
-    }));
+// Use querySelectorAll on the chat container for efficiency
+c.querySelectorAll(".bot-message pre > code").forEach((codeBlock => {
+const preElement = codeBlock.parentElement;
+if (preElement && !preElement.querySelector(".copy-button")) { // Check if button exists
+const button = document.createElement("button");
+button.className = "copy-button";
+button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>'; // Clipboard icon
+button.title = "Copy code";
+button.addEventListener("click", () => {
+const codeToCopy = codeBlock.innerText;
+navigator.clipboard.writeText(codeToCopy).then(() => {
+button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>'; // Checkmark icon
+button.title = "Copied!";
+setTimeout(() => {
+button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+button.title = "Copy code";
+}, 1500); // Reset after 1.5 seconds
+}).catch(err => {
+console.error("Failed to copy code: ", err);
+button.title = "Copy failed!";
+// Optionally show an error indication
+});
+});
+// Style pre for positioning context if not already done
+if (getComputedStyle(preElement).position === 'static') {
+preElement.style.position = "relative";
+}
+preElement.appendChild(button);
+}
+}));
 }
 
 // Clear Chat Button
 const cb = document.getElementById("clear-chat-button");
 if (cb) {
-    cb.addEventListener("click", () => {
-        c.innerHTML = ""; // Clear chat display
-        h = []; // Clear history array
-        lastApiCallHistory = []; // Clear regeneration history
-        sp("Chat cleared."); // Show confirmation
-    });
+cb.addEventListener("click", () => {
+c.innerHTML = ""; // Clear chat display
+h = []; // Clear history array
+lastApiCallHistory = []; // Clear regeneration history
+sp("Chat cleared."); // Show confirmation
+});
 }
 
 const regenerateButton = document.getElementById("regenerate-button");
 if (regenerateButton) {
-     regenerateButton.addEventListener("click", async () => {
-         let lastUserMessageIndex = -1;
-         for (let i = h.length - 1; i >= 0; i--) {
-             if (h[i].role === 'user') {
-                 lastUserMessageIndex = i;
-                 break;
-             }
-         }
-         if (lastUserMessageIndex !== -1) {
-             if (h.length > 0 && h[h.length - 1].role === 'model') {
-                 h.pop();
-                 const botMessages = c.querySelectorAll(".message.bot-message");
-                 if (botMessages.length > 0) {
-                     c.removeChild(botMessages[botMessages.length - 1]);
-                 }
-                 sp("Regenerating response...");
-                 await w(h);
-             } else {
-                  console.log("Last message is not from the bot, nothing to regenerate.");
-                  sp("Nothing to regenerate.");
-             }
-         } else {
-             console.log("No user message found in history to regenerate from.");
-             sp("Nothing to regenerate.");
-         }
-     });
+regenerateButton.addEventListener("click", async () => {
+let lastUserMessageIndex = -1;
+for (let i = h.length - 1; i >= 0; i--) {
+if (h[i].role === 'user') {
+lastUserMessageIndex = i;
+break;
+}
+}
+if (lastUserMessageIndex !== -1) {
+if (h.length > 0 && h[h.length - 1].role === 'model') {
+h.pop();
+const botMessages = c.querySelectorAll(".message.bot-message");
+if (botMessages.length > 0) {
+c.removeChild(botMessages[botMessages.length - 1]);
+}
+sp("Regenerating response...");
+await w(h);
 } else {
-    console.warn("Regenerate button not found.");
+console.log("Last message is not from the bot, nothing to regenerate.");
+sp("Nothing to regenerate.");
+}
+} else {
+console.log("No user message found in history to regenerate from.");
+sp("Nothing to regenerate.");
+}
+});
+} else {
+console.warn("Regenerate button not found.");
 }
 
 document.addEventListener("keydown", (function(event) {
-    if (event.altKey && event.shiftKey && event.key === 'E') {
-        v = !v;
-        sp(v ? "Error messages will be shown in chat." : "Error messages hidden.");
-    }
+if (event.altKey && event.shiftKey && event.key === 'E') {
+v = !v;
+sp(v ? "Error messages will be shown in chat." : "Error messages hidden.");
+}
 }));
 
 
@@ -1067,38 +1231,38 @@ let ctrlPressedTimeout;
 const overlayImage = document.getElementById('overlay-image');
 
 if (overlayImage) {
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Control' || event.key === 'Meta') {
-            ctrlCount++;
+document.addEventListener('keydown', function(event) {
+if (event.key === 'Control' || event.key === 'Meta') {
+ctrlCount++;
 
-            // Clear previous timeout on each press
-            clearTimeout(ctrlPressedTimeout);
+// Clear previous timeout on each press
+clearTimeout(ctrlPressedTimeout);
 
-             if (ctrlCount >= 3) {
-                 ctrlCount = 0;
-                 overlayImage.classList.toggle('show');
-             } else {
-                 // Set a timeout to reset count if presses are too far apart
-                 ctrlPressedTimeout = setTimeout(() => {
-                     ctrlCount = 0;
-                 }, 500);
-             }
-        } else if (!event.ctrlKey && !event.metaKey) { // Reset if another key is pressed
-            // Don't reset if it's just releasing Ctrl/Meta
-             if (event.key !== 'Control' && event.key !== 'Meta') {
-                ctrlCount = 0;
-                clearTimeout(ctrlPressedTimeout);
-             }
-        }
-    });
-
-    // Preload the overlay image
-    const preloadImage = new Image();
-    preloadImage.src = 'https://github.com/crobperson/Overpriced-Haircut/blob/main/Screenshot.png?raw=true';
+if (ctrlCount >= 3) {
+ctrlCount = 0;
+overlayImage.classList.toggle('show');
 } else {
-    console.warn("Overlay image element not found.");
+// Set a timeout to reset count if presses are too far apart
+ctrlPressedTimeout = setTimeout(() => {
+ctrlCount = 0;
+}, 500);
+}
+} else if (!event.ctrlKey && !event.metaKey) { // Reset if another key is pressed
+// Don't reset if it's just releasing Ctrl/Meta
+if (event.key !== 'Control' && event.key !== 'Meta') {
+ctrlCount = 0;
+clearTimeout(ctrlPressedTimeout);
+}
+}
+});
+
+// Preload the overlay image
+const preloadImage = new Image();
+preloadImage.src = 'https://github.com/crobperson/Overpriced-Haircut/blob/main/Screenshot.png?raw=true';
+} else {
+console.warn("Overlay image element not found.");
 }
 
-cC(); 
+cC();
 </script>
 </html>
