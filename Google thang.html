@@ -555,7 +555,7 @@ input:checked + .slider:before {
     border: 1px solid #555;
 }
 
-/* Style for images within the chat message */
+/* Style for images within the chat message (previews in user message) */
 .message-image {
     max-width: 150px;
     max-height: 150px;
@@ -566,6 +566,19 @@ input:checked + .slider:before {
     /* Dark Mode Message Image Border */
     border: 1px solid #555;
 }
+
+/* Style for generated images in bot message */
+.generated-message-image {
+    max-width: 100%; /* Allow it to take full width of message bubble */
+    max-height: 500px; /* Or a reasonable max height */
+    border-radius: 8px;
+    margin-top: 8px;
+    display: block;
+    /* Dark Mode Message Image Border */
+    border: 1px solid #555;
+    object-fit: contain; /* Ensure the whole image is visible */
+}
+
 
 /* Style for image container within the user message */
 .user-message .images-container {
@@ -587,6 +600,7 @@ input:checked + .slider:before {
 <div class=model-select-container><label for=model-select>AI Model:</label> <select id=model-select>
 <option value=gemini-2.5-flash-preview-04-17>Clifton Flash</option>
 <option value=gemini-2.5-pro-exp-03-25>Clifton Pro</option>
+<option value=gemini-2.0-flash-preview-image-generation>Clifton Image Gen</option>
 </select></div>
 <div class=temperature-container><label for=temperature-slider>Temp:</label> <input id=temperature-slider
 type=range max=1 min=0 step=0.1 value=1> <span id=temperature-value>1.0</span></div>
@@ -613,6 +627,7 @@ placeholder="Enter your message..." rows=1></textarea> <button id=send-button>Se
 <div class=modal id=changelogModal>
 <div class=modal-content><span class=close>×</span>
 <h2>Changelog</h2>
+<p><strong>Version 2.1 (May 10, 2025)</strong><br>- Added Image Generation model (Clifton Image Gen). Supports text-to-image and image-to-image (editing by uploading an image with your prompt).<br>
 <p><strong>Version 2.0 (May 9, 2025)</strong><br>- Added AI Search (finally). Revamped the S**tty UI.<br><p><strong>Version 1.83 (April 9, 2025)</strong><br>- Added Image Previews Along With General Improvements<br><p><strong>Version 1.82 (March 31, 2025)</strong><br>- Improved the Clifton pro and flash model (I like chicken)<br><p><strong>Version 1.81 (Feb 6, 2025)</strong><br>- Improved the Clifton pro model (I've ran out of ideas)<br><p><strong>Version 1.8 (January 31, 2025)</strong><br>- Press ctrl 3 times<br><p><strong>Version 1.7 (January 22, 2025)</strong><br>- The Thinker is back... (Currently the best model)<br><p><strong>Version 1.65 (January 16, 2025)</strong><br>- Message Regeneration<br><p><strong>Version 1.6 (January 14, 2025)</strong><br>- Fixed bug!!!<br>
 </div>
 </div>
@@ -648,6 +663,7 @@ temp = 1; // Temperature setting
 
 // NEW: Store data URLs for currently selected image previews
 let currentImagePreviews = [];
+let lastApiCallHistory = []; // Store history/parts *sent* to API for regeneration
 
 const tempSlider = document.getElementById("temperature-slider"),
 tempValueDisplay = document.getElementById("temperature-value");
@@ -659,7 +675,17 @@ t.classList.add("message", "bot-message"), t.textContent = `Error: ${e}`, c.appe
 }
 }
 
-// Function to make the API call
+// Function to convert file to base64
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]); // Get only the base64 part
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+    });
+}
+
+// Function to make the API call for TEXT models (streaming)
 async function g(apiKey, contents, modelName, outputElement) {
 const safetySettings = [
 { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
@@ -679,20 +705,13 @@ responseMimeType: "text/plain"
 safetySettings: safetySettings,
 };
 
-// Conditionally add tools based on the toggle state
 if (aiSearchToggle.checked) {
-apiRequestBody.tools = [
-{
-"googleSearch": {}
-}
-];
+apiRequestBody.tools = [{"googleSearch": {}}];
 }
 
 const response = await fetch(`${u}/v1beta/models/${modelName}:streamGenerateContent?alt=sse&key=${apiKey}`, {
 method: "POST",
-headers: {
-"Content-Type": "application/json"
-},
+headers: {"Content-Type": "application/json"},
 body: JSON.stringify(apiRequestBody)
 });
 
@@ -710,20 +729,16 @@ throw new Error(errorMsg);
 const reader = response.body.getReader();
 let accumulatedResponse = "";
 let decodedChunk = "";
-outputElement.innerHTML = ""; // Clear previous content
+outputElement.innerHTML = "";
 
 while (true) {
 const { done, value } = await reader.read();
 if (done) break;
-
 decodedChunk += new TextDecoder().decode(value);
-
-// Process lines separated by newline
 let newlineIndex;
 while ((newlineIndex = decodedChunk.indexOf('\n')) >= 0) {
 const line = decodedChunk.substring(0, newlineIndex).trim();
 decodedChunk = decodedChunk.substring(newlineIndex + 1);
-
 if (line.startsWith("data:")) {
 try {
 const jsonData = JSON.parse(line.substring(5));
@@ -731,143 +746,202 @@ if (jsonData.candidates && jsonData.candidates[0]?.content?.parts) {
 const textPart = jsonData.candidates[0].content.parts[0]?.text;
 if (textPart) {
 accumulatedResponse += textPart;
-// Update progressively using marked.js
 outputElement.innerHTML = marked.parse(accumulatedResponse);
-c.scrollTop = c.scrollHeight; // Keep scrolled down
+c.scrollTop = c.scrollHeight;
 }
 }
-// Handle potential finish reason or safety ratings if needed
 if (jsonData.candidates && jsonData.candidates[0]?.finishReason && jsonData.candidates[0].finishReason !== "STOP") {
 console.warn("Stream stopped for reason:", jsonData.candidates[0].finishReason);
-// Optionally display a message about why it stopped
 }
 if (jsonData.promptFeedback?.blockReason) {
 console.error("Request blocked:", jsonData.promptFeedback.blockReason);
 throw new Error(`Request blocked due to safety settings: ${jsonData.promptFeedback.blockReason}`);
 }
-
 } catch (e) {
 console.error("Error parsing SSE data line:", e, "Line:", line);
 }
 }
 }
 }
-// Final update with the complete parsed content
 outputElement.innerHTML = marked.parse(accumulatedResponse);
-cC(); // Ensure copy buttons are added after final render
+cC();
 return accumulatedResponse;
 }
 
+// Function to make API call for IMAGE GENERATION model (non-streaming)
+async function generateImageApiCall(apiKey, contents, modelName) {
+    const safetySettings = [
+        { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
+        { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
+        { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
+        { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" },
+    ];
+
+    const apiRequestBody = {
+        contents: contents,
+        generationConfig: {
+            responseModalities: ["TEXT", "IMAGE"]
+            // Temperature, topP, maxOutputTokens are typically not used or different for image models
+        },
+        safetySettings: safetySettings,
+    };
+
+    const response = await fetch(`${u}/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(apiRequestBody)
+    });
+
+    if (!response.ok) {
+        let errorMsg = "Unknown API error (Image Generation)";
+        try {
+            const errorData = await response.json();
+            errorMsg = errorData.error?.message || JSON.stringify(errorData);
+        } catch (e) {
+            errorMsg = `Image API request failed with status ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMsg);
+    }
+
+    const responseData = await response.json();
+    let botTextResponse = "";
+    let botImageBase64 = null;
+    let botImageMimeType = "image/png"; // Default
+
+    if (responseData.candidates && responseData.candidates[0]?.content?.parts) {
+        for (const part of responseData.candidates[0].content.parts) {
+            if (part.text) {
+                botTextResponse += part.text;
+            }
+            if (part.inlineData && part.inlineData.data) {
+                botImageBase64 = part.inlineData.data;
+                botImageMimeType = part.inlineData.mimeType;
+            }
+        }
+    }
+
+    if (responseData.promptFeedback?.blockReason) {
+        console.error("Request blocked (Image Gen):", responseData.promptFeedback.blockReason);
+        throw new Error(`Request blocked due to safety settings (Image Gen): ${responseData.promptFeedback.blockReason}`);
+    }
+    return { text: botTextResponse.trim(), imageBase64: botImageBase64, imageMimeType: botImageMimeType };
+}
+
+
 // Function to send message (Main User Action)
 async function a() {
-const textInput = i.value.trim();
-const actualFiles = Array.from(f.files); // Get the actual File objects
-// Use the stored preview data for displaying in the user message
-const previewsToShow = [...currentImagePreviews];
+    const textInput = i.value.trim();
+    const actualFiles = Array.from(f.files);
+    const previewsToShow = [...currentImagePreviews];
 
-if (textInput === "" && actualFiles.length === 0) return; // Don't send empty
+    if (textInput === "" && actualFiles.length === 0) return;
 
-// --- 1. Create and display the user message bubble ---
-const userMessageDiv = document.createElement("div");
-userMessageDiv.classList.add("message", "user-message");
+    const userMessageDiv = document.createElement("div");
+    userMessageDiv.classList.add("message", "user-message");
+    if (textInput) {
+        const textElement = document.createElement('p');
+        textElement.textContent = textInput;
+        userMessageDiv.appendChild(textElement);
+    }
+    if (previewsToShow.length > 0) {
+        const imageContainer = document.createElement('div');
+        imageContainer.className = 'images-container';
+        previewsToShow.forEach(previewData => {
+            const img = document.createElement('img');
+            img.src = previewData.dataUrl;
+            img.classList.add('message-image');
+            img.title = previewData.name;
+            img.alt = previewData.name;
+            imageContainer.appendChild(img);
+        });
+        userMessageDiv.appendChild(imageContainer);
+    }
+    if (!textInput && previewsToShow.length === 0 && actualFiles.length > 0) {
+        const fileInfoElement = document.createElement('p');
+        fileInfoElement.textContent = `Attached ${actualFiles.length} file(s): ${actualFiles.map(file => file.name).join(', ')}`;
+        userMessageDiv.appendChild(fileInfoElement);
+    }
+    c.appendChild(userMessageDiv);
+    c.scrollTop = c.scrollHeight;
 
-// Add text part if exists
-if (textInput) {
-const textElement = document.createElement('p');
-textElement.textContent = textInput;
-userMessageDiv.appendChild(textElement);
-}
+    i.value = "";
+    f.value = "";
+    fileNamesSpan.textContent = '';
+    filePreviewContainer.innerHTML = '';
+    currentImagePreviews = [];
 
-// Add image previews if they exist from the selection
-if (previewsToShow.length > 0) {
-const imageContainer = document.createElement('div');
-imageContainer.className = 'images-container'; // Use class for styling
-previewsToShow.forEach(previewData => {
-const img = document.createElement('img');
-img.src = previewData.dataUrl;
-img.classList.add('message-image'); // Style for in-chat preview
-img.title = previewData.name;
-img.alt = previewData.name; // Accessibility
-imageContainer.appendChild(img);
-});
-userMessageDiv.appendChild(imageContainer);
-}
+    t.style.display = "block";
 
-// If no text and no image previews, but other files were selected
-if (!textInput && previewsToShow.length === 0 && actualFiles.length > 0) {
-const fileInfoElement = document.createElement('p');
-fileInfoElement.textContent = `Attached ${actualFiles.length} file(s): ${actualFiles.map(file => file.name).join(', ')}`;
-userMessageDiv.appendChild(fileInfoElement);
-}
+    let newUserParts = [];
+    if (textInput) {
+        newUserParts.push({ text: textInput });
+    }
 
-c.appendChild(userMessageDiv);
-c.scrollTop = c.scrollHeight;
+    if (n === "gemini-2.0-flash-preview-image-generation") {
+        let hasTextPrompt = newUserParts.some(p => p.text && p.text.trim() !== "");
+        if (!hasTextPrompt) {
+            console.log("Image Gen: Text prompt is required.");
+            t.style.display = "none";
+            const errDiv = document.createElement("div");
+            errDiv.classList.add("message", "bot-message");
+            errDiv.textContent = "For image generation, a text prompt is required. You can optionally include one image for editing.";
+            c.appendChild(errDiv);
+            c.scrollTop = c.scrollHeight;
+            return; // Abort send
+        }
 
-// --- 2. Clear input fields and previews ---
-i.value = "";
-f.value = ""; // Clear the file input element
-fileNamesSpan.textContent = ''; // Clear file names display
-filePreviewContainer.innerHTML = ''; // Clear the thumbnail previews
-currentImagePreviews = []; // Clear the stored preview data
+        if (actualFiles.length > 0) {
+            const imageFile = actualFiles.find(file => file.type.startsWith('image/'));
+            if (imageFile) {
+                try {
+                    const base64Data = await fileToBase64(imageFile);
+                    newUserParts.push({
+                        inline_data: {
+                            mime_type: imageFile.type,
+                            data: base64Data
+                        }
+                    });
+                } catch (error) {
+                    console.error(`Error converting image ${imageFile.name} to base64:`, error);
+                    d(`Failed to process image ${imageFile.name} for generation: ${error.message}`);
+                }
+            }
+        }
+        const userMessageForHistory = { role: "user", parts: newUserParts };
+        h.push(userMessageForHistory);
+        await w(newUserParts); // Pass just the parts for image model
+    } else { // Text models
+        let fileProcessingPromises = actualFiles.map(async (file) => {
+            try {
+                if (file.type.startsWith('text/') || file.type === 'text/html' || file.type === 'application/json' || file.type === 'application/xml') {
+                    const content = await fT(file);
+                    return { text: `--- File Start: ${file.name} ---\n${content}\n--- File End: ${file.name} ---` };
+                } else if (file.type.startsWith('image/') || file.type.startsWith('audio/') || file.type === 'application/pdf' || file.type.startsWith('video/')) {
+                    const uploadedFile = await z(file);
+                    return { file_data: { mime_type: file.type, file_uri: uploadedFile.file.uri } };
+                } else {
+                    console.warn(`Unsupported file type for direct API processing: ${file.name} (${file.type}). Sending as text note.`);
+                    return { text: `[Attached file: ${file.name} (${file.type}) - Content not processed]` };
+                }
+            } catch (error) {
+                console.error(`Error processing file ${file.name}:`, error);
+                d(`Failed to process file ${file.name}: ${error.message}`);
+                return null;
+            }
+        });
+        const filePartsForApi = (await Promise.all(fileProcessingPromises)).filter(p => p !== null);
+        newUserParts.push(...filePartsForApi);
 
-// --- 3. Prepare data for the API call ---
-t.style.display = "block"; // Show typing indicator
-
-let newUserParts = [];
-// Add text part for API
-if (textInput) {
-newUserParts.push({ text: textInput });
-}
-
-// Process actual files for API upload/embedding
-let fileProcessingPromises = actualFiles.map(async (file) => {
-try {
-// Handle text-based files
-if (file.type.startsWith('text/') || file.type === 'text/html' || file.type === 'application/json' || file.type === 'application/xml') {
-const content = await fT(file); // Read text content
-// Embed content directly for smaller files, or add note for larger ones? Gemini prefers direct data.
-return { text: `--- File Start: ${file.name} ---\n${content}\n--- File End: ${file.name} ---` };
-}
-// Handle files supported by the File API (Images, Audio, PDF, Video likely)
-else if (file.type.startsWith('image/') || file.type.startsWith('audio/') || file.type === 'application/pdf' || file.type.startsWith('video/')) {
-const uploadedFile = await z(file); // Upload file via File API, get URI
-return { file_data: { mime_type: file.type, file_uri: uploadedFile.file.uri } };
-}
-// Handle other file types - just mention them?
-else {
-console.warn(`Unsupported file type for direct API processing: ${file.name} (${file.type}). Sending as text note.`);
-return { text: `[Attached file: ${file.name} (${file.type}) - Content not processed]` };
-// return null; // Or skip entirely
-}
-} catch (error) {
-console.error(`Error processing file ${file.name}:`, error);
-// Add error message to chat?
-d(`Failed to process file ${file.name}: ${error.message}`); // Use the error display function
-return null; // Indicate failure for this file
-}
-});
-
-const filePartsForApi = (await Promise.all(fileProcessingPromises)).filter(p => p !== null); // Filter out nulls from errors
-newUserParts.push(...filePartsForApi); // Add successfully processed file parts
-
-// --- 4. Update History and Call API ---
-if (newUserParts.length > 0) { // Only proceed if there's text or successfully processed files
-const newUserMessage = { role: "user", parts: newUserParts };
-
-// Prepare the full history for the API call
-const historyForApi = [...h, newUserMessage]; // Combine existing history + new user message
-
-// Add the user message to local history *before* the API call
-// This ensures it's there even if the API call fails.
-h.push(newUserMessage);
-
-// Call the main API interaction function
-await w(historyForApi); // Pass the updated history to w
-} else {
-// If only text was entered and it was just whitespace, or all files failed processing
-console.log("No valid content (text or processed files) to send.");
-t.style.display = "none"; // Hide typing indicator as nothing is being sent
-}
+        if (newUserParts.length > 0) {
+            const newUserMessage = { role: "user", parts: newUserParts };
+            const historyForApi = [...h, newUserMessage];
+            h.push(newUserMessage);
+            await w(historyForApi);
+        } else {
+            console.log("No valid content (text or processed files) to send.");
+            t.style.display = "none";
+        }
+    }
 }
 
 
@@ -882,76 +956,99 @@ reader.readAsText(file);
 }
 
 // Main function to handle conversation flow and API calls
-let lastApiCallHistory = []; // Store history *sent* to API for regeneration
-async function w(conversationHistory) { // Renamed from 'w' to be more descriptive (processAndRespond)
-lastApiCallHistory = [...conversationHistory]; // Store the history being sent for potential regeneration
-let botReplied = false;
-const botMessageDiv = document.createElement("div");
-botMessageDiv.classList.add("message", "bot-message");
-// Add placeholder before API call starts
-botMessageDiv.innerHTML = "<i>Clifton is typing...</i>";
-c.appendChild(botMessageDiv);
-c.scrollTop = c.scrollHeight;
-t.style.display = 'block'; // Ensure typing indicator is shown
+async function w(conversationHistoryOrPartsForImageGen) {
+    // Store what's being sent to the API for potential regeneration
+    if (n === "gemini-2.0-flash-preview-image-generation") {
+        lastApiCallHistory = conversationHistoryOrPartsForImageGen; // These are userParts
+    } else {
+        lastApiCallHistory = [...conversationHistoryOrPartsForImageGen]; // This is full history
+    }
 
-// Try API keys sequentially
-for (const apiKey of k) {
-try {
-// Call the API streaming function
-const botResponseText = await g(apiKey, conversationHistory, n, botMessageDiv); // Pass history and output element
+    let botReplied = false;
+    const botMessageDiv = document.createElement("div");
+    botMessageDiv.classList.add("message", "bot-message");
+    botMessageDiv.innerHTML = "<i>Clifton is typing...</i>";
+    c.appendChild(botMessageDiv);
+    c.scrollTop = c.scrollHeight;
+    t.style.display = 'block';
 
-// If successful response received
-if (botResponseText !== null && botResponseText.trim() !== "") {
-// Update local history 'h' with the bot's response
-// Ensure we don't add duplicate model responses if regeneration happened quickly
-if (h.length === 0 || h[h.length - 1].role !== 'model') {
-h.push({ role: "model", parts: [{ text: botResponseText }] });
-} else {
-// Update the last model message if needed (e.g., after regeneration)
-h[h.length - 1] = { role: "model", parts: [{ text: botResponseText }] };
+    for (const apiKey of k) {
+        try {
+            if (n === "gemini-2.0-flash-preview-image-generation") {
+                const userParts = conversationHistoryOrPartsForImageGen; // This is already the parts array
+                const imageGenContents = [{ role: "user", parts: userParts }];
+
+                const result = await generateImageApiCall(apiKey, imageGenContents, n);
+                botMessageDiv.innerHTML = ''; // Clear "typing..."
+
+                let contentAdded = false;
+                let modelPartsForHistory = [];
+
+                if (result.text) {
+                    const textElement = document.createElement('div');
+                    textElement.innerHTML = marked.parse(result.text);
+                    botMessageDiv.appendChild(textElement);
+                    modelPartsForHistory.push({ text: result.text });
+                    contentAdded = true;
+                }
+                if (result.imageBase64) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = `data:${result.imageMimeType};base64,${result.imageBase64}`;
+                    imgElement.classList.add('generated-message-image');
+                    imgElement.alt = "Generated Image";
+                    botMessageDiv.appendChild(imgElement);
+                    contentAdded = true;
+                    if (!result.text) { // If only image, add placeholder to history
+                        modelPartsForHistory.push({ text: "[Image Generated]" });
+                    }
+                }
+
+                if (!contentAdded) {
+                    botMessageDiv.innerHTML = "<i>Image model returned no text or image.</i>";
+                }
+
+                if (modelPartsForHistory.length > 0) {
+                    h.push({ role: "model", parts: modelPartsForHistory });
+                }
+                botReplied = true;
+                break;
+            } else { // Text models
+                const botResponseText = await g(apiKey, conversationHistoryOrPartsForImageGen, n, botMessageDiv);
+                if (botResponseText !== null && botResponseText.trim() !== "") {
+                    h.push({ role: "model", parts: [{ text: botResponseText }] });
+                    botReplied = true;
+                    break;
+                } else if (botResponseText === "") {
+                    botMessageDiv.innerHTML = "<i>Received an empty response.</i>";
+                    // h.push({ role: "model", parts: [{ text: "" }] }); // Optionally log empty responses
+                    botReplied = true;
+                    break;
+                }
+            }
+        } catch (error) {
+            console.error(`Error during API call with key [...] for model ${n}: ${error.message}`);
+            d(error.message);
+            botMessageDiv.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+        }
+    }
+
+    if (!botReplied && !botMessageDiv.innerHTML.includes("Error:")) {
+        botMessageDiv.textContent = "I'm sorry, I'm currently unable to process your request after trying all available resources. Please try again later.";
+    }
+
+    t.style.display = "none";
+    c.scrollTop = c.scrollHeight;
+    cC();
 }
 
-botReplied = true;
-break; // Exit loop on success
-} else if (botResponseText === "") {
-console.log("Received empty but successful response from API.");
-botMessageDiv.innerHTML = "<i>Received an empty response.</i>";
-// Decide if you want to add this empty response to history 'h'
-// h.push({ role: "model", parts: [{ text: "" }] });
-botReplied = true; // Consider it handled
-break;
-}
-// If botResponseText is null (error handled within g), the loop continues
-} catch (error) {
-console.error(`Error during API call with key [...]: ${error.message}`);
-d(error.message); // Display error in chat if enabled
-// Update the placeholder message div with the error
-botMessageDiv.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
-// Don't break the loop, try the next key
-}
-}
 
-// If no API key worked and no specific error was already displayed in the div
-if (!botReplied && !botMessageDiv.innerHTML.includes("Error:")) {
-botMessageDiv.textContent = "I'm sorry, I'm currently unable to process your request after trying all available resources. Please try again later.";
-// Don't add this failure message to history 'h'
-}
-
-t.style.display = "none"; // Hide typing indicator
-c.scrollTop = c.scrollHeight; // Scroll down after response
-cC(); // Add copy buttons to the final message
-}
-
-
-// Upload file using Google's resumable upload
+// Upload file using Google's resumable upload (for text models)
 async function z(file) { // uploadFileToGoogle
 return new Promise(async (resolve, reject) => {
 try {
-// Use the first API key for uploads (assuming it has upload permissions)
 const uploadApiKey = k[0];
 if (!uploadApiKey) return reject(new Error("No API key available for file uploads."));
 
-// 1. Start Resumable Upload - Get Upload URL
 const startResponse = await fetch(`${u}/upload/v1beta/files?key=${uploadApiKey}`, {
 method: "POST",
 headers: {
@@ -961,9 +1058,7 @@ headers: {
 "X-Goog-Upload-Header-Content-Type": file.type,
 "Content-Type": "application/json"
 },
-body: JSON.stringify({
-file: { display_name: file.name }
-})
+body: JSON.stringify({ file: { display_name: file.name }})
 });
 
 if (!startResponse.ok || startResponse.status !== 200) {
@@ -973,19 +1068,16 @@ return reject(new Error(errorMsg));
 }
 
 const uploadUrl = startResponse.headers.get("X-Goog-Upload-URL");
-if (!uploadUrl) {
-return reject(new Error("Failed to get upload URL from start response."));
-}
+if (!uploadUrl) return reject(new Error("Failed to get upload URL from start response."));
 
-// 2. Upload File Content
 const uploadResponse = await fetch(uploadUrl, {
-method: "POST", // Changed to POST as per common practice for resumable finalization
+method: "POST",
 headers: {
-"Content-Length": file.size.toString(), // Required by some servers
-"X-Goog-Upload-Offset": "0", // Required? Maybe not if sending all at once
-"X-Goog-Upload-Command": "upload, finalize" // Upload data and finalize
+"Content-Length": file.size.toString(),
+"X-Goog-Upload-Offset": "0",
+"X-Goog-Upload-Command": "upload, finalize"
 },
-body: file // Send the file blob directly
+body: file
 });
 
 if (!uploadResponse.ok) {
@@ -993,20 +1085,12 @@ let errorMsg = `File upload failed (Status: ${uploadResponse.status})`;
 try {
 const errorData = await uploadResponse.json();
 errorMsg = errorData.error?.message || JSON.stringify(errorData) || errorMsg;
-} catch (_) {
-errorMsg += `: ${uploadResponse.statusText}`;
-}
+} catch (_) { errorMsg += `: ${uploadResponse.statusText}`; }
 return reject(new Error(errorMsg));
 }
-
 const uploadResult = await uploadResponse.json();
-
-// 3. Return the File URI
-if (!uploadResult.file?.uri) {
-return reject(new Error("Upload succeeded but response did not contain file URI."));
-}
-resolve({ file: { uri: uploadResult.file.uri } }); // Resolve with the structure expected
-
+if (!uploadResult.file?.uri) return reject(new Error("Upload succeeded but response did not contain file URI."));
+resolve({ file: { uri: uploadResult.file.uri } });
 } catch (error) {
 console.error("File Upload z() Error:", error);
 reject(error);
@@ -1015,41 +1099,34 @@ reject(error);
 }
 
 // --- Event Listeners ---
-
-// Temperature Slider
 tempSlider.addEventListener("input", () => {
 temp = parseFloat(tempSlider.value);
 tempValueDisplay.textContent = temp.toFixed(1);
+// Show/hide temp slider based on model
+const isImageModel = n === "gemini-2.0-flash-preview-image-generation";
+document.querySelector('.temperature-container').style.display = isImageModel ? 'none' : 'flex';
+
 });
 
-// Model Selection
 s.addEventListener("change", () => {
 n = s.value;
 console.log(`Model switched to: ${n}`);
-// Optionally clear history or notify user when model changes?
-// h = [];
-// c.innerHTML = '';
-// sp(`Model changed to ${n}. Chat history cleared.`);
+const isImageModel = n === "gemini-2.0-flash-preview-image-generation";
+document.querySelector('.temperature-container').style.display = isImageModel ? 'none' : 'flex';
+document.querySelector('.ai-search-toggle-container').style.display = isImageModel ? 'none' : 'flex';
+
+// Optionally clear history or notify user
+// h = []; c.innerHTML = ''; sp(`Model changed to ${n}. Chat history may not be fully compatible.`);
 });
 
-// Send Button
 m.addEventListener("click", a);
+i.addEventListener("keydown", (e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); a(); }}));
 
-// Input Box Enter Key
-i.addEventListener("keydown", (e => {
-if (e.key === "Enter" && !e.shiftKey) {
-e.preventDefault();
-a();
-}
-}));
-
-// File Input Change (for Previews)
 f.addEventListener('change', function() {
-fileNamesSpan.textContent = ''; // Clear previous file names
-filePreviewContainer.innerHTML = ''; // Clear previous previews
-currentImagePreviews = []; // Clear stored previews
+fileNamesSpan.textContent = '';
+filePreviewContainer.innerHTML = '';
+currentImagePreviews = [];
 let nonImageFileNames = [];
-
 if (f.files && f.files.length > 0) {
 const filePromises = Array.from(f.files).map(file => {
 return new Promise((resolve) => {
@@ -1057,211 +1134,145 @@ if (file.type.startsWith('image/')) {
 const reader = new FileReader();
 reader.onload = (e) => {
 const dataUrl = e.target.result;
-// Store preview data
 currentImagePreviews.push({ name: file.name, dataUrl: dataUrl });
-
-// Create and display thumbnail
 const img = document.createElement('img');
 img.src = dataUrl;
 img.classList.add('file-preview-image');
-img.title = file.name; // Tooltip with filename
-img.alt = file.name; // Accessibility
+img.title = file.name;
+img.alt = file.name;
 filePreviewContainer.appendChild(img);
 resolve();
 };
-reader.onerror = () => {
-console.error("Error reading file:", file.name);
-nonImageFileNames.push(file.name + " (preview failed)");
-resolve();
-};
+reader.onerror = () => { console.error("Error reading file:", file.name); nonImageFileNames.push(file.name + " (preview failed)"); resolve(); };
 reader.readAsDataURL(file);
-} else {
-// Collect names of non-image files
-nonImageFileNames.push(file.name);
-resolve();
-}
+} else { nonImageFileNames.push(file.name); resolve(); }
 });
 });
-
-// After all files are processed (including reading images)
 Promise.all(filePromises).then(() => {
-// Display names of non-image files
-if (nonImageFileNames.length > 0) {
-fileNamesSpan.textContent = nonImageFileNames.join(', ');
-}
-// Update layout if previews are shown
+if (nonImageFileNames.length > 0) { fileNamesSpan.textContent = nonImageFileNames.join(', '); }
 filePreviewContainer.style.display = currentImagePreviews.length > 0 ? 'flex' : 'none';
 });
-} else {
-filePreviewContainer.style.display = 'none'; // Hide preview container if no files
-}
+} else { filePreviewContainer.style.display = 'none'; }
 });
 
-
 // --- Buttons and Modals ---
-
-// Last Updated Timestamp
 const ld = document.createElement("p");
 ld.id = "last-updated";
-ld.textContent = "Last updated: May 9th, 2025, 11:47 AM";
+ld.textContent = "Last updated: May 10th, 2025, 10:00 AM"; // Update timestamp
 document.body.appendChild(ld);
 
-// Changelog Modal
 const ch = document.getElementById("changelogModal"),
 bb = document.getElementById("changelog-button"),
 cl = document.getElementsByClassName("close")[0];
 if (bb && ch && cl) {
 bb.onclick = function() { ch.style.display = "block" };
 cl.onclick = function() { ch.style.display = "none" };
-window.onclick = function(event) {
-if (event.target == ch) { ch.style.display = "none"; }
-};
-} else {
-console.warn("Changelog modal elements not found.");
-}
+window.onclick = function(event) { if (event.target == ch) { ch.style.display = "none"; }};
+} else { console.warn("Changelog modal elements not found."); }
 
-
-// Popup Message Function
-function sp(message) { // showPopup
+function sp(message) {
 const popup = document.createElement("div");
 popup.classList.add("popup-message");
 popup.textContent = message;
 p.appendChild(popup);
-// Trigger reflow to enable transition
 popup.offsetWidth;
 popup.classList.add("show");
 setTimeout(() => {
 popup.classList.remove("show");
-setTimeout(() => {
-if (popup.parentNode) { // Check if it's still in the DOM
-popup.remove();
-}
-}, 500); // Wait for fade out transition
-}, 2500); // Duration visible
+setTimeout(() => { if (popup.parentNode) { popup.remove(); }}, 500);
+}, 2500);
 }
 
-// Add Copy Buttons to Code Blocks
-function cC() { // createCopyButtons
-// Use querySelectorAll on the chat container for efficiency
+function cC() {
 c.querySelectorAll(".bot-message pre > code").forEach((codeBlock => {
 const preElement = codeBlock.parentElement;
-if (preElement && !preElement.querySelector(".copy-button")) { // Check if button exists
+if (preElement && !preElement.querySelector(".copy-button")) {
 const button = document.createElement("button");
 button.className = "copy-button";
-button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>'; // Clipboard icon
+button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
 button.title = "Copy code";
 button.addEventListener("click", () => {
-const codeToCopy = codeBlock.innerText;
-navigator.clipboard.writeText(codeToCopy).then(() => {
-button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>'; // Checkmark icon
+navigator.clipboard.writeText(codeBlock.innerText).then(() => {
+button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>';
 button.title = "Copied!";
 setTimeout(() => {
 button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
 button.title = "Copy code";
-}, 1500); // Reset after 1.5 seconds
-}).catch(err => {
-console.error("Failed to copy code: ", err);
-button.title = "Copy failed!";
-// Optionally show an error indication
+}, 1500);
+}).catch(err => { console.error("Failed to copy code: ", err); button.title = "Copy failed!"; });
 });
-});
-// Style pre for positioning context if not already done
-if (getComputedStyle(preElement).position === 'static') {
-preElement.style.position = "relative";
-}
+if (getComputedStyle(preElement).position === 'static') { preElement.style.position = "relative"; }
 preElement.appendChild(button);
 }
 }));
 }
 
-// Clear Chat Button
 const cb = document.getElementById("clear-chat-button");
 if (cb) {
 cb.addEventListener("click", () => {
-c.innerHTML = ""; // Clear chat display
-h = []; // Clear history array
-lastApiCallHistory = []; // Clear regeneration history
-sp("Chat cleared."); // Show confirmation
+c.innerHTML = ""; h = []; lastApiCallHistory = []; sp("Chat cleared.");
 });
 }
 
 const regenerateButton = document.getElementById("regenerate-button");
 if (regenerateButton) {
-regenerateButton.addEventListener("click", async () => {
-let lastUserMessageIndex = -1;
-for (let i = h.length - 1; i >= 0; i--) {
-if (h[i].role === 'user') {
-lastUserMessageIndex = i;
-break;
-}
-}
-if (lastUserMessageIndex !== -1) {
-if (h.length > 0 && h[h.length - 1].role === 'model') {
-h.pop();
-const botMessages = c.querySelectorAll(".message.bot-message");
-if (botMessages.length > 0) {
-c.removeChild(botMessages[botMessages.length - 1]);
-}
-sp("Regenerating response...");
-await w(h);
-} else {
-console.log("Last message is not from the bot, nothing to regenerate.");
-sp("Nothing to regenerate.");
-}
-} else {
-console.log("No user message found in history to regenerate from.");
-sp("Nothing to regenerate.");
-}
-});
-} else {
-console.warn("Regenerate button not found.");
-}
+    regenerateButton.addEventListener("click", async () => {
+        if (h.length === 0 || h[h.length - 1].role === 'user') {
+            sp("Nothing to regenerate from the bot.");
+            return;
+        }
+
+        // Remove the last bot message from display and history
+        h.pop(); // Remove last bot message from history
+        const botMessages = c.querySelectorAll(".message.bot-message");
+        if (botMessages.length > 0) {
+            c.removeChild(botMessages[botMessages.length - 1]); // Remove last bot message from DOM
+        }
+
+        if (lastApiCallHistory && ( (Array.isArray(lastApiCallHistory) && lastApiCallHistory.length > 0) || (typeof lastApiCallHistory === 'object' && Object.keys(lastApiCallHistory).length > 0) ) ) {
+            sp("Regenerating response...");
+            // `lastApiCallHistory` is already in the correct format (parts or full history)
+            // that `w` expects for the model that was active during the last call.
+            // We assume model 'n' hasn't changed in a way that invalidates `lastApiCallHistory`.
+            await w(lastApiCallHistory);
+        } else {
+            sp("Cannot regenerate: No previous API call context found.");
+            // Attempt to restore the bot message if regeneration fails early
+            // This part is complex; for now, if lastApiCallHistory is missing, it's an issue.
+        }
+    });
+} else { console.warn("Regenerate button not found."); }
+
 
 document.addEventListener("keydown", (function(event) {
 if (event.altKey && event.shiftKey && event.key === 'E') {
-v = !v;
-sp(v ? "Error messages will be shown in chat." : "Error messages hidden.");
+v = !v; sp(v ? "Error messages will be shown in chat." : "Error messages hidden.");
 }
 }));
 
-
-// Ctrl+Ctrl+Ctrl Easter Egg
 let ctrlCount = 0;
 let ctrlPressedTimeout;
 const overlayImage = document.getElementById('overlay-image');
-
 if (overlayImage) {
 document.addEventListener('keydown', function(event) {
 if (event.key === 'Control' || event.key === 'Meta') {
 ctrlCount++;
-
-// Clear previous timeout on each press
 clearTimeout(ctrlPressedTimeout);
-
-if (ctrlCount >= 3) {
-ctrlCount = 0;
-overlayImage.classList.toggle('show');
-} else {
-// Set a timeout to reset count if presses are too far apart
-ctrlPressedTimeout = setTimeout(() => {
-ctrlCount = 0;
-}, 500);
-}
-} else if (!event.ctrlKey && !event.metaKey) { // Reset if another key is pressed
-// Don't reset if it's just releasing Ctrl/Meta
-if (event.key !== 'Control' && event.key !== 'Meta') {
-ctrlCount = 0;
-clearTimeout(ctrlPressedTimeout);
-}
+if (ctrlCount >= 3) { ctrlCount = 0; overlayImage.classList.toggle('show'); }
+else { ctrlPressedTimeout = setTimeout(() => { ctrlCount = 0; }, 500); }
+} else if (!event.ctrlKey && !event.metaKey) {
+if (event.key !== 'Control' && event.key !== 'Meta') { ctrlCount = 0; clearTimeout(ctrlPressedTimeout); }
 }
 });
-
-// Preload the overlay image
 const preloadImage = new Image();
 preloadImage.src = 'https://github.com/crobperson/Overpriced-Haircut/blob/main/Screenshot.png?raw=true';
-} else {
-console.warn("Overlay image element not found.");
-}
+} else { console.warn("Overlay image element not found."); }
+
+// Initial UI setup based on default model
+const initialIsImageModel = s.value === "gemini-2.0-flash-preview-image-generation";
+document.querySelector('.temperature-container').style.display = initialIsImageModel ? 'none' : 'flex';
+document.querySelector('.ai-search-toggle-container').style.display = initialIsImageModel ? 'none' : 'flex';
+
 
 cC();
 </script>
