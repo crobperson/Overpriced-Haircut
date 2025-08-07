@@ -4,38 +4,39 @@
 <meta content="width=device-width,initial-scale=1" name=viewport>
 <title>Google</title>
 <link href="https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true" rel=icon type=image/png>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
-/* Basic Scrollbar Styling for Webkit browsers (Optional but good for dark mode) */
+/* Basic Scrollbar Styling */
 ::-webkit-scrollbar {
-    width: 10px;
+    width: 12px;
+    background-color: #c0c0c0;
 }
 
 ::-webkit-scrollbar-track {
-    background: #282828; /* Dark track */
+    background: #c0c0c0;
+    border-left: 1px solid #808080;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #555; /* Darker thumb */
-    border-radius: 5px;
+    background: #a0a0a0;
+    border: 1px solid #808080;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #777; /* Lighter thumb on hover */
+    background: #808080;
 }
 
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'VT323', monospace;
     margin: 0;
-    padding: 0;
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    /* Dark Mode Background */
-    background-color: #121212;
-    /* Dark Mode Text Color */
-    color: #e0e0e0;
+    background-color: #008080; /* Teal background */
+    color: #000000;
 }
 
 .container {
@@ -44,20 +45,16 @@ body {
     width: 90%;
     max-width: 700px;
     height: 90vh;
-    /* Dark Mode Container Background */
-    background-color: #282828;
-    border-radius: 10px;
-    /* Shadows are less effective in dark mode, often removed or subtle */
-    /* box-shadow: 0 4px 12px rgba(0, 0, 0, .15); */
+    background-color: #c0c0c0; /* Classic grey */
+    border: 2px solid #000000;
+    box-shadow: inset -3px -3px #808080, inset 3px 3px #ffffff;
     overflow: hidden;
 }
 
 .header {
-    padding: 15px 25px;
-    /* Dark Mode Header Background */
-    background-color: #333;
-    /* Dark Mode Border */
-    border-bottom: 1px solid #444;
+    padding: 10px;
+    background-color: #c0c0c0;
+    border-bottom: 2px solid #000000;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -69,179 +66,154 @@ body {
     display: flex;
     align-items: center;
     margin: 5px 0;
+    font-size: 16px;
 }
 
 .model-select-container label,
 .temperature-container label {
     margin-right: 10px;
-    font-size: 14px;
-    /* Dark Mode Label Color */
-    color: #bbbbbb;
 }
 
 #model-select {
-    padding: 8px;
-    /* Dark Mode Border */
-    border: 1px solid #555;
-    border-radius: 4px;
-    font-size: 14px;
-    /* Dark Mode Text Color */
-    color: #e0e0e0;
-    /* Dark Mode Background */
-    background-color: #444;
+    padding: 5px;
+    border: 2px solid #000000;
+    box-shadow: inset -2px -2px #808080, inset 2px 2px #ffffff;
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    background-color: #c0c0c0;
+    color: #000000;
 }
 
 
 #chat-container {
     flex: 1;
-    padding: 20px;
+    padding: 10px;
     overflow-y: auto;
-    /* Dark Mode Chat Background */
-    background-color: #1e1e1e;
+    background-color: #ffffff;
+    border: 2px solid #000000;
+    margin: 10px;
+    box-shadow: inset 2px 2px #808080, inset -2px -2px #ffffff;
     display: flex;
     flex-direction: column;
 }
 
 .message {
-    padding: 12px 18px;
-    margin-bottom: 15px;
-    border-radius: 20px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #000000;
     max-width: 75%;
     word-wrap: break-word;
     position: relative;
     white-space: pre-line;
     line-height: 1.4;
-    font-size: 15px;
-    /* Remove shadows from messages in dark mode */
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, .1); */
+    font-size: 18px;
 }
 
 .user-message {
-    /* Dark Mode User Message Background (Dark Teal) */
-    background-color: #004d40;
-    /* Dark Mode User Message Text Color */
-    color: #e0e0e0;
+    background-color: #90ee90; /* Light green */
     align-self: flex-end;
     text-align: right;
+    box-shadow: 2px 2px #000000;
 }
 
 .bot-message {
-    /* Dark Mode Bot Message Background (Dark Grey) */
-    background-color: #333;
-    /* Dark Mode Bot Message Text Color */
-    color: #e0e0e0;
+    background-color: #add8e6; /* Light blue */
     align-self: flex-start;
-    /* Remove shadows from messages in dark mode */
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, .1); */
+    box-shadow: 2px 2px #000000;
 }
 
-/* Style for code blocks within bot messages */
 .bot-message pre {
-    background-color: #444; /* Darker background for code */
+    background-color: #000000;
+    color: #00ff00; /* Green text on black background */
     padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto; /* Ensure code blocks are scrollable */
+    border: 2px solid #808080;
+    overflow-x: auto;
 }
 
 .bot-message code {
-    color: #e0e0e0; /* Light text for code */
+    color: #00ff00;
 }
 
 
 .copy-button {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    background-color: transparent;
-    border: none;
+    top: 5px;
+    right: 5px;
+    background-color: #c0c0c0;
+    border: 1px solid #000000;
     cursor: pointer;
     z-index: 10;
-    opacity: .7;
-    transition: opacity .3s;
+    box-shadow: 1px 1px #000000;
 }
 
-.copy-button:hover {
-    opacity: 1;
+.copy-button:active {
+    box-shadow: inset 1px 1px #000000;
 }
 
 .copy-button svg {
-    width: 18px;
-    height: 18px;
-    /* Dark Mode Copy Button Icon Color */
-    fill: #bbb;
+    width: 16px;
+    height: 16px;
+    fill: #000000;
 }
 
 #input-area {
     display: flex;
-    padding: 15px 20px;
-    /* Dark Mode Border */
-    border-top: 1px solid #444;
-    /* Dark Mode Input Area Background */
-    background-color: #333;
+    padding: 10px;
+    border-top: 2px solid #000000;
+    background-color: #c0c0c0;
     align-items: center;
 }
 
 #input-box {
     flex-grow: 1;
-    padding: 12px 15px;
-    /* Dark Mode Border */
-    border: 1px solid #555;
-    border-radius: 25px;
+    padding: 8px;
+    border: 2px solid #000000;
+    box-shadow: inset 2px 2px #808080, inset -2px -2px #ffffff;
     resize: none;
-    font-size: 15px;
+    font-size: 16px;
     outline: 0;
-    /* Dark Mode Input Background */
-    background-color: #444;
-    /* Dark Mode Text Color */
-    color: #e0e0e0;
+    background-color: #ffffff;
+    color: #000000;
     line-height: 1.5;
+    font-family: 'VT323', monospace;
 }
 
 #input-box::placeholder {
-    /* Dark Mode Placeholder Color */
-    color: #bbb;
+    color: #808080;
 }
 
 
 #send-button {
-    padding: 10px 25px;
-    margin-left: 15px;
-    /* Dark Mode Send Button Background (Teal) */
-    background-color: #009688;
-    color: #fff;
-    border: none;
-    border-radius: 25px;
+    padding: 8px 20px;
+    margin-left: 10px;
+    background-color: #c0c0c0;
+    color: #000000;
+    border: 2px solid #000000;
     cursor: pointer;
-    font-size: 15px;
-    transition: background-color .3s ease;
-    /* Remove shadows */
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, .1); */
+    font-size: 16px;
+    font-family: 'VT323', monospace;
+    box-shadow: 2px 2px #000000;
 }
 
-#send-button:hover {
-    /* Dark Mode Send Button Hover Background */
-    background-color: #00796b;
+#send-button:active {
+    box-shadow: inset 2px 2px #000000;
 }
 
 .file-upload-label {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 8px 15px;
     margin-right: 10px;
-    /* Dark Mode File Upload Background */
-    background-color: #555;
-    color: #fff;
-    border: none;
-    border-radius: 25px;
+    background-color: #c0c0c0;
+    color: #000000;
+    border: 2px solid #000000;
     cursor: pointer;
-    font-size: 15px;
-    transition: background-color .3s ease;
-    /* Remove shadows */
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, .1); */
+    font-size: 16px;
+    font-family: 'VT323', monospace;
+    box-shadow: 2px 2px #000000;
 }
 
-.file-upload-label:hover {
-    /* Dark Mode File Upload Hover Background */
-    background-color: #666;
+.file-upload-label:active {
+    box-shadow: inset 2px 2px #000000;
 }
 
 #file-input {
@@ -249,16 +221,13 @@ body {
 }
 
 #typing-indicator {
-    padding: 10px 20px;
+    padding: 10px;
     font-style: italic;
-    /* Dark Mode Typing Indicator Color */
-    color: #bbb;
-    /* Dark Mode Typing Indicator Background */
-    background-color: #333;
-    /* Dark Mode Border */
-    border-top: 1px solid #444;
+    color: #000000;
+    background-color: #c0c0c0;
+    border-top: 2px solid #000000;
     display: none;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 @media (max-width:768px) {
@@ -286,11 +255,11 @@ body {
     }
 
     #send-button {
-        padding: 10px 15px;
+        padding: 8px 12px;
     }
 
     .file-upload-label {
-        padding: 10px 15px;
+        padding: 8px 12px;
     }
 }
 
@@ -303,103 +272,68 @@ body {
     width: 100%;
     height: 100%;
     overflow: auto;
-    /* Dark Mode Modal Overlay Background */
-    background-color: rgba(0, 0, 0, .7);
+    background-color: rgba(0, 0, 0, .5);
 }
 
 .modal-content {
-    /* Dark Mode Modal Content Background */
-    background-color: #282828;
-    /* Dark Mode Text Color */
-    color: #e0e0e0;
-    margin: 10% auto;
+    background-color: #c0c0c0;
+    color: #000000;
+    margin: 15% auto;
     padding: 20px;
-    /* Dark Mode Border */
-    border: 1px solid #444;
+    border: 2px solid #000000;
     width: 80%;
     max-width: 600px;
-    border-radius: 8px;
-    /* Remove shadows */
-    /* box-shadow: 0 4px 8px rgba(0, 0, 0, .1); */
+    box-shadow: inset -3px -3px #808080, inset 3px 3px #ffffff;
 }
 
 .close {
-    /* Dark Mode Close Button Color */
-    color: #bbb;
+    color: #000000;
     float: right;
     font-size: 28px;
     font-weight: 700;
     cursor: pointer;
 }
 
-.close:focus,
-.close:hover {
-    /* Dark Mode Close Button Hover Color */
-    color: #fff;
+.close:hover,
+.close:focus {
+    color: #ff0000;
 }
 
-.button-primary {
-    padding: 8px 16px;
-    margin: 10px 5px;
-    /* Dark Mode Primary Button Background (Darker Green) */
-    background-color: #218838;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color .3s ease;
-    /* Remove shadows */
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, .1); */
-}
-
-.button-primary:hover {
-    /* Dark Mode Primary Button Hover Background */
-    background-color: #1e7e34;
-}
-
+.button-primary,
 .button-secondary {
     padding: 8px 16px;
     margin: 10px 5px;
-    /* Dark Mode Secondary Button Background (Darker Red) */
-    background-color: #c82333;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
+    background-color: #c0c0c0;
+    color: #000000;
+    border: 2px solid #000000;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color .3s ease;
-    /* Remove shadows */
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, .1); */
+    font-family: 'VT323', monospace;
+    box-shadow: 2px 2px #000000;
 }
 
-.button-secondary:hover {
-    /* Dark Mode Secondary Button Hover Background */
-    background-color: #bd2130;
+.button-primary:active,
+.button-secondary:active {
+    box-shadow: inset 2px 2px #000000;
 }
 
 #last-updated {
     position: fixed;
     top: 10px;
     right: 10px;
-    font-size: 12px;
-    /* Dark Mode Timestamp Color */
-    color: #bbb;
-    /* Dark Mode Timestamp Background (Dark Translucent) */
-    background-color: rgba(40, 40, 40, 0.8);
+    font-size: 14px;
+    color: #000000;
+    background-color: #c0c0c0;
     padding: 5px 10px;
-    border-radius: 5px;
-    /* Remove shadows */
-    /* box-shadow: 0 2px 5px rgba(0, 0, 0, .2); */
+    border: 1px solid #000000;
     font-weight: 700;
     z-index: 100;
 }
 
 .footer-text {
-    font-size: 12px;
+    font-size: 14px;
     text-align: center;
-    /* Dark Mode Footer Text Color */
-    color: #aaa;
+    color: #000000;
     padding: 10px;
 }
 
@@ -408,14 +342,14 @@ body {
     top: -60px;
     left: 50%;
     transform: translateX(-50%);
-    /* Dark Mode Popup Background (Darker Green) */
-    background-color: #218838;
-    color: #fff;
+    background-color: #ffff00; /* Bright yellow */
+    color: #000000;
     padding: 10px 20px;
-    border-radius: 5px;
+    border: 2px solid #000000;
     z-index: 1000;
     opacity: 0;
     transition: opacity .5s ease-out, top .5s ease-out;
+    box-shadow: 3px 3px #000000;
 }
 
 .popup-message.show {
@@ -424,17 +358,15 @@ body {
 }
 
 #temperature-value {
-    font-size: 14px;
-    /* Dark Mode Temperature Value Color */
-    color: #bbbbbb;
+    font-size: 16px;
+    color: #000000;
     width: 30px;
     text-align: right;
 }
 
 #file-names {
     font-size: 14px;
-    /* Dark Mode File Names Color */
-    color: #bbbbbb;
+    color: #000000;
     margin-left: 10px;
     margin-top: 5px;
     display: inline-block;
@@ -456,7 +388,7 @@ body {
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: rgba(0,0,0,0.5); /* Keep overlay dark */
+    background-color: rgba(0,0,0,0.5);
     z-index: 1001;
     pointer-events: none;
 }
@@ -464,7 +396,6 @@ body {
 #overlay-image.show {
     display: block;
 }
-/* Style for the preview area next to the input */
 #file-preview-container {
     display: flex;
     gap: 5px;
@@ -475,44 +406,34 @@ body {
     align-items: center;
 }
 
-/* Style for individual preview thumbnails */
 .file-preview-image {
     max-height: 40px;
     max-width: 40px;
     height: 40px;
     width: 40px;
-    border-radius: 4px;
     object-fit: cover;
-    /* Dark Mode Preview Border */
-    border: 1px solid #555;
+    border: 2px solid #000000;
 }
 
-/* Style for images within the chat message (previews in user message) */
 .message-image {
     max-width: 150px;
     max-height: 150px;
-    border-radius: 8px;
     margin-top: 8px;
     cursor: pointer;
     display: block;
-    /* Dark Mode Message Image Border */
-    border: 1px solid #555;
+    border: 2px solid #000000;
 }
 
-/* Style for generated images in bot message */
 .generated-message-image {
-    max-width: 100%; /* Allow it to take full width of message bubble */
-    max-height: 500px; /* Or a reasonable max height */
-    border-radius: 8px;
+    max-width: 100%;
+    max-height: 500px;
     margin-top: 8px;
     display: block;
-    /* Dark Mode Message Image Border */
-    border: 1px solid #555;
-    object-fit: contain; /* Ensure the whole image is visible */
+    border: 2px solid #000000;
+    object-fit: contain;
 }
 
 
-/* Style for image container within the user message */
 .user-message .images-container {
     display: flex;
     flex-wrap: wrap;
@@ -530,7 +451,8 @@ body {
 <div class=container>
 <div class=header>
 <div class=model-select-container><label for=model-select>AI Model:</label> <select id=model-select>
-<option value=gemini-2.5-flash-preview-05-20>Clifton Flash</option>
+<option value=gemini-2.5-flash>Clifton Flash</option>
+<option value=gemini-2.5-pro>Clifton Pro</option>
 <option value=gemini-2.0-flash-preview-image-generation>Clifton Image Gen</option>
 </select></div>
 <div class=temperature-container><label for=temperature-slider>Temp:</label> <input id=temperature-slider
@@ -580,7 +502,7 @@ fileNamesSpan = document.getElementById("file-names"),
 filePreviewContainer = document.getElementById("file-preview-container"); // Get the new preview container
 
 let h = [], // Chat history
-n = "gemini-2.5-flash-preview-05-20", // Default model
+n = "gemini-2.5-flash", // Default model
 v = !1, // Error messages enabled/disabled flag
 temp = 1; // Temperature setting
 
