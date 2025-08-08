@@ -6,7 +6,7 @@
 <link href="https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true" rel=icon type=image/png>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
-/* Basic Scrollbar Styling */
+
 ::-webkit-scrollbar {
     width: 12px;
     background-color: #c0c0c0;
@@ -35,7 +35,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #008080; /* Teal background */
+    background-color: #008080;
     color: #000000;
 }
 
@@ -45,7 +45,7 @@ body {
     width: 90%;
     max-width: 700px;
     height: 90vh;
-    background-color: #c0c0c0; /* Classic grey */
+    background-color: #c0c0c0;
     border: 2px solid #000000;
     box-shadow: inset -3px -3px #808080, inset 3px 3px #ffffff;
     overflow: hidden;
@@ -117,14 +117,14 @@ body {
 }
 
 .bot-message {
-    background-color: #add8e6; /* Light blue */
+    background-color: #add8e6; 
     align-self: flex-start;
     box-shadow: 2px 2px #000000;
 }
 
 .bot-message pre {
     background-color: #000000;
-    color: #00ff00; /* Green text on black background */
+    color: #00ff00; 
     padding: 10px;
     border: 2px solid #808080;
     overflow-x: auto;
@@ -342,7 +342,7 @@ body {
     top: -60px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #ffff00; /* Bright yellow */
+    background-color: #ffff00;
     color: #000000;
     padding: 10px 20px;
     border: 2px solid #000000;
@@ -496,41 +496,41 @@ i = document.getElementById("input-box"),
 m = document.getElementById("send-button"),
 t = document.getElementById("typing-indicator"),
 s = document.getElementById("model-select"),
-f = document.getElementById("file-input"), // file input element
+f = document.getElementById("file-input"),
 p = document.getElementById("popup-container"),
 fileNamesSpan = document.getElementById("file-names"),
-filePreviewContainer = document.getElementById("file-preview-container"); // Get the new preview container
+filePreviewContainer = document.getElementById("file-preview-container");
 
-let h = [], // Chat history
-n = "gemini-2.5-flash", // Default model
-v = !1, // Error messages enabled/disabled flag
-temp = 1; // Temperature setting
+let h = [],
+n = "gemini-2.5-flash",
+v = !1, 
+temp = 1; 
 
-// NEW: Store data URLs for currently selected image previews
+
 let currentImagePreviews = [];
-let lastApiCallHistory = []; // Store history/parts *sent* to API for regeneration
+let lastApiCallHistory = [];
 
 const tempSlider = document.getElementById("temperature-slider"),
 tempValueDisplay = document.getElementById("temperature-value");
 
-function d(e) { // Display error message in chat if v is true
+function d(e) {
 if (v) {
 const t = document.createElement("div");
 t.classList.add("message", "bot-message"), t.textContent = `Error: ${e}`, c.appendChild(t), c.scrollTop = c.scrollHeight
 }
 }
 
-// Function to convert file to base64
+
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]); // Get only the base64 part
+        reader.onload = () => resolve(reader.result.split(',')[1]);
         reader.onerror = error => reject(error);
         reader.readAsDataURL(file);
     });
 }
 
-// Function to make the API call for TEXT models (streaming)
+
 async function g(apiKey, contents, modelName, outputElement) {
 const safetySettings = [
 { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
@@ -610,7 +610,6 @@ cC();
 return accumulatedResponse;
 }
 
-// Function to make API call for IMAGE GENERATION model (non-streaming)
 async function generateImageApiCall(apiKey, contents, modelName) {
     const safetySettings = [
         { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
@@ -623,7 +622,6 @@ async function generateImageApiCall(apiKey, contents, modelName) {
         contents: contents,
         generationConfig: {
             responseModalities: ["TEXT", "IMAGE"]
-            // Temperature, topP, maxOutputTokens are typically not used or different for image models
         },
         safetySettings: safetySettings,
     };
@@ -648,7 +646,7 @@ async function generateImageApiCall(apiKey, contents, modelName) {
     const responseData = await response.json();
     let botTextResponse = "";
     let botImageBase64 = null;
-    let botImageMimeType = "image/png"; // Default
+    let botImageMimeType = "image/png";
 
     if (responseData.candidates && responseData.candidates[0]?.content?.parts) {
         for (const part of responseData.candidates[0].content.parts) {
@@ -670,7 +668,7 @@ async function generateImageApiCall(apiKey, contents, modelName) {
 }
 
 
-// Function to send message (Main User Action)
+
 async function a() {
     const textInput = i.value.trim();
     const actualFiles = Array.from(f.files);
@@ -729,7 +727,7 @@ async function a() {
             errDiv.textContent = "For image generation, a text prompt is required. You can optionally include one image for editing.";
             c.appendChild(errDiv);
             c.scrollTop = c.scrollHeight;
-            return; // Abort send
+            return; 
         }
 
         if (actualFiles.length > 0) {
@@ -751,8 +749,8 @@ async function a() {
         }
         const userMessageForHistory = { role: "user", parts: newUserParts };
         h.push(userMessageForHistory);
-        await w(newUserParts); // Pass just the parts for image model
-    } else { // Text models
+        await w(newUserParts);
+    } else {
         let fileProcessingPromises = actualFiles.map(async (file) => {
             try {
                 if (file.type.startsWith('text/') || file.type === 'text/html' || file.type === 'application/json' || file.type === 'application/xml') {
@@ -787,8 +785,8 @@ async function a() {
 }
 
 
-// Read file as text
-function fT(file) { // fileToText
+
+function fT(file) { 
 return new Promise(((resolve, reject) => {
 const reader = new FileReader;
 reader.onload = e => resolve(e.target.result);
@@ -797,13 +795,13 @@ reader.readAsText(file);
 }))
 }
 
-// Main function to handle conversation flow and API calls
+
 async function w(conversationHistoryOrPartsForImageGen) {
-    // Store what's being sent to the API for potential regeneration
+
     if (n === "gemini-2.0-flash-preview-image-generation") {
-        lastApiCallHistory = conversationHistoryOrPartsForImageGen; // These are userParts
+        lastApiCallHistory = conversationHistoryOrPartsForImageGen; 
     } else {
-        lastApiCallHistory = [...conversationHistoryOrPartsForImageGen]; // This is full history
+        lastApiCallHistory = [...conversationHistoryOrPartsForImageGen]; 
     }
 
     let botReplied = false;
@@ -817,11 +815,11 @@ async function w(conversationHistoryOrPartsForImageGen) {
     for (const apiKey of k) {
         try {
             if (n === "gemini-2.0-flash-preview-image-generation") {
-                const userParts = conversationHistoryOrPartsForImageGen; // This is already the parts array
+                const userParts = conversationHistoryOrPartsForImageGen;
                 const imageGenContents = [{ role: "user", parts: userParts }];
 
                 const result = await generateImageApiCall(apiKey, imageGenContents, n);
-                botMessageDiv.innerHTML = ''; // Clear "typing..."
+                botMessageDiv.innerHTML = ''; 
 
                 let contentAdded = false;
                 let modelPartsForHistory = [];
@@ -840,7 +838,7 @@ async function w(conversationHistoryOrPartsForImageGen) {
                     imgElement.alt = "Generated Image";
                     botMessageDiv.appendChild(imgElement);
                     contentAdded = true;
-                    if (!result.text) { // If only image, add placeholder to history
+                    if (!result.text) {
                         modelPartsForHistory.push({ text: "[Image Generated]" });
                     }
                 }
@@ -854,7 +852,7 @@ async function w(conversationHistoryOrPartsForImageGen) {
                 }
                 botReplied = true;
                 break;
-            } else { // Text models
+            } else {
                 const botResponseText = await g(apiKey, conversationHistoryOrPartsForImageGen, n, botMessageDiv);
                 if (botResponseText !== null && botResponseText.trim() !== "") {
                     h.push({ role: "model", parts: [{ text: botResponseText }] });
@@ -862,7 +860,7 @@ async function w(conversationHistoryOrPartsForImageGen) {
                     break;
                 } else if (botResponseText === "") {
                     botMessageDiv.innerHTML = "<i>Received an empty response.</i>";
-                    // h.push({ role: "model", parts: [{ text: "" }] }); // Optionally log empty responses
+                   
                     botReplied = true;
                     break;
                 }
@@ -884,8 +882,8 @@ async function w(conversationHistoryOrPartsForImageGen) {
 }
 
 
-// Upload file using Google's resumable upload (for text models)
-async function z(file) { // uploadFileToGoogle
+
+async function z(file) {
 return new Promise(async (resolve, reject) => {
 try {
 const uploadApiKey = k[0];
@@ -939,11 +937,10 @@ reject(error);
 });
 }
 
-// --- Event Listeners ---
+
 tempSlider.addEventListener("input", () => {
 temp = parseFloat(tempSlider.value);
 tempValueDisplay.textContent = temp.toFixed(1);
-// Show/hide temp slider based on model
 const isImageModel = n === "gemini-2.0-flash-preview-image-generation";
 document.querySelector('.temperature-container').style.display = isImageModel ? 'none' : 'flex';
 
@@ -956,8 +953,7 @@ const isImageModel = n === "gemini-2.0-flash-preview-image-generation";
 document.querySelector('.temperature-container').style.display = isImageModel ? 'none' : 'flex';
 
 
-// Optionally clear history or notify user
-// h = []; c.innerHTML = ''; sp(`Model changed to ${n}. Chat history may not be fully compatible.`);
+
 });
 
 m.addEventListener("click", a);
@@ -996,10 +992,10 @@ filePreviewContainer.style.display = currentImagePreviews.length > 0 ? 'flex' : 
 } else { filePreviewContainer.style.display = 'none'; }
 });
 
-// --- Buttons and Modals ---
+
 const ld = document.createElement("p");
 ld.id = "last-updated";
-ld.textContent = "Last updated: May 22th, 2025, 10:00 AM"; // Update timestamp
+ld.textContent = "Last updated: May 22th, 2025, 10:00 AM"; 
 document.body.appendChild(ld);
 
 const ch = document.getElementById("changelogModal"),
@@ -1063,23 +1059,19 @@ if (regenerateButton) {
             return;
         }
 
-        // Remove the last bot message from display and history
-        h.pop(); // Remove last bot message from history
+
+        h.pop();
         const botMessages = c.querySelectorAll(".message.bot-message");
         if (botMessages.length > 0) {
-            c.removeChild(botMessages[botMessages.length - 1]); // Remove last bot message from DOM
+            c.removeChild(botMessages[botMessages.length - 1]); 
         }
 
         if (lastApiCallHistory && ( (Array.isArray(lastApiCallHistory) && lastApiCallHistory.length > 0) || (typeof lastApiCallHistory === 'object' && Object.keys(lastApiCallHistory).length > 0) ) ) {
             sp("Regenerating response...");
-            // `lastApiCallHistory` is already in the correct format (parts or full history)
-            // that `w` expects for the model that was active during the last call.
-            // We assume model 'n' hasn't changed in a way that invalidates `lastApiCallHistory`.
+
             await w(lastApiCallHistory);
         } else {
             sp("Cannot regenerate: No previous API call context found.");
-            // Attempt to restore the bot message if regeneration fails early
-            // This part is complex; for now, if lastApiCallHistory is missing, it's an issue.
         }
     });
 } else { console.warn("Regenerate button not found."); }
@@ -1109,7 +1101,7 @@ const preloadImage = new Image();
 preloadImage.src = 'https://github.com/crobperson/Overpriced-Haircut/blob/main/Screenshot.png?raw=true';
 } else { console.warn("Overlay image element not found."); }
 
-// Initial UI setup based on default model
+
 const initialIsImageModel = s.value === "gemini-2.0-flash-preview-image-generation";
 document.querySelector('.temperature-container').style.display = initialIsImageModel ? 'none' : 'flex';
 
