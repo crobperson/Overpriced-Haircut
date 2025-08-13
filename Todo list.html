@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google</title>
+    <link href="https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true" rel=icon type=image/png>
+    <style>
+        /* --- Basic Reset & Body Styling --- */
+        :root {
+            --primary-color: #0984e3;
+            --primary-hover: #0056b3;
+            --success-color: #27ae60;
+            --success-hover: #229954;
+            --danger-color: #c0392b;
+            --danger-hover: #a93226;
+            --light-gray: #f4f7f6;
+            --medium-gray: #dfe6e9;
+            --dark-gray: #95a5a6;
+            --text-color: #2c3e50;
+            --white: #ffffff;
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        /* --- Main Container --- */
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            box-sizing: border-box;
+            transition: all 0.3s ease-in-out;
+        }
+
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        /* --- List Management Section --- */
+        .list-management {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            border: 1px solid var(--medium-gray);
+        }
+
+        .list-management h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+
+        .list-controls, .new-list-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .new-list-form {
+            margin-top: 15px;
+        }
+
+        #listSelector {
+            flex-grow: 1;
+            padding: 10px;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+        }
+
+        #newListInput {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+            white-space: nowrap;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #createListButton { background-color: var(--success-color); }
+        #createListButton:hover:not(:disabled) { background-color: var(--success-hover); }
+
+        #deleteListButton { background-color: var(--danger-color); }
+        #deleteListButton:hover:not(:disabled) { background-color: var(--danger-hover); }
+
+        /* --- Main Content & Empty State --- */
+        .main-content, .empty-state {
+            transition: opacity 0.3s ease-in-out, max-height 0.4s ease-in-out;
+            overflow: hidden;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--dark-gray);
+            border: 2px dashed var(--medium-gray);
+            border-radius: var(--border-radius);
+        }
+        .empty-state p {
+            margin: 0;
+            font-size: 1.1em;
+        }
+
+        /* Logic for hiding/showing content based on whether lists exist */
+        .container.no-lists .main-content,
+        .container.no-lists .list-controls {
+            opacity: 0;
+            max-height: 0;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            visibility: hidden;
+        }
+        .container:not(.no-lists) .empty-state {
+            opacity: 0;
+            max-height: 0;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            visibility: hidden;
+        }
+
+
+        /* --- Input Form --- */
+        .todo-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        #taskInput {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        #taskInput:focus, #newListInput:focus, #listSelector:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        #addButton {
+            padding: 12px 20px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #addButton:hover:not(:disabled) { background-color: var(--primary-hover); }
+        
+        /* --- Task List --- */
+        #taskList {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: #fdfdfd;
+            border-bottom: 1px solid #ecf0f1;
+            transition: background-color 0.2s;
+            word-break: break-word;
+        }
+        li:last-child { border-bottom: none; }
+        li.completed { text-decoration: line-through; color: var(--dark-gray); }
+        li .task-text { cursor: pointer; flex-grow: 1; }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        li:hover .delete-btn { opacity: 1; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="list-management">
+            <h2>My Lists</h2>
+            <div class="list-controls">
+                <select id="listSelector"></select>
+                <button id="deleteListButton" class="btn">Delete List</button>
+            </div>
+            <div class="new-list-form">
+                <input type="text" id="newListInput" placeholder="Create a new list...">
+                <button id="createListButton" class="btn">Create</button>
+            </div>
+        </div>
+
+        <div class="empty-state">
+            <p>Create your first list to get started!</p>
+        </div>
+
+        <div class="main-content">
+            <h1 id="listTitle"></h1>
+            
+            <div class="todo-form">
+                <input type="text" id="taskInput" placeholder="Add a new task...">
+                <button id="addButton">Add</button>
+            </div>
+
+            <ul id="taskList">
+                <!-- Tasks will be dynamically inserted here by JavaScript -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. GET DOM ELEMENTS ---
+            const container = document.querySelector('.container');
+            const listSelector = document.getElementById('listSelector');
+            const deleteListButton = document.getElementById('deleteListButton');
+            const newListInput = document.getElementById('newListInput');
+            const createListButton = document.getElementById('createListButton');
+            const listTitle = document.getElementById('listTitle');
+            const taskInput = document.getElementById('taskInput');
+            const addButton = document.getElementById('addButton');
+            const taskList = document.getElementById('taskList');
+
+            // --- 2. DATA MODEL & STATE ---
+            let allData = {};
+            let activeList = '';
+
+            // --- 3. CORE FUNCTIONS ---
+
+            const saveData = () => {
+                localStorage.setItem('todoMultiList', JSON.stringify(allData));
+                localStorage.setItem('todoActiveList', activeList);
+            };
+
+            const loadData = () => {
+                const loadedData = JSON.parse(localStorage.getItem('todoMultiList'));
+                const loadedActiveList = localStorage.getItem('todoActiveList');
+
+                if (loadedData && Object.keys(loadedData).length > 0) {
+                    allData = loadedData;
+                    activeList = loadedActiveList && allData[loadedActiveList] ? loadedActiveList : Object.keys(allData)[0];
+                } else {
+                    // Start with no lists
+                    allData = {};
+                    activeList = '';
+                }
+            };
+
+            const render = () => {
+                saveData();
+                updateUIState();
+                renderListSelector();
+                renderTasks();
+            };
+
+            const updateUIState = () => {
+                const hasLists = Object.keys(allData).length > 0;
+
+                if (hasLists) {
+                    container.classList.remove('no-lists');
+                    deleteListButton.disabled = false;
+                    taskInput.disabled = false;
+                    addButton.disabled = false;
+                    newListInput.placeholder = "Create another list...";
+                } else {
+                    container.classList.add('no-lists');
+                    activeList = ''; // Ensure activeList is cleared
+                    deleteListButton.disabled = true;
+                    taskInput.disabled = true;
+                    addButton.disabled = true;
+                    newListInput.placeholder = "Your first list name...";
+                }
+            };
+
+            const renderListSelector = () => {
+                listSelector.innerHTML = '';
+                const listNames = Object.keys(allData);
+                
+                listNames.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    if (name === activeList) {
+                        option.selected = true;
+                    }
+                    listSelector.appendChild(option);
+                });
+            };
+
+            const renderTasks = () => {
+                // If there's no active list, do nothing.
+                if (!activeList) {
+                    listTitle.textContent = '';
+                    taskList.innerHTML = '';
+                    return;
+                }
+
+                listTitle.textContent = activeList;
+                const currentTasks = allData[activeList] || [];
+                taskList.innerHTML = '';
+
+                if (currentTasks.length === 0) {
+                    const li = document.createElement('li');
+                    li.textContent = 'No tasks yet. Add one above!';
+                    li.style.color = '#95a5a6';
+                    li.style.justifyContent = 'center';
+                    taskList.appendChild(li);
+                    return;
+                }
+
+                currentTasks.forEach((task, index) => {
+                    const li = document.createElement('li');
+                    if (task.completed) li.classList.add('completed');
+                    
+                    const taskText = document.createElement('span');
+                    taskText.className = 'task-text';
+                    taskText.textContent = task.text;
+                    taskText.addEventListener('click', () => toggleTask(index));
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.addEventListener('click', () => deleteTask(index));
+
+                    li.appendChild(taskText);
+                    li.appendChild(deleteBtn);
+                    taskList.appendChild(li);
+                });
+            };
+
+            // --- 4. TASK & LIST MANAGEMENT FUNCTIONS ---
+
+            const addTask = () => {
+                const text = taskInput.value.trim();
+                if (text !== '' && allData[activeList]) {
+                    allData[activeList].push({ text: text, completed: false });
+                    taskInput.value = '';
+                    taskInput.focus();
+                    render();
+                }
+            };
+            
+            const toggleTask = (index) => {
+                const task = allData[activeList][index];
+                if (task) {
+                    task.completed = !task.completed;
+                    render();
+                }
+            };
+
+            const deleteTask = (index) => {
+                if (allData[activeList]) {
+                    allData[activeList].splice(index, 1);
+                    render();
+                }
+            };
+
+            const createList = () => {
+                const newName = newListInput.value.trim();
+                if (newName && !allData[newName]) {
+                    allData[newName] = [];
+                    activeList = newName;
+                    newListInput.value = '';
+                    newListInput.focus();
+                    render();
+                } else if (allData[newName]) {
+                    alert("A list with this name already exists.");
+                }
+            };
+
+            const switchList = () => {
+                const selectedList = listSelector.value;
+                if (selectedList && allData[selectedList]) {
+                    activeList = selectedList;
+                    render();
+                }
+            };
+
+            const deleteList = () => {
+                const listToDelete = activeList;
+                if (!listToDelete) return; // Should be disabled, but as a safeguard.
+
+                if (confirm(`Are you sure you want to delete the list "${listToDelete}"? This cannot be undone.`)) {
+                    delete allData[listToDelete];
+                    const remainingLists = Object.keys(allData);
+                    activeList = remainingLists.length > 0 ? remainingLists[0] : '';
+                    render();
+                }
+            };
+
+            // --- 5. EVENT LISTENERS ---
+            addButton.addEventListener('click', addTask);
+            taskInput.addEventListener('keypress', (e) => e.key === 'Enter' && addTask());
+
+            createListButton.addEventListener('click', createList);
+            newListInput.addEventListener('keypress', (e) => e.key === 'Enter' && createList());
+
+            listSelector.addEventListener('change', switchList);
+            deleteListButton.addEventListener('click', deleteList);
+
+            // --- 6. INITIALIZATION ---
+            loadData();
+            render();
+        });
+    </script>
+
+</body>
+</html>
