@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google</title>
+    <style>
+        /* Basic Styling */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        /* Main container for the timer and schedule */
+        #container {
+            background-color: #ffffff;
+            padding: 2em 3em;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        /* Current Time Display */
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.2em;
+            color: #333;
+        }
+
+        /* Status Message (e.g., "Class ends in:") */
+        #statusMessage {
+            font-size: 1.2em;
+            color: #606770;
+            min-height: 1.5em; /* Prevents layout shift when text changes */
+        }
+
+        /* The countdown timer itself */
+        #countdown {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #1877f2; /* A nice blue color */
+            min-height: 1.2em; /* Prevents layout shift */
+            margin: 0.2em 0;
+        }
+
+        /* Schedule Display */
+        #schedule {
+            margin-top: 2em;
+            text-align: left;
+            border-top: 1px solid #ddd;
+            padding-top: 1.5em;
+        }
+
+        #schedule h2 {
+            text-align: center;
+            margin-top: 0;
+            color: #333;
+        }
+
+        #schedule ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #schedule li {
+            padding: 0.5em;
+            border-radius: 6px;
+            margin-bottom: 0.5em;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        /* Highlight the currently active class in the schedule */
+        #schedule li.active {
+            background-color: #e7f3ff;
+            color: #1877f2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <!-- Element to display the current time -->
+        <h1 id="currentTime"></h1>
+        
+        <!-- Elements for the status and countdown -->
+        <p id="statusMessage">Loading...</p>
+        <div id="countdown">--:--:--</div>
+
+        <!-- The full class schedule for reference -->
+        <div id="schedule">
+            <h2>Today's Schedule</h2>
+            <ul id="scheduleList">
+                <!-- Schedule items will be populated by JavaScript -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION: CLASS SCHEDULE ---
+        // Times are in 24-hour format [hour, minute]
+        const schedule = [
+            { name: '1st Period', start: [8, 0],  end: [8, 47] },
+            { name: '2nd Period', start: [8, 52], end: [9, 49] },
+            { name: '3rd Period', start: [9, 54], end: [10, 41] },
+            { name: '4th Period', start: [10, 46],end: [11, 33] },
+            { name: '5th Period', start: [11, 38],end: [12, 25] },
+            { name: '6th Period', start: [12, 30],end: [13, 17] }, // 1:17 PM
+            { name: '7th Period', start: [13, 22],end: [14, 9] },  // 2:09 PM
+            { name: '8th Period', start: [14, 14],end: [15, 1] }   // 3:01 PM
+        ];
+
+        // --- DOM ELEMENTS ---
+        const currentTimeElem = document.getElementById('currentTime');
+        const statusMessageElem = document.getElementById('statusMessage');
+        const countdownElem = document.getElementById('countdown');
+        const scheduleListElem = document.getElementById('scheduleList');
+
+        // --- HELPER FUNCTIONS ---
+
+        /**
+         * Formats a time difference in milliseconds into an HH:MM:SS string.
+         * @param {number} ms - The time difference in milliseconds.
+         * @returns {string} The formatted time string.
+         */
+        function formatTimeDifference(ms) {
+            if (ms < 0) ms = 0;
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            // Pad with leading zeros if necessary
+            const pad = (num) => num.toString().padStart(2, '0');
+
+            return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        }
+
+        /**
+         * Creates a Date object for today with a specific hour and minute.
+         * @param {number} hour - The hour (0-23).
+         * @param {number} minute - The minute (0-59).
+         * @returns {Date} The resulting Date object.
+         */
+        function getDateForToday(hour, minute) {
+            const now = new Date();
+            return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0);
+        }
+        
+        // --- MAIN LOGIC ---
+
+        /**
+         * Populates the schedule list in the HTML.
+         */
+        function displaySchedule() {
+            schedule.forEach(period => {
+                const li = document.createElement('li');
+                li.id = `period-${period.name.replace(' ', '-')}`; // Create a unique ID
+                
+                // Format times for display (12-hour with AM/PM)
+                const format12Hour = (h, m) => {
+                    const ampm = h >= 12 ? 'PM' : 'AM';
+                    const hour12 = h % 12 || 12; // Convert 0 to 12 for 12 AM
+                    const minute = m.toString().padStart(2, '0');
+                    return `${hour12}:${minute} ${ampm}`;
+                };
+                
+                const startTime = format12Hour(period.start[0], period.start[1]);
+                const endTime = format12Hour(period.end[0], period.end[1]);
+                
+                li.textContent = `${period.name}: ${startTime} - ${endTime}`;
+                scheduleListElem.appendChild(li);
+            });
+        }
+
+        /**
+         * The main function that updates the entire display.
+         * It's called every second.
+         */
+        function updateDisplay() {
+            const now = new Date();
+
+            // 1. Update the current time display
+            currentTimeElem.textContent = now.toLocaleTimeString();
+
+            let stateFound = false;
+
+            // Remove any existing 'active' class from the schedule list
+            document.querySelectorAll('#scheduleList li').forEach(li => li.classList.remove('active'));
+
+            // 2. Iterate through the schedule to find the current state
+            for (const period of schedule) {
+                const periodStart = getDateForToday(period.start[0], period.start[1]);
+                const periodEnd = getDateForToday(period.end[0], period.end[1]);
+                const periodId = `period-${period.name.replace(' ', '-')}`;
+                const periodLiElem = document.getElementById(periodId);
+
+                // Check if we are currently IN a class
+                if (now >= periodStart && now < periodEnd) {
+                    statusMessageElem.textContent = `${period.name} ends in:`;
+                    const timeDiff = periodEnd - now;
+                    countdownElem.textContent = formatTimeDifference(timeDiff);
+                    if (periodLiElem) periodLiElem.classList.add('active');
+                    stateFound = true;
+                    break;
+                }
+
+                // Check if the next class is coming up
+                if (now < periodStart) {
+                    statusMessageElem.textContent = `Next class (${period.name}) starts in:`;
+                    const timeDiff = periodStart - now;
+                    countdownElem.textContent = formatTimeDifference(timeDiff);
+                    stateFound = true;
+                    break;
+                }
+            }
+
+            // 3. Handle edge cases: before school starts or after school ends
+            if (!stateFound) {
+                const firstClassStart = getDateForToday(schedule[0].start[0], schedule[0].start[1]);
+                const lastClassEnd = getDateForToday(schedule[schedule.length - 1].end[0], schedule[schedule.length - 1].end[1]);
+
+                if (now < firstClassStart) {
+                     statusMessageElem.textContent = `School starts in:`;
+                     const timeDiff = firstClassStart - now;
+                     countdownElem.textContent = formatTimeDifference(timeDiff);
+                } else if (now >= lastClassEnd) {
+                    statusMessageElem.textContent = "School is over for the day!";
+                    countdownElem.textContent = "🎉";
+                }
+            }
+        }
+
+        // --- INITIALIZATION ---
+
+        // Populate the static schedule list once on page load
+        displaySchedule();
+        
+        // Run the update function immediately on load
+        updateDisplay();
+
+        // Then, set it to run every second
+        setInterval(updateDisplay, 100);
+    </script>
+
+</body>
+</html>
