@@ -7,64 +7,61 @@
 body {
   font-family: sans-serif;
   display: flex;
-  flex-direction: column; /* Stack elements vertically */
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   margin: 0;
-  background-color: #f8f9fa; /* Light background color */
+  background-color: #f8f9fa;
 }
 
 button {
-  padding: 15px 30px; /* Larger padding */
-  font-size: 18px; /* Larger font size */
-  font-weight: bold; /* Bold text */
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
   color: white;
-  background-color: #4285f4; /* Google blue color */
+  background-color: #4285f4;
   border: none;
-  border-radius: 5px; /* Rounded corners */
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  border-radius: 5px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  transition: all 0.2s ease; /* Smooth hover effect */
-  margin-bottom: 20px; /* Space between buttons */
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
 }
 
 button:hover {
-  background-color: #3367d6; /* Slightly darker blue on hover */
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Larger shadow on hover */
+  background-color: #3367d6;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 button:active {
-  transform: translateY(1px); /* Button moves down slightly when clicked */
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2); /* Smaller shadow when clicked */
+  transform: translateY(1px); 
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
 }
 </style>
 </head>
 <body>
 
 <button id="launchButton">Click To Run Google By Clifton</button>
-<button id="launchImageButton">Click To Run Image Gen By Clifton</button>
+<button id="launchSDButton">Click To Run Clifton's Class Schedule-Inator</button>
 <button id="launchPDFButton">Click To Run Clifton's PDF To PNG Converter</button>
 <button id="launchTDButton">Click To Run Clifton's Todo List</button>
 
 <script>
 const launchButton = document.getElementById("launchButton");
-const launchImageButton = document.getElementById("launchImageButton");
+const launchSDButton = document.getElementById("launchSDButton");
 const launchPDFButton = document.getElementById("launchPDFButton");
 const launchTDButton = document.getElementById("launchTDButton");
 
-// Function to fetch and display Google HTML
 function launchGoogle() {
   const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/refs/heads/main/Google%20thang.html";
   fetchAndDisplay(url);
 }
 
-// Function to fetch and display Image Thang HTML
-function launchImageThang() {
-  const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/main/Image%20thang.html";
+function launchSDThang() {
+  const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/refs/heads/main/Class.html";
   fetchAndDisplay(url);
 }
-// Function to fetch and display Image Thang HTML
 function launchPDFThang() {
   const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/refs/heads/main/PDF%20thang.html";
   fetchAndDisplay(url);
@@ -73,7 +70,6 @@ function launchTDThang() {
   const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/refs/heads/main/Todo%20list.html";
   fetchAndDisplay(url);
 }
-// Common function to fetch and display HTML
 function fetchAndDisplay(url) {
   fetch(url)
     .then(response => {
@@ -83,7 +79,6 @@ function fetchAndDisplay(url) {
       return response.text();
     })
     .then(htmlCode => {
-      // Replace the current document's content with the fetched HTML
       document.open();
       document.write(htmlCode);
       document.close();
@@ -94,14 +89,12 @@ function fetchAndDisplay(url) {
     });
 }
 
-// Manual launch for Google
 launchButton.addEventListener("click", () => {
   launchGoogle();
 });
 
-// Manual launch for Image Thang
-launchImageButton.addEventListener("click", () => {
-  launchImageThang();
+launchSDButton.addEventListener("click", () => {
+  launchSDThang();
 });
 launchPDFButton.addEventListener("click", () => {
   launchPDFThang();
