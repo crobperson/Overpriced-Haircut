@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Google</title>
+<link rel="icon" href="https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true" type="image/png">
+<style>
+body {
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #f8f9fa; /* Light background color */
+  text-align: center; /* Center text within the body */
+}
+
+button {
+  padding: 15px 30px; /* Larger padding */
+  font-size: 18px; /* Larger font size */
+  font-weight: bold; /* Bold text */
+  color: white;
+  background-color: #4285f4; /* Google blue color */
+  border: none;
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  cursor: pointer;
+  transition: all 0.2s ease; /* Smooth hover effect */
+  margin-bottom: 20px; /* Space between buttons */
+  max-width: 80%; /* Prevent buttons from being too wide on small screens */
+  white-space: normal; /* Allow text to wrap */
+  word-wrap: break-word; /* Break long words */
+}
+
+button:hover {
+  background-color: #3367d6; /* Slightly darker blue on hover */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Larger shadow on hover */
+}
+
+button:active {
+  transform: translateY(1px); /* Button moves down slightly when clicked */
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2); /* Smaller shadow when clicked */
+}
+
+/* Styles for messages */
+#loading-message, .error-message, .no-files-message {
+    font-size: 1.2em;
+    color: #555;
+    margin-top: 20px;
+}
+.error-message {
+    color: red;
+}
+.no-files-message {
+    color: #777;
+}
+</style>
+</head>
+<body>
+
+<div id="loading-message">Loading applications from GitHub...</div>
+
+<script>
+function toTitleCase(str) {
+  return str.replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function fetchAndDisplay(url) {
+  fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Network response was not ok, status: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(htmlCode => {
+      document.open();
+      document.write(htmlCode);
+      document.close();
+    })
+    .catch(error => {
+      console.error("Error fetching or displaying HTML:", error);
+      alert("Error loading HTML. See console for details.");
+    });
+}
+
+// Function to fetch repository contents and create buttons
+async function loadHtmlFilesFromRepo() {
+  const repoOwner = "crobperson";
+  const repoName = "Working-Center";
+  const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/`;
+
+  const loadingMessage = document.getElementById("loading-message");
+  const body = document.body;
+
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+    }
+    const contents = await response.json();
+
+    if (loadingMessage) {
+      body.removeChild(loadingMessage);
+    }
+
+    // Create a main title for the page
+    const title = document.createElement('h1');
+    title.textContent = `Clifton's Game Center`;
+    title.style.color = '#333';
+    title.style.marginBottom = '30px';
+    body.appendChild(title);
+
+    let foundHtmlFiles = false;
+
+    contents.forEach(item => {
+      if (item.type === "file" && item.name.endsWith(".html")) {
+        foundHtmlFiles = true;
+        const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${item.path}`;
+
+        const button = document.createElement("button");
+        
+        let rawFileName = item.name.replace(".html", "");
+        let buttonActionText = "";
+        buttonActionText = toTitleCase(rawFileName.replace(/-/g, " ").replace(/%20/g, " "));
+        button.textContent = `Click To Run ${buttonActionText}`;
+        button.addEventListener("click", () => {
+          fetchAndDisplay(rawUrl);
+        });
+        body.appendChild(button);
+      }
+    });
+
+    if (!foundHtmlFiles) {
+        const noFilesMessage = document.createElement('p');
+        noFilesMessage.className = 'no-files-message';
+        noFilesMessage.textContent = "No HTML files found in the repository.";
+        body.appendChild(noFilesMessage);
+    }
+
+  } catch (error) {
+    console.error("Error fetching repository contents:", error);
+    if (loadingMessage && body.contains(loadingMessage)) {
+      body.removeChild(loadingMessage);
+    }
+    const errorMessage = document.createElement('p');
+    errorMessage.className = 'error-message';
+    errorMessage.textContent = "Failed to load applications from GitHub. Please check the console for details.";
+    body.appendChild(errorMessage);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadHtmlFilesFromRepo);
+</script>
+
+</body>
+</html>
