@@ -46,12 +46,14 @@ button:active {
 <button id="launchSDButton">Click To Run Clifton's Class Schedule-Inator</button>
 <button id="launchPDFButton">Click To Run Clifton's PDF To PNG Converter</button>
 <button id="launchTDButton">Click To Run Clifton's Todo List</button>
+<button id="launchGButton">Click To Visit Clifton's Game Center</button>
 
 <script>
 const launchButton = document.getElementById("launchButton");
 const launchSDButton = document.getElementById("launchSDButton");
 const launchPDFButton = document.getElementById("launchPDFButton");
 const launchTDButton = document.getElementById("launchTDButton");
+const launchGButton = document.getElementById("launchGButton");
 
 // Function to fetch and display Google HTML
 function launchGoogle() {
@@ -71,6 +73,10 @@ function launchPDFThang() {
 }
 function launchTDThang() {
   const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/refs/heads/main/Todo%20list.html";
+  fetchAndDisplay(url);
+}
+function launchGThang() {
+  const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/refs/heads/main/Working-Center.html";
   fetchAndDisplay(url);
 }
 // Common function to fetch and display HTML
@@ -108,6 +114,9 @@ launchPDFButton.addEventListener("click", () => {
 });
 launchTDButton.addEventListener("click", () => {
   launchTDThang();
+});
+launchGButton.addEventListener("click", () => {
+  launchGThang();
 });
 </script>
 
