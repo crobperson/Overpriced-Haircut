@@ -7,7 +7,7 @@
     <style>
         /* Basic Styling */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #f0f2f5;
             color: #1c1e21;
             display: flex;
@@ -26,6 +26,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             max-width: 500px;
             width: 90%;
+            position: relative; /* Needed for absolute positioning of settings */
         }
 
         /* Current Time Display */
@@ -83,17 +84,86 @@
             color: #1877f2;
             font-weight: bold;
         }
+
+        /* Settings Toggle Button */
+        #settingsToggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #606770;
+            transition: color 0.2s ease-in-out;
+        }
+        #settingsToggle:hover {
+            color: #333;
+        }
+
+        /* Settings Panel */
+        #settingsPanel {
+            background-color: #f8f8f8;
+            border-top: 1px solid #eee;
+            padding: 1em;
+            margin-top: 1.5em;
+            border-radius: 8px;
+            text-align: left;
+            display: none; /* Hidden by default */
+        }
+        #settingsPanel.visible {
+            display: block;
+        }
+
+        #settingsPanel label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        #settingsPanel input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 8px 10px;
+            margin-bottom: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            font-size: 1em;
+        }
+        #settingsPanel p {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: -0.5em;
+            margin-bottom: 1em;
+        }
     </style>
 </head>
 <body>
 
     <div id="container">
+        <!-- Settings Toggle Button -->
+        <button id="settingsToggle" title="Settings">⚙️</button>
+
         <!-- Element to display the current time -->
         <h1 id="currentTime"></h1>
         
         <!-- Elements for the status and countdown -->
         <p id="statusMessage">Loading...</p>
         <div id="countdown">--:--:--</div>
+
+        <!-- Settings Panel -->
+        <div id="settingsPanel">
+            <h3>Schedule Offsets</h3>
+            <label for="startOffsetInput">Class Start Offset (seconds):</label>
+            <input type="number" id="startOffsetInput" value="-45">
+            <p>Negative values make classes start earlier. E.g., -45 means class starts 45 seconds before the official time.</p>
+
+            <label for="endOffsetInput">Class End Offset (seconds):</label>
+            <input type="number" id="endOffsetInput" value="-45">
+            <p>Negative values make classes end earlier. E.g., -45 means class ends 45 seconds before the official time.</p>
+        </div>
 
         <!-- The full class schedule for reference -->
         <div id="schedule">
@@ -123,6 +193,14 @@
         const statusMessageElem = document.getElementById('statusMessage');
         const countdownElem = document.getElementById('countdown');
         const scheduleListElem = document.getElementById('scheduleList');
+        const settingsToggleBtn = document.getElementById('settingsToggle');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const startOffsetInput = document.getElementById('startOffsetInput');
+        const endOffsetInput = document.getElementById('endOffsetInput');
+
+        // --- GLOBAL OFFSET VARIABLES ---
+        let startOffsetMs = 0;
+        let endOffsetMs = 0;
 
         // --- HELPER FUNCTIONS ---
 
@@ -155,6 +233,46 @@
             return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0);
         }
         
+        // --- OFFSET MANAGEMENT ---
+
+        /**
+         * Loads offset values from localStorage or uses defaults.
+         * Updates input fields and global offset variables.
+         */
+        function loadOffsets() {
+            const storedStartOffset = localStorage.getItem('startOffset');
+            const storedEndOffset = localStorage.getItem('endOffset');
+
+            // Apply stored values or defaults (-45 seconds)
+            const defaultOffsetSeconds = -44;
+
+            let currentStartOffsetSeconds = storedStartOffset !== null ? parseInt(storedStartOffset, 10) : defaultOffsetSeconds;
+            let currentEndOffsetSeconds = storedEndOffset !== null ? parseInt(storedEndOffset, 10) : defaultOffsetSeconds;
+
+            // Update input fields
+            startOffsetInput.value = currentStartOffsetSeconds;
+            endOffsetInput.value = currentEndOffsetSeconds;
+
+            // Convert to milliseconds for calculations
+            startOffsetMs = currentStartOffsetSeconds * 1000;
+            endOffsetMs = currentEndOffsetSeconds * 1000;
+        }
+
+        /**
+         * Saves current offset values to localStorage.
+         */
+        function saveOffsets() {
+            localStorage.setItem('startOffset', startOffsetInput.value);
+            localStorage.setItem('endOffset', endOffsetInput.value);
+
+            // Also update the global ms variables
+            startOffsetMs = parseInt(startOffsetInput.value, 10) * 1000;
+            endOffsetMs = parseInt(endOffsetInput.value, 10) * 1000;
+            
+            // Re-run display update immediately
+            updateDisplay();
+        }
+
         // --- MAIN LOGIC ---
 
         /**
@@ -198,48 +316,68 @@
 
             // 2. Iterate through the schedule to find the current state
             for (const period of schedule) {
-                const periodStart = getDateForToday(period.start[0], period.start[1]);
-                const periodEnd = getDateForToday(period.end[0], period.end[1]);
+                // Apply offsets when creating the actual start/end date objects
+                const officialPeriodStart = getDateForToday(period.start[0], period.start[1]);
+                const officialPeriodEnd = getDateForToday(period.end[0], period.end[1]);
+                
+                const actualPeriodStart = new Date(officialPeriodStart.getTime() + startOffsetMs);
+                const actualPeriodEnd = new Date(officialPeriodEnd.getTime() + endOffsetMs);
+
                 const periodId = `period-${period.name.replace(' ', '-')}`;
                 const periodLiElem = document.getElementById(periodId);
 
-                // Check if we are currently IN a class
-                if (now >= periodStart && now < periodEnd) {
+                // Check if we are currently IN a class (with offsets applied)
+                if (now >= actualPeriodStart && now < actualPeriodEnd) {
                     statusMessageElem.textContent = `${period.name} ends in:`;
-                    const timeDiff = periodEnd - now;
+                    const timeDiff = actualPeriodEnd - now;
                     countdownElem.textContent = formatTimeDifference(timeDiff);
                     if (periodLiElem) periodLiElem.classList.add('active');
                     stateFound = true;
                     break;
                 }
 
-                // Check if the next class is coming up
-                if (now < periodStart) {
+                // Check if the next class is coming up (with offsets applied)
+                if (now < actualPeriodStart) {
                     statusMessageElem.textContent = `Next class (${period.name}) starts in:`;
-                    const timeDiff = periodStart - now;
+                    const timeDiff = actualPeriodStart - now;
                     countdownElem.textContent = formatTimeDifference(timeDiff);
                     stateFound = true;
                     break;
                 }
             }
 
-            // 3. Handle edge cases: before school starts or after school ends
+            // 3. Handle edge cases: before school starts or after school ends (with offsets applied)
             if (!stateFound) {
-                const firstClassStart = getDateForToday(schedule[0].start[0], schedule[0].start[1]);
-                const lastClassEnd = getDateForToday(schedule[schedule.length - 1].end[0], schedule[schedule.length - 1].end[1]);
+                const officialFirstClassStart = getDateForToday(schedule[0].start[0], schedule[0].start[1]);
+                const officialLastClassEnd = getDateForToday(schedule[schedule.length - 1].end[0], schedule[schedule.length - 1].end[1]);
 
-                if (now < firstClassStart) {
+                const actualFirstClassStart = new Date(officialFirstClassStart.getTime() + startOffsetMs);
+                const actualLastClassEnd = new Date(officialLastClassEnd.getTime() + endOffsetMs);
+
+                if (now < actualFirstClassStart) {
                      statusMessageElem.textContent = `School starts in:`;
-                     const timeDiff = firstClassStart - now;
+                     const timeDiff = actualFirstClassStart - now;
                      countdownElem.textContent = formatTimeDifference(timeDiff);
-                } else if (now >= lastClassEnd) {
+                } else if (now >= actualLastClassEnd) {
                     statusMessageElem.textContent = "School is over for the day!";
                     countdownElem.textContent = "🎉";
                 }
             }
         }
 
+        // --- EVENT LISTENERS ---
+        settingsToggleBtn.addEventListener('click', () => {
+            settingsPanel.classList.toggle('visible');
+        });
+
+        startOffsetInput.addEventListener('change', saveOffsets);
+        endOffsetInput.addEventListener('change', saveOffsets);
+
+
         // --- INITIALIZATION ---
+
+        // Load offsets first, so the inputs and global variables are set
+        loadOffsets();
 
         // Populate the static schedule list once on page load
         displaySchedule();
@@ -247,8 +385,8 @@
         // Run the update function immediately on load
         updateDisplay();
 
-        // Then, set it to run every second
-        setInterval(updateDisplay, 100);
+        // Then, set it to run every second (1000ms) or more frequently (100ms) for smoother countdown
+        setInterval(updateDisplay, 100); // Using 100ms for a smoother second transition
     </script>
 
 </body>
