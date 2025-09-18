@@ -4,603 +4,660 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Class Schedule Timer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-/* Basic Styling */
+/* --- THEME & VARIABLES --- */
+:root {
+    --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --border-radius-sm: 6px;
+    --border-radius-md: 12px;
+    --transition-speed: 0.3s;
+
+    /* Light Theme */
+    --color-bg: #f0f2f5;
+    --color-surface: rgba(255, 255, 255, 0.85);
+    --color-surface-secondary: #f8f9fa;
+    --color-text-primary: #1c1e21;
+    --color-text-secondary: #606770;
+    --color-border: #dce1e7;
+    --color-shadow: rgba(0, 0, 0, 0.1);
+    --color-primary: #0d6efd;
+    --color-primary-hover: #0b5ed7;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5c636a;
+    --color-danger: #dc3545;
+    --color-danger-hover: #bb2d3b;
+    --color-success: #198754;
+}
+
+[data-theme="dark"] {
+    --color-bg: #121212;
+    --color-surface: rgba(28, 28, 30, 0.85);
+    --color-surface-secondary: #2c2c2e;
+    --color-text-primary: #e4e6eb;
+    --color-text-secondary: #b0b3b8;
+    --color-border: #3a3b3c;
+    --color-shadow: rgba(0, 0, 0, 0.25);
+    --color-primary: #409cff;
+    --color-primary-hover: #59aaff;
+    --color-secondary: #8d949b;
+    --color-secondary-hover: #a1a8ae;
+    --color-danger: #ff4d4d;
+    --color-danger-hover: #ff6b6b;
+    --color-success: #28a745;
+}
+
+/* --- BASE STYLING --- */
 body {
-font-family: -apple-system, BlinkMacMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-background-color: #f0f2f5;
-color: #1c1e21;
-display: flex;
-justify-content: center;
-align-items: flex-start; /* Align to top to better see long settings panel */
-min-height: 100vh;
-margin: 0;
-padding: 2em 0; /* Add padding for scroll */
-text-align: center;
+    font-family: var(--font-family);
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 2em 1em;
+    box-sizing: border-box;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
-/* Main container for the timer and schedule */
+/* --- CONTAINER --- */
 #container {
-background-color: #ffffff;
-padding: 2em 3em;
-border-radius: 12px;
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-max-width: 600px; /* Increased max-width */
-width: 90%;
-position: relative; /* Needed for absolute positioning of settings */
+    background-color: var(--color-surface);
+    backdrop-filter: blur(20px);
+    padding: 2.5em;
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 8px 32px var(--color-shadow);
+    border: 1px solid var(--color-border);
+    max-width: 600px;
+    width: 100%;
+    position: relative;
+    text-align: center;
 }
 
-/* Current Time Display */
-h1 {
-font-size: 2.5em;
-margin-bottom: 0.2em;
-color: #333;
+@media (max-width: 640px) {
+    #container { padding: 2em 1.5em; }
 }
 
-/* Status Message (e.g., "Class ends in:") */
+/* --- HEADER ICONS (Settings, Theme) --- */
+.header-actions {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    gap: 10px;
+}
+.icon-button {
+    background: none;
+    border: none;
+    font-size: 1.6em;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    transition: color 0.2s ease, transform 0.2s ease;
+    padding: 5px;
+    line-height: 1;
+}
+.icon-button:hover {
+    color: var(--color-text-primary);
+    transform: scale(1.1) rotate(10deg);
+}
+
+/* --- TIMER DISPLAY --- */
+h1#currentTime {
+    font-size: 2em;
+    margin-bottom: 0.1em;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
 #statusMessage {
-font-size: 1.2em;
-color: #606770;
-min-height: 1.5em; /* Prevents layout shift when text changes */
+    font-size: 1.25em;
+    color: var(--color-text-primary);
+    min-height: 1.5em;
 }
-
-/* The countdown timer itself */
 #countdown {
-font-size: 3.5em;
-font-weight: bold;
-color: #1877f2; /* A nice blue color */
-min-height: 1.2em; /* Prevents layout shift */
-margin: 0.2em 0;
+    font-size: clamp(3em, 15vw, 5em);
+    font-weight: 700;
+    color: var(--color-primary);
+    min-height: 1.2em;
+    margin: 0.1em 0;
 }
 
-/* Schedule Display */
+/* --- SCHEDULE LIST --- */
 #schedule {
-margin-top: 2em;
-text-align: left;
-border-top: 1px solid #ddd;
-padding-top: 1.5em;
+    margin-top: 2.5em;
+    text-align: left;
+    border-top: 1px solid var(--color-border);
+    padding-top: 2em;
 }
-
 #schedule h2 {
-text-align: center;
-margin-top: 0;
-color: #333;
+    text-align: center;
+    margin-top: 0;
+    font-weight: 600;
 }
-
 #schedule ul {
-list-style: none;
-padding: 0;
+    list-style: none;
+    padding: 0;
 }
-
 #schedule li {
-padding: 0.5em;
-border-radius: 6px;
-margin-bottom: 0.5em;
-font-family: 'Courier New', Courier, monospace;
+    padding: 0.8em 1em;
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 0.5em;
+    transition: background-color 0.2s ease;
+    display: flex;
+    justify-content: space-between;
 }
-
-/* Highlight the currently active class in the schedule */
+#schedule li:hover {
+    background-color: var(--color-surface-secondary);
+}
 #schedule li.active {
-background-color: #e7f3ff;
-color: #1877f2;
-font-weight: bold;
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 600;
+}
+#schedule li .period-name {
+    flex-grow: 1;
+}
+#schedule li .period-times {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+#schedule li.active .period-times {
+    opacity: 1;
 }
 
-/* Settings Toggle Button */
-#settingsToggle {
-position: absolute;
-top: 15px;
-right: 15px;
-background: none;
-border: none;
-font-size: 1.5em;
-cursor: pointer;
-color: #606770;
-transition: color 0.2s ease-in-out;
-}
-#settingsToggle:hover {
-color: #333;
-}
-
-/* --- NEW & UPDATED SETTINGS STYLES --- */
-
-/* Settings Panel */
+/* --- SETTINGS PANEL --- */
 #settingsPanel {
-background-color: #f8f8f8;
-border-top: 1px solid #eee;
-padding: 1.5em;
-margin-top: 1.5em;
-border-radius: 8px;
-text-align: left;
-display: none; /* Hidden by default */
+    background-color: var(--color-surface-secondary);
+    border-top: 1px solid var(--color-border);
+    padding: 0 1.5em; /* Padding will be on the inner container */
+    margin-top: 2em;
+    border-radius: var(--border-radius-sm);
+    text-align: left;
+    overflow: hidden;
+    max-height: 0; /* Animated with JS */
+    opacity: 0;
+    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, padding 0.5s ease-in-out;
 }
 #settingsPanel.visible {
-display: block;
+    max-height: 2000px; /* Large enough to not clip content */
+    opacity: 1;
+    padding: 1.5em;
 }
 #settingsPanel h3 {
-margin-top: 0;
-border-bottom: 1px solid #ddd;
-padding-bottom: 0.5em;
-margin-bottom: 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0;
+    padding-bottom: 0.5em;
+    margin-bottom: 1.5em;
+    border-bottom: 1px solid var(--color-border);
 }
-
-.settings-section {
-margin-bottom: 1.5em;
+#settingsPanel fieldset {
+    border: 1px solid var(--color-border);
+    padding: 1em 1.5em 1.5em;
+    margin: 0 0 2em 0;
+    border-radius: var(--border-radius-sm);
 }
-
+#settingsPanel legend {
+    padding: 0 0.5em;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
 #settingsPanel label {
-display: block;
-margin-bottom: 0.5em;
-font-weight: bold;
-font-size: 0.9em;
-color: #555;
+    display: block;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+    font-size: 0.9em;
+    color: var(--color-text-secondary);
 }
-
-#settingsPanel input[type="number"],
-#settingsPanel input[type="text"],
-#settingsPanel input[type="time"],
-#settingsPanel select {
-width: 100%;
-padding: 8px 10px;
-margin-bottom: 1em;
-border: 1px solid #ccc;
-border-radius: 4px;
-box-sizing: border-box;
-font-size: 1em;
+#settingsPanel input, #settingsPanel select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 1em;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    border-radius: var(--border-radius-sm);
+    box-sizing: border-box;
+    font-size: 1em;
+    font-family: var(--font-family);
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
-
+#settingsPanel input:focus-visible, #settingsPanel select:focus-visible {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
+}
+#settingsPanel p.description {
+    font-size: 0.85em;
+    color: var(--color-text-secondary);
+    margin-top: -0.75em;
+    margin-bottom: 1.5em;
+}
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
 #settingsPanel button {
-background-color: #1877f2;
-color: white;
-border: none;
-padding: 10px 15px;
-border-radius: 6px;
-cursor: pointer;
-font-size: 0.9em;
-margin-right: 5px;
-transition: background-color 0.2s;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    font-family: var(--font-family);
+    transition: background-color 0.2s, transform 0.1s;
 }
 #settingsPanel button:hover {
-background-color: #166fe5;
+    background-color: var(--color-primary-hover);
 }
-#settingsPanel button.secondary {
-background-color: #6c757d;
+#settingsPanel button:active {
+    transform: scale(0.98);
 }
-#settingsPanel button.secondary:hover {
-background-color: #5a6268;
-}
-#settingsPanel button.danger {
-background-color: #dc3545;
-}
-#settingsPanel button.danger:hover {
-background-color: #c82333;
-}
-
-#settingsPanel p {
-font-size: 0.8em;
-color: #888;
-margin-top: -0.5em;
-margin-bottom: 1em;
-}
+#settingsPanel button.secondary { background-color: var(--color-secondary); }
+#settingsPanel button.secondary:hover { background-color: var(--color-secondary-hover); }
+#settingsPanel button.danger { background-color: var(--color-danger); }
+#settingsPanel button.danger:hover { background-color: var(--color-danger-hover); }
 
 /* Schedule Editor Styles */
 .period-editor-row {
-display: flex;
-align-items: center;
-gap: 10px;
-margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: 3fr 2fr 2fr auto;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
 }
-.period-editor-row input {
-margin-bottom: 0;
+.period-editor-row input { margin-bottom: 0; }
+.period-remove-btn {
+    background: none; border: none;
+    color: var(--color-danger);
+    font-size: 1.5em; cursor: pointer; padding: 0 5px;
+    transition: color 0.2s, transform 0.2s;
 }
-.period-editor-row .period-name { flex: 3; }
-.period-editor-row .period-time { flex: 2; }
-.period-editor-row .period-remove-btn {
-background: none;
-border: none;
-color: #dc3545;
-font-size: 1.5em;
-cursor: pointer;
-padding: 0 5px;
+.period-remove-btn:hover { color: var(--color-danger-hover); transform: scale(1.1); }
+
+/* --- TOAST NOTIFICATIONS --- */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
+.toast {
+    padding: 12px 20px;
+    border-radius: var(--border-radius-sm);
+    color: white;
+    font-size: 0.9em;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    transform: translateX(100%);
+    animation: slideIn 0.5s forwards, fadeOut 0.5s 4.5s forwards;
+}
+.toast.success { background-color: var(--color-success); }
+.toast.error { background-color: var(--color-danger); }
+@keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
+
 </style>
 </head>
 <body>
 
 <div id="container">
-<!-- Settings Toggle Button -->
-<button id="settingsToggle" title="Settings">⚙️</button>
+    <div class="header-actions">
+        <button id="themeToggle" class="icon-button" title="Toggle Theme">🌙</button>
+        <button id="settingsToggle" class="icon-button" title="Settings">⚙️</button>
+    </div>
 
-<!-- Element to display the current time -->
-<h1 id="currentTime"></h1>
+    <h1 id="currentTime"></h1>
+    <p id="statusMessage">Loading...</p>
+    <div id="countdown">--:--:--</div>
 
-<!-- Elements for the status and countdown -->
-<p id="statusMessage">Loading...</p>
-<div id="countdown">--:--:--</div>
+    <div id="settingsPanel">
+        <h3>
+            <span>Settings</span>
+            <button id="settingsCloseBtn" class="icon-button" style="font-size: 1.2em;">✖</button>
+        </h3>
 
-<!-- Settings Panel -->
-<div id="settingsPanel">
-<!-- PRESET MANAGEMENT -->
-<div class="settings-section">
-<h3>Schedule Presets</h3>
-<label for="presetSelect">Load Preset:</label>
-<select id="presetSelect"></select>
-<button id="deletePresetBtn" class="danger">Delete Current Preset</button>
-<!-- The restore default button has been removed from here -->
-<hr style="margin: 1.5em 0;">
-<label for="newPresetName">Save as New Preset:</label>
-<input type="text" id="newPresetName" placeholder="e.g., Half Day Schedule">
-<button id="saveAsPresetBtn">Save as New</button>
+        <fieldset>
+            <legend>Schedule Presets</legend>
+            <label for="presetSelect">Load Preset:</label>
+            <div class="button-group">
+                <select id="presetSelect" style="flex-grow: 1; margin-bottom: 0;"></select>
+                <button id="deletePresetBtn" class="danger">Delete</button>
+            </div>
+            <hr style="border: none; border-top: 1px solid var(--color-border); margin: 1.5em 0;">
+            <label for="newPresetName">Save as New Preset:</label>
+             <div class="button-group">
+                <input type="text" id="newPresetName" placeholder="e.g., Half Day" style="flex-grow: 1; margin-bottom: 0;">
+                <button id="saveAsPresetBtn">Save New</button>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Edit Schedule</legend>
+            <div id="scheduleEditor"></div>
+            <div class="button-group" style="margin-top: 1.5em; justify-content: space-between;">
+                 <button id="addPeriodBtn" class="secondary">+ Add Period</button>
+                 <button id="applyScheduleChangesBtn">Apply Changes</button>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Time Offsets</legend>
+            <label for="startOffsetInput">Class Start Offset (seconds):</label>
+            <input type="number" id="startOffsetInput" value="-45">
+            <p class="description">Negative values make classes start earlier.</p>
+
+            <label for="endOffsetInput">Class End Offset (seconds):</p>
+            <input type="number" id="endOffsetInput" value="-45">
+            <p class="description">Negative values make classes end earlier.</p>
+        </fieldset>
+    </div>
+
+    <div id="schedule">
+        <h2 id="scheduleTitle">Today's Schedule</h2>
+        <ul id="scheduleList"></ul>
+    </div>
 </div>
 
-<!-- SCHEDULE EDITOR -->
-<div class="settings-section">
-<h3>Edit Schedule</h3>
-<div id="scheduleEditor">
-<!-- Period input rows will be generated here by JS -->
-</div>
-<button id="addPeriodBtn" class="secondary" style="margin-top: 1em;">+ Add Period</button>
-<button id="applyScheduleChangesBtn">Apply Changes to Current Preset</button>
-</div>
-
-<!-- TIME OFFSETS -->
-<div class="settings-section">
-<h3>Time Offsets</h3>
-<label for="startOffsetInput">Class Start Offset (seconds):</label>
-<input type="number" id="startOffsetInput" value="-45">
-<p>Negative values make classes start earlier.</p>
-
-<label for="endOffsetInput">Class End Offset (seconds):</p>
-<input type="number" id="endOffsetInput" value="-45">
-<p>Negative values make classes end earlier.</p>
-</div>
-</div>
-
-<!-- The full class schedule for reference -->
-<div id="schedule">
-<h2 id="scheduleTitle">Today's Schedule</h2>
-<ul id="scheduleList">
-<!-- Schedule items will be populated by JavaScript -->
-</ul>
-</div>
-</div>
+<div id="toast-container"></div>
 
 <script>
-// --- DEFAULT CONFIGURATION (used if no localStorage is found) ---
-const DEFAULT_SCHEDULE = {
-name: 'Default Schedule',
-periods: [
-{ name: '1st Period', start: [8, 0], end: [8, 47] },
-{ name: '2nd Period', start: [8, 52], end: [9, 49] },
-{ name: '3rd Period', start: [9, 54], end: [10, 41] },
-{ name: '4th Period', start: [10, 46],end: [11, 33] },
-{ name: '5th Period', start: [11, 38],end: [12, 25] },
-{ name: '6th Period', start: [12, 30],end: [13, 17] },
-{ name: '7th Period', start: [13, 22],end: [14, 9] },
-{ name: '8th Period', start: [14, 14],end: [15, 1] }
-]
-};
+document.addEventListener('DOMContentLoaded', () => {
+    // --- DEFAULT CONFIGURATION ---
+    const DEFAULT_SCHEDULE = {
+        name: 'Default Schedule',
+        periods: [
+            { name: '1st Period', start: [8, 0], end: [8, 47] },
+            { name: '2nd Period', start: [8, 52], end: [9, 49] },
+            { name: '3rd Period', start: [9, 54], end: [10, 41] },
+            { name: '4th Period', start: [10, 46],end: [11, 33] },
+            { name: '5th Period', start: [11, 38],end: [12, 25] },
+            { name: '6th Period', start: [12, 30],end: [13, 17] },
+            { name: '7th Period', start: [13, 22],end: [14, 9] },
+            { name: '8th Period', start: [14, 14],end: [15, 1] }
+        ]
+    };
+    const LATE_START_SCHEDULE = {
+        name: 'Late Start Schedule',
+        periods: [
+            { name: '1st Period', start: [10, 0], end: [10, 30] },
+            { name: '2nd Period', start: [10, 35], end: [11, 5] },
+            { name: '3rd Period', start: [11, 10], end: [11, 40] },
+            { name: '4th Period', start: [11, 45], end: [12, 25] },
+            { name: '5th Period', start: [12, 30], end: [13, 10] },
+            { name: '6th Period', start: [13, 15], end: [13, 55] },
+            { name: '7th Period', start: [14, 0], end: [14, 30] },
+            { name: '8th Period', start: [14, 35], end: [15, 5] }
+        ]
+    };
+    const BUILT_IN_SCHEDULES = [ DEFAULT_SCHEDULE, LATE_START_SCHEDULE ];
 
-// --- NEW LATE START SCHEDULE ---
-const LATE_START_SCHEDULE = {
-name: 'Late Start Schedule',
-periods: [
-{ name: '1st Period', start: [10, 0], end: [10, 30] },
-{ name: '2nd Period', start: [10, 35], end: [11, 5] },
-{ name: '3rd Period', start: [11, 10], end: [11, 40] },
-{ name: '4th Period', start: [11, 45], end: [12, 25] },
-{ name: '5th Period', start: [12, 30], end: [13, 10] }, // 1:10 PM
-{ name: '6th Period', start: [13, 15], end: [13, 55] }, // 1:55 PM
-{ name: '7th Period', start: [14, 0], end: [14, 30] },   // 2:00 PM
-{ name: '8th Period', start: [14, 35], end: [15, 5] }    // 3:05 PM
-]
-};
+    // --- DOM ELEMENTS ---
+    const currentTimeElem = document.getElementById('currentTime');
+    const statusMessageElem = document.getElementById('statusMessage');
+    const countdownElem = document.getElementById('countdown');
+    const scheduleTitleElem = document.getElementById('scheduleTitle');
+    const scheduleListElem = document.getElementById('scheduleList');
+    const settingsToggleBtn = document.getElementById('settingsToggle');
+    const settingsCloseBtn = document.getElementById('settingsCloseBtn');
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const startOffsetInput = document.getElementById('startOffsetInput');
+    const endOffsetInput = document.getElementById('endOffsetInput');
+    const presetSelect = document.getElementById('presetSelect');
+    const deletePresetBtn = document.getElementById('deletePresetBtn');
+    const newPresetNameInput = document.getElementById('newPresetName');
+    const saveAsPresetBtn = document.getElementById('saveAsPresetBtn');
+    const scheduleEditor = document.getElementById('scheduleEditor');
+    const addPeriodBtn = document.getElementById('addPeriodBtn');
+    const applyScheduleChangesBtn = document.getElementById('applyScheduleChangesBtn');
+    const toastContainer = document.getElementById('toast-container');
 
-const BUILT_IN_SCHEDULES = [
-DEFAULT_SCHEDULE,
-LATE_START_SCHEDULE
-];
+    // --- GLOBAL STATE ---
+    let currentSchedule = [];
+    let schedulePresets = {};
+    let startOffsetMs = 0;
+    let endOffsetMs = 0;
 
-// --- DOM ELEMENTS ---
-const currentTimeElem = document.getElementById('currentTime');
-const statusMessageElem = document.getElementById('statusMessage');
-const countdownElem = document.getElementById('countdown');
-const scheduleTitleElem = document.getElementById('scheduleTitle');
-const scheduleListElem = document.getElementById('scheduleList');
-const settingsToggleBtn = document.getElementById('settingsToggle');
-const settingsPanel = document.getElementById('settingsPanel');
-const startOffsetInput = document.getElementById('startOffsetInput');
-const endOffsetInput = document.getElementById('endOffsetInput');
-// New settings elements
-const presetSelect = document.getElementById('presetSelect');
-const deletePresetBtn = document.getElementById('deletePresetBtn');
-const newPresetNameInput = document.getElementById('newPresetName');
-const saveAsPresetBtn = document.getElementById('saveAsPresetBtn');
-const scheduleEditor = document.getElementById('scheduleEditor');
-const addPeriodBtn = document.getElementById('addPeriodBtn');
-const applyScheduleChangesBtn = document.getElementById('applyScheduleChangesBtn');
-// const restoreDefaultBtn = document.getElementById('restoreDefaultBtn'); // REMOVED
+    // --- HELPER FUNCTIONS ---
+    const formatTimeDifference = (ms) => {
+        if (ms < 0) ms = 0;
+        const totalSeconds = Math.floor(ms / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    };
+    const getDateForToday = (hour, minute) => new Date(new Date().setHours(hour, minute, 0, 0));
+    const format12Hour = (h, m) => new Date(2000, 0, 1, h, m).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
-// --- GLOBAL STATE ---
-let currentSchedule = [];
-let schedulePresets = {};
-let startOffsetMs = 0;
-let endOffsetMs = 0;
+    // --- TOAST NOTIFICATION ---
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.remove(), 5000);
+    }
+    
+    // --- THEME MANAGEMENT ---
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+        localStorage.setItem('theme', theme);
+    }
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        applyTheme(newTheme);
+    }
 
-// --- HELPER FUNCTIONS ---
-const formatTimeDifference = (ms) => {
-if (ms < 0) ms = 0;
-const s = Math.floor(ms / 1000);
-return `${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor(s%3600/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
-};
-const getDateForToday = (hour, minute) => {
-const now = new Date();
-return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0);
-};
-const format12Hour = (h, m) => {
-const ampm = h >= 12 ? 'PM' : 'AM';
-const hour12 = h % 12 || 12;
-return `${hour12}:${String(m).padStart(2, '0')} ${ampm}`;
-};
+    // --- PRESET & SCHEDULE MANAGEMENT ---
+    function initializePresets() {
+        const storedPresetsJson = localStorage.getItem('schedulePresets');
+        let userPresets = storedPresetsJson ? JSON.parse(storedPresetsJson) : {};
+        schedulePresets = {};
+        BUILT_IN_SCHEDULES.forEach(builtin => { schedulePresets[builtin.name] = builtin.periods; });
+        Object.assign(schedulePresets, userPresets);
+        localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
+        populatePresetDropdown();
+        const lastUsedPreset = localStorage.getItem('lastUsedPreset');
+        loadSchedule(lastUsedPreset && schedulePresets[lastUsedPreset] ? lastUsedPreset : DEFAULT_SCHEDULE.name);
+    }
+    function populatePresetDropdown() {
+        presetSelect.innerHTML = '';
+        Object.keys(schedulePresets).forEach(presetName => {
+            const option = document.createElement('option');
+            option.value = option.textContent = presetName;
+            presetSelect.appendChild(option);
+        });
+    }
+    function loadSchedule(presetName) {
+        if (!schedulePresets[presetName]) {
+            console.error(`Preset "${presetName}" not found. Loading default.`);
+            presetName = DEFAULT_SCHEDULE.name;
+        }
+        currentSchedule = schedulePresets[presetName];
+        presetSelect.value = presetName;
+        localStorage.setItem('lastUsedPreset', presetName);
+        scheduleTitleElem.textContent = presetName;
+        displaySchedule();
+        renderScheduleEditor();
+        updateDisplay();
+    }
+    function saveAsNewPreset() {
+        const newName = newPresetNameInput.value.trim();
+        if (!newName) return showToast('Please enter a name for the new preset.', 'error');
+        if (schedulePresets[newName]) return showToast('A preset with this name already exists.', 'error');
+        
+        schedulePresets[newName] = getScheduleFromEditor();
+        localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
+        newPresetNameInput.value = '';
+        populatePresetDropdown();
+        loadSchedule(newName);
+        showToast(`Preset "${newName}" saved!`, 'success');
+    }
+    function deleteCurrentPreset() {
+        if (Object.keys(schedulePresets).length <= 1) return showToast("Cannot delete the last remaining schedule.", 'error');
+        
+        const presetNameToDelete = presetSelect.value;
+        if (confirm(`Are you sure you want to delete "${presetNameToDelete}"?`)) {
+            delete schedulePresets[presetNameToDelete];
+            localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
+            populatePresetDropdown();
+            loadSchedule(Object.keys(schedulePresets)[0]);
+            showToast(`"${presetNameToDelete}" has been deleted.`, 'success');
+        }
+    }
+    function applyScheduleChanges() {
+        const currentPresetName = presetSelect.value;
+        schedulePresets[currentPresetName] = getScheduleFromEditor();
+        localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
+        loadSchedule(currentPresetName);
+        showToast(`"${currentPresetName}" has been updated.`, 'success');
+    }
 
-// --- PRESET & SCHEDULE MANAGEMENT ---
+    // --- SCHEDULE EDITOR UI ---
+    function renderScheduleEditor() {
+        scheduleEditor.innerHTML = '';
+        currentSchedule.forEach(period => addPeriodRowToEditor(period));
+    }
+    function addPeriodRowToEditor(period = { name: '', start: [8, 0], end: [9, 0] }) {
+        const row = document.createElement('div');
+        row.className = 'period-editor-row';
+        const formatTimeForInput = (timeArr) => `${String(timeArr[0]).padStart(2, '0')}:${String(timeArr[1]).padStart(2, '0')}`;
+        row.innerHTML = `
+            <input type="text" class="period-name" placeholder="Period Name" value="${period.name}">
+            <input type="time" class="period-start" value="${formatTimeForInput(period.start)}">
+            <input type="time" class="period-end" value="${formatTimeForInput(period.end)}">
+            <button class="period-remove-btn">✖</button>
+        `;
+        row.querySelector('.period-remove-btn').addEventListener('click', () => row.remove());
+        scheduleEditor.appendChild(row);
+    }
+    function getScheduleFromEditor() {
+        const newSchedule = [];
+        scheduleEditor.querySelectorAll('.period-editor-row').forEach(row => {
+            const name = row.querySelector('.period-name').value;
+            const start = row.querySelector('.period-start').value.split(':').map(Number);
+            const end = row.querySelector('.period-end').value.split(':').map(Number);
+            if (name && !isNaN(start[0]) && !isNaN(end[0])) {
+                newSchedule.push({ name, start, end });
+            }
+        });
+        return newSchedule.sort((a, b) => a.start[0] * 60 + a.start[1] - (b.start[0] * 60 + b.start[1]));
+    }
 
-function initializePresets() {
-const storedPresetsJson = localStorage.getItem('schedulePresets');
-let userPresets = {};
-if (storedPresetsJson) {
-userPresets = JSON.parse(storedPresetsJson);
-}
+    // --- OFFSET MANAGEMENT ---
+    function loadOffsets() {
+        startOffsetInput.value = localStorage.getItem('startOffset') || -45;
+        endOffsetInput.value = localStorage.getItem('endOffset') || -45;
+        updateOffsetVariables();
+    }
+    function saveOffsets() {
+        localStorage.setItem('startOffset', startOffsetInput.value);
+        localStorage.setItem('endOffset', endOffsetInput.value);
+        updateOffsetVariables();
+        updateDisplay();
+        showToast('Offsets saved!', 'success');
+    }
+    function updateOffsetVariables() {
+        startOffsetMs = parseInt(startOffsetInput.value, 10) * 1000;
+        endOffsetMs = parseInt(endOffsetInput.value, 10) * 1000;
+    }
 
-schedulePresets = {}; // Start fresh for current session
+    // --- MAIN DISPLAY LOGIC ---
+    function displaySchedule() {
+        scheduleListElem.innerHTML = '';
+        if (!currentSchedule || currentSchedule.length === 0) return;
+        currentSchedule.forEach(period => {
+            const li = document.createElement('li');
+            li.id = `period-${period.name.replace(/\s+/g, '-')}`;
+            li.innerHTML = `
+                <span class="period-name">${period.name}</span>
+                <span class="period-times">${format12Hour(period.start[0], period.start[1])} - ${format12Hour(period.end[0], period.end[1])}</span>
+            `;
+            scheduleListElem.appendChild(li);
+        });
+    }
+    function updateDisplay() {
+        const now = new Date();
+        currentTimeElem.textContent = now.toLocaleTimeString('en-US');
 
-// Add built-in schedules
-BUILT_IN_SCHEDULES.forEach(builtin => {
-schedulePresets[builtin.name] = builtin.periods;
+        if (!currentSchedule || currentSchedule.length === 0) {
+            statusMessageElem.textContent = "No schedule loaded.";
+            countdownElem.textContent = "--:--:--";
+            return;
+        }
+
+        let stateFound = false;
+        document.querySelectorAll('#scheduleList li.active').forEach(li => li.classList.remove('active'));
+
+        for (const period of currentSchedule) {
+            const actualPeriodStart = new Date(getDateForToday(period.start[0], period.start[1]).getTime() + startOffsetMs);
+            const actualPeriodEnd = new Date(getDateForToday(period.end[0], period.end[1]).getTime() + endOffsetMs);
+            const periodLiElem = document.getElementById(`period-${period.name.replace(/\s+/g, '-')}`);
+
+            if (now >= actualPeriodStart && now < actualPeriodEnd) {
+                statusMessageElem.textContent = `${period.name} ends in:`;
+                countdownElem.textContent = formatTimeDifference(actualPeriodEnd - now);
+                if (periodLiElem) periodLiElem.classList.add('active');
+                stateFound = true;
+                break;
+            }
+            if (now < actualPeriodStart) {
+                statusMessageElem.textContent = `Next up: ${period.name} in:`;
+                countdownElem.textContent = formatTimeDifference(actualPeriodStart - now);
+                stateFound = true;
+                break;
+            }
+        }
+
+        if (!stateFound) {
+            const firstClassStart = new Date(getDateForToday(currentSchedule[0].start[0], currentSchedule[0].start[1]).getTime() + startOffsetMs);
+            const lastClassEnd = new Date(getDateForToday(currentSchedule[currentSchedule.length - 1].end[0], currentSchedule[currentSchedule.length - 1].end[1]).getTime() + endOffsetMs);
+
+            if (now < firstClassStart) {
+                statusMessageElem.textContent = `School starts in:`;
+                countdownElem.textContent = formatTimeDifference(firstClassStart - now);
+            } else if (now >= lastClassEnd) {
+                statusMessageElem.textContent = "School is over for the day!";
+                countdownElem.textContent = "🎉";
+            }
+        }
+    }
+
+    // --- EVENT LISTENERS ---
+    const toggleSettingsPanel = () => settingsPanel.classList.toggle('visible');
+    settingsToggleBtn.addEventListener('click', toggleSettingsPanel);
+    settingsCloseBtn.addEventListener('click', toggleSettingsPanel);
+    themeToggleBtn.addEventListener('click', toggleTheme);
+    startOffsetInput.addEventListener('change', saveOffsets);
+    endOffsetInput.addEventListener('change', saveOffsets);
+    presetSelect.addEventListener('change', () => loadSchedule(presetSelect.value));
+    saveAsPresetBtn.addEventListener('click', saveAsNewPreset);
+    deletePresetBtn.addEventListener('click', deleteCurrentPreset);
+    addPeriodBtn.addEventListener('click', () => addPeriodRowToEditor());
+    applyScheduleChangesBtn.addEventListener('click', applyScheduleChanges);
+
+    // --- INITIALIZATION ---
+    loadOffsets();
+    initializePresets();
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    applyTheme(savedTheme);
+    setInterval(updateDisplay, 100);
 });
-
-// Overwrite with user-saved presets (if names conflict) and add new user presets
-for (const name in userPresets) {
-schedulePresets[name] = userPresets[name];
-}
-
-// Save back to localStorage for consistency (especially if new built-ins were added)
-localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
-
-populatePresetDropdown();
-
-const lastUsedPreset = localStorage.getItem('lastUsedPreset');
-if (lastUsedPreset && schedulePresets[lastUsedPreset]) {
-loadSchedule(lastUsedPreset);
-} else {
-// If last used preset is gone or none defined, load the default
-loadSchedule(DEFAULT_SCHEDULE.name);
-}
-}
-
-function populatePresetDropdown() {
-presetSelect.innerHTML = '';
-for (const presetName in schedulePresets) {
-const option = document.createElement('option');
-option.value = presetName;
-option.textContent = presetName;
-presetSelect.appendChild(option);
-}
-}
-
-function loadSchedule(presetName) {
-if (!schedulePresets[presetName]) {
-console.error(`Preset "${presetName}" not found. Loading default.`);
-presetName = DEFAULT_SCHEDULE.name; // Fallback to default if somehow not found
-}
-currentSchedule = schedulePresets[presetName];
-presetSelect.value = presetName;
-localStorage.setItem('lastUsedPreset', presetName);
-
-scheduleTitleElem.textContent = `${presetName}`;
-displaySchedule();
-renderScheduleEditor();
-updateDisplay();
-}
-
-function saveAsNewPreset() {
-const newName = newPresetNameInput.value.trim();
-if (!newName) {
-alert('Please enter a name for the new preset.');
-return;
-}
-if (schedulePresets[newName]) {
-alert('A preset with this name already exists.');
-return;
-}
-schedulePresets[newName] = getScheduleFromEditor();
-localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
-newPresetNameInput.value = '';
-
-populatePresetDropdown();
-loadSchedule(newName); // Load the newly created preset
-}
-
-function deleteCurrentPreset() {
-// This check might be too restrictive if someone deletes a user preset
-// and only built-ins remain, but allows deletion if there's at least one custom.
-// For now, allow deletion if there's *any* other preset to fall back to.
-if (Object.keys(schedulePresets).length <= 1) { // If only one preset left (could be a built-in)
-alert("Cannot delete the last remaining schedule. Create a new one first or switch to another preset if available.");
-return;
-}
-const presetNameToDelete = presetSelect.value;
-if (confirm(`Are you sure you want to delete the preset "${presetNameToDelete}"?`)) {
-delete schedulePresets[presetNameToDelete];
-localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
-populatePresetDropdown();
-// After deleting, load the first available preset, which will effectively be a different one.
-loadSchedule(Object.keys(schedulePresets)[0]);
-}
-}
-
-// The restoreDefaultPresets function is no longer needed since the button is removed.
-/*
-function restoreDefaultPresets() {
-if (confirm('Are you sure you want to restore all default schedules? This will delete all custom presets and revert any changes to built-in ones.')) {
-localStorage.removeItem('schedulePresets');
-localStorage.removeItem('lastUsedPreset');
-schedulePresets = {}; // Clear in-memory presets
-initializePresets(); // Re-populate with defaults and load
-alert('Default presets restored.');
-}
-}
-*/
-
-
-function applyScheduleChanges() {
-const currentPresetName = presetSelect.value;
-schedulePresets[currentPresetName] = getScheduleFromEditor();
-localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
-loadSchedule(currentPresetName); // Reload to reflect changes
-alert(`"${currentPresetName}" has been updated.`);
-}
-
-// --- SCHEDULE EDITOR UI ---
-
-function renderScheduleEditor() {
-scheduleEditor.innerHTML = ''; // Clear existing editor
-currentSchedule.forEach(period => {
-addPeriodRowToEditor(period);
-});
-}
-
-function addPeriodRowToEditor(period = { name: '', start: [8, 0], end: [9, 0] }) {
-const row = document.createElement('div');
-row.className = 'period-editor-row';
-
-const formatTimeForInput = (timeArr) => `${String(timeArr[0]).padStart(2,'0')}:${String(timeArr[1]).padStart(2,'0')}`;
-
-row.innerHTML = `
-<input type="text" class="period-name" placeholder="Period Name" value="${period.name}">
-<input type="time" class="period-time" value="${formatTimeForInput(period.start)}">
-<input type="time" class="period-time" value="${formatTimeForInput(period.end)}">
-<button class="period-remove-btn">✖</button>
-`;
-
-row.querySelector('.period-remove-btn').addEventListener('click', () => row.remove());
-scheduleEditor.appendChild(row);
-}
-
-function getScheduleFromEditor() {
-const newSchedule = [];
-const rows = scheduleEditor.querySelectorAll('.period-editor-row');
-rows.forEach(row => {
-const name = row.querySelector('.period-name').value;
-const timeInputs = row.querySelectorAll('.period-time');
-const start = timeInputs[0].value.split(':').map(Number);
-const end = timeInputs[1].value.split(':').map(Number);
-
-if (name && !isNaN(start[0]) && !isNaN(end[0])) {
-newSchedule.push({ name, start, end });
-}
-});
-// Sort by start time before returning
-newSchedule.sort((a, b) => a.start[0] * 60 + a.start[1] - (b.start[0] * 60 + b.start[1]));
-return newSchedule;
-}
-
-
-// --- OFFSET MANAGEMENT ---
-function loadOffsets() {
-startOffsetInput.value = localStorage.getItem('startOffset') || -45;
-endOffsetInput.value = localStorage.getItem('endOffset') || -45;
-updateOffsetVariables();
-}
-function saveOffsets() {
-localStorage.setItem('startOffset', startOffsetInput.value);
-localStorage.setItem('endOffset', endOffsetInput.value);
-updateOffsetVariables();
-updateDisplay();
-}
-function updateOffsetVariables() {
-startOffsetMs = parseInt(startOffsetInput.value, 10) * 1000;
-endOffsetMs = parseInt(endOffsetInput.value, 10) * 1000;
-}
-
-// --- MAIN DISPLAY LOGIC ---
-function displaySchedule() {
-scheduleListElem.innerHTML = ''; // Clear previous list
-if (!currentSchedule || currentSchedule.length === 0) return;
-currentSchedule.forEach(period => {
-const li = document.createElement('li');
-li.id = `period-${period.name.replace(/\s+/g, '-')}`;
-const startTime = format12Hour(period.start[0], period.start[1]);
-const endTime = format12Hour(period.end[0], period.end[1]);
-li.textContent = `${period.name}: ${startTime} - ${endTime}`;
-scheduleListElem.appendChild(li);
-});
-}
-
-function updateDisplay() {
-const now = new Date();
-currentTimeElem.textContent = now.toLocaleTimeString();
-
-// Handle empty schedule
-if (!currentSchedule || currentSchedule.length === 0) {
-statusMessageElem.textContent = "No schedule loaded.";
-countdownElem.textContent = "--:--:--";
-return;
-}
-
-let stateFound = false;
-document.querySelectorAll('#scheduleList li').forEach(li => li.classList.remove('active'));
-
-for (const period of currentSchedule) {
-const actualPeriodStart = new Date(getDateForToday(period.start[0], period.start[1]).getTime() + startOffsetMs);
-const actualPeriodEnd = new Date(getDateForToday(period.end[0], period.end[1]).getTime() + endOffsetMs);
-const periodLiElem = document.getElementById(`period-${period.name.replace(/\s+/g, '-')}`);
-
-if (now >= actualPeriodStart && now < actualPeriodEnd) {
-statusMessageElem.textContent = `${period.name} ends in:`;
-countdownElem.textContent = formatTimeDifference(actualPeriodEnd - now);
-if (periodLiElem) periodLiElem.classList.add('active');
-stateFound = true;
-break;
-}
-if (now < actualPeriodStart) {
-statusMessageElem.textContent = `Next up: ${period.name} in:`;
-countdownElem.textContent = formatTimeDifference(actualPeriodStart - now);
-stateFound = true;
-break;
-}
-}
-
-if (!stateFound) {
-const firstClassStart = new Date(getDateForToday(currentSchedule[0].start[0], currentSchedule[0].start[1]).getTime() + startOffsetMs);
-const lastClassEnd = new Date(getDateForToday(currentSchedule[currentSchedule.length - 1].end[0], currentSchedule[currentSchedule.length - 1].end[1]).getTime() + endOffsetMs);
-
-if (now < firstClassStart) {
-statusMessageElem.textContent = `School starts in:`;
-countdownElem.textContent = formatTimeDifference(firstClassStart - now);
-} else if (now >= lastClassEnd) {
-statusMessageElem.textContent = "School is over for the day!";
-countdownElem.textContent = "🎉";
-}
-}
-}
-
-// --- EVENT LISTENERS ---
-settingsToggleBtn.addEventListener('click', () => settingsPanel.classList.toggle('visible'));
-startOffsetInput.addEventListener('change', saveOffsets);
-endOffsetInput.addEventListener('change', saveOffsets);
-// New listeners
-presetSelect.addEventListener('change', () => loadSchedule(presetSelect.value));
-saveAsPresetBtn.addEventListener('click', saveAsNewPreset);
-deletePresetBtn.addEventListener('click', deleteCurrentPreset);
-// restoreDefaultBtn.addEventListener('click', restoreDefaultPresets); // REMOVED
-addPeriodBtn.addEventListener('click', () => addPeriodRowToEditor());
-applyScheduleChangesBtn.addEventListener('click', applyScheduleChanges);
-
-// --- INITIALIZATION ---
-loadOffsets();
-initializePresets(); // This also triggers the first loadSchedule
-setInterval(updateDisplay, 100);
 </script>
 
 </body>
