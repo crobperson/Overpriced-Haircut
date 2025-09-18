@@ -1,393 +1,607 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google</title>
-    <style>
-        /* Basic Styling */
-        body {
-            font-family: -apple-system, BlinkMacMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f2f5;
-            color: #1c1e21;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class Schedule Timer</title>
+<style>
+/* Basic Styling */
+body {
+font-family: -apple-system, BlinkMacMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+background-color: #f0f2f5;
+color: #1c1e21;
+display: flex;
+justify-content: center;
+align-items: flex-start; /* Align to top to better see long settings panel */
+min-height: 100vh;
+margin: 0;
+padding: 2em 0; /* Add padding for scroll */
+text-align: center;
+}
 
-        /* Main container for the timer and schedule */
-        #container {
-            background-color: #ffffff;
-            padding: 2em 3em;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 90%;
-            position: relative; /* Needed for absolute positioning of settings */
-        }
+/* Main container for the timer and schedule */
+#container {
+background-color: #ffffff;
+padding: 2em 3em;
+border-radius: 12px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+max-width: 600px; /* Increased max-width */
+width: 90%;
+position: relative; /* Needed for absolute positioning of settings */
+}
 
-        /* Current Time Display */
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 0.2em;
-            color: #333;
-        }
+/* Current Time Display */
+h1 {
+font-size: 2.5em;
+margin-bottom: 0.2em;
+color: #333;
+}
 
-        /* Status Message (e.g., "Class ends in:") */
-        #statusMessage {
-            font-size: 1.2em;
-            color: #606770;
-            min-height: 1.5em; /* Prevents layout shift when text changes */
-        }
+/* Status Message (e.g., "Class ends in:") */
+#statusMessage {
+font-size: 1.2em;
+color: #606770;
+min-height: 1.5em; /* Prevents layout shift when text changes */
+}
 
-        /* The countdown timer itself */
-        #countdown {
-            font-size: 3.5em;
-            font-weight: bold;
-            color: #1877f2; /* A nice blue color */
-            min-height: 1.2em; /* Prevents layout shift */
-            margin: 0.2em 0;
-        }
+/* The countdown timer itself */
+#countdown {
+font-size: 3.5em;
+font-weight: bold;
+color: #1877f2; /* A nice blue color */
+min-height: 1.2em; /* Prevents layout shift */
+margin: 0.2em 0;
+}
 
-        /* Schedule Display */
-        #schedule {
-            margin-top: 2em;
-            text-align: left;
-            border-top: 1px solid #ddd;
-            padding-top: 1.5em;
-        }
+/* Schedule Display */
+#schedule {
+margin-top: 2em;
+text-align: left;
+border-top: 1px solid #ddd;
+padding-top: 1.5em;
+}
 
-        #schedule h2 {
-            text-align: center;
-            margin-top: 0;
-            color: #333;
-        }
+#schedule h2 {
+text-align: center;
+margin-top: 0;
+color: #333;
+}
 
-        #schedule ul {
-            list-style: none;
-            padding: 0;
-        }
+#schedule ul {
+list-style: none;
+padding: 0;
+}
 
-        #schedule li {
-            padding: 0.5em;
-            border-radius: 6px;
-            margin-bottom: 0.5em;
-            font-family: 'Courier New', Courier, monospace;
-        }
-        
-        /* Highlight the currently active class in the schedule */
-        #schedule li.active {
-            background-color: #e7f3ff;
-            color: #1877f2;
-            font-weight: bold;
-        }
+#schedule li {
+padding: 0.5em;
+border-radius: 6px;
+margin-bottom: 0.5em;
+font-family: 'Courier New', Courier, monospace;
+}
 
-        /* Settings Toggle Button */
-        #settingsToggle {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 1.5em;
-            cursor: pointer;
-            color: #606770;
-            transition: color 0.2s ease-in-out;
-        }
-        #settingsToggle:hover {
-            color: #333;
-        }
+/* Highlight the currently active class in the schedule */
+#schedule li.active {
+background-color: #e7f3ff;
+color: #1877f2;
+font-weight: bold;
+}
 
-        /* Settings Panel */
-        #settingsPanel {
-            background-color: #f8f8f8;
-            border-top: 1px solid #eee;
-            padding: 1em;
-            margin-top: 1.5em;
-            border-radius: 8px;
-            text-align: left;
-            display: none; /* Hidden by default */
-        }
-        #settingsPanel.visible {
-            display: block;
-        }
+/* Settings Toggle Button */
+#settingsToggle {
+position: absolute;
+top: 15px;
+right: 15px;
+background: none;
+border: none;
+font-size: 1.5em;
+cursor: pointer;
+color: #606770;
+transition: color 0.2s ease-in-out;
+}
+#settingsToggle:hover {
+color: #333;
+}
 
-        #settingsPanel label {
-            display: block;
-            margin-bottom: 0.5em;
-            font-weight: bold;
-            font-size: 0.9em;
-            color: #555;
-        }
+/* --- NEW & UPDATED SETTINGS STYLES --- */
 
-        #settingsPanel input[type="number"] {
-            width: calc(100% - 20px);
-            padding: 8px 10px;
-            margin-bottom: 1em;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box; /* Include padding and border in the element's total width and height */
-            font-size: 1em;
-        }
-        #settingsPanel p {
-            font-size: 0.8em;
-            color: #888;
-            margin-top: -0.5em;
-            margin-bottom: 1em;
-        }
-    </style>
+/* Settings Panel */
+#settingsPanel {
+background-color: #f8f8f8;
+border-top: 1px solid #eee;
+padding: 1.5em;
+margin-top: 1.5em;
+border-radius: 8px;
+text-align: left;
+display: none; /* Hidden by default */
+}
+#settingsPanel.visible {
+display: block;
+}
+#settingsPanel h3 {
+margin-top: 0;
+border-bottom: 1px solid #ddd;
+padding-bottom: 0.5em;
+margin-bottom: 1em;
+}
+
+.settings-section {
+margin-bottom: 1.5em;
+}
+
+#settingsPanel label {
+display: block;
+margin-bottom: 0.5em;
+font-weight: bold;
+font-size: 0.9em;
+color: #555;
+}
+
+#settingsPanel input[type="number"],
+#settingsPanel input[type="text"],
+#settingsPanel input[type="time"],
+#settingsPanel select {
+width: 100%;
+padding: 8px 10px;
+margin-bottom: 1em;
+border: 1px solid #ccc;
+border-radius: 4px;
+box-sizing: border-box;
+font-size: 1em;
+}
+
+#settingsPanel button {
+background-color: #1877f2;
+color: white;
+border: none;
+padding: 10px 15px;
+border-radius: 6px;
+cursor: pointer;
+font-size: 0.9em;
+margin-right: 5px;
+transition: background-color 0.2s;
+}
+#settingsPanel button:hover {
+background-color: #166fe5;
+}
+#settingsPanel button.secondary {
+background-color: #6c757d;
+}
+#settingsPanel button.secondary:hover {
+background-color: #5a6268;
+}
+#settingsPanel button.danger {
+background-color: #dc3545;
+}
+#settingsPanel button.danger:hover {
+background-color: #c82333;
+}
+
+#settingsPanel p {
+font-size: 0.8em;
+color: #888;
+margin-top: -0.5em;
+margin-bottom: 1em;
+}
+
+/* Schedule Editor Styles */
+.period-editor-row {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 10px;
+}
+.period-editor-row input {
+margin-bottom: 0;
+}
+.period-editor-row .period-name { flex: 3; }
+.period-editor-row .period-time { flex: 2; }
+.period-editor-row .period-remove-btn {
+background: none;
+border: none;
+color: #dc3545;
+font-size: 1.5em;
+cursor: pointer;
+padding: 0 5px;
+}
+</style>
 </head>
 <body>
 
-    <div id="container">
-        <!-- Settings Toggle Button -->
-        <button id="settingsToggle" title="Settings">⚙️</button>
+<div id="container">
+<!-- Settings Toggle Button -->
+<button id="settingsToggle" title="Settings">⚙️</button>
 
-        <!-- Element to display the current time -->
-        <h1 id="currentTime"></h1>
-        
-        <!-- Elements for the status and countdown -->
-        <p id="statusMessage">Loading...</p>
-        <div id="countdown">--:--:--</div>
+<!-- Element to display the current time -->
+<h1 id="currentTime"></h1>
 
-        <!-- Settings Panel -->
-        <div id="settingsPanel">
-            <h3>Schedule Offsets</h3>
-            <label for="startOffsetInput">Class Start Offset (seconds):</label>
-            <input type="number" id="startOffsetInput" value="-45">
-            <p>Negative values make classes start earlier. E.g., -45 means class starts 45 seconds before the official time.</p>
+<!-- Elements for the status and countdown -->
+<p id="statusMessage">Loading...</p>
+<div id="countdown">--:--:--</div>
 
-            <label for="endOffsetInput">Class End Offset (seconds):</label>
-            <input type="number" id="endOffsetInput" value="-45">
-            <p>Negative values make classes end earlier. E.g., -45 means class ends 45 seconds before the official time.</p>
-        </div>
+<!-- Settings Panel -->
+<div id="settingsPanel">
+<!-- PRESET MANAGEMENT -->
+<div class="settings-section">
+<h3>Schedule Presets</h3>
+<label for="presetSelect">Load Preset:</label>
+<select id="presetSelect"></select>
+<button id="deletePresetBtn" class="danger">Delete Current Preset</button>
+<!-- The restore default button has been removed from here -->
+<hr style="margin: 1.5em 0;">
+<label for="newPresetName">Save as New Preset:</label>
+<input type="text" id="newPresetName" placeholder="e.g., Half Day Schedule">
+<button id="saveAsPresetBtn">Save as New</button>
+</div>
 
-        <!-- The full class schedule for reference -->
-        <div id="schedule">
-            <h2>Today's Schedule</h2>
-            <ul id="scheduleList">
-                <!-- Schedule items will be populated by JavaScript -->
-            </ul>
-        </div>
-    </div>
+<!-- SCHEDULE EDITOR -->
+<div class="settings-section">
+<h3>Edit Schedule</h3>
+<div id="scheduleEditor">
+<!-- Period input rows will be generated here by JS -->
+</div>
+<button id="addPeriodBtn" class="secondary" style="margin-top: 1em;">+ Add Period</button>
+<button id="applyScheduleChangesBtn">Apply Changes to Current Preset</button>
+</div>
 
-    <script>
-        // --- CONFIGURATION: CLASS SCHEDULE ---
-        // Times are in 24-hour format [hour, minute]
-        const schedule = [
-            { name: '1st Period', start: [8, 0],  end: [8, 47] },
-            { name: '2nd Period', start: [8, 52], end: [9, 49] },
-            { name: '3rd Period', start: [9, 54], end: [10, 41] },
-            { name: '4th Period', start: [10, 46],end: [11, 33] },
-            { name: '5th Period', start: [11, 38],end: [12, 25] },
-            { name: '6th Period', start: [12, 30],end: [13, 17] }, // 1:17 PM
-            { name: '7th Period', start: [13, 22],end: [14, 9] },  // 2:09 PM
-            { name: '8th Period', start: [14, 14],end: [15, 1] }   // 3:01 PM
-        ];
+<!-- TIME OFFSETS -->
+<div class="settings-section">
+<h3>Time Offsets</h3>
+<label for="startOffsetInput">Class Start Offset (seconds):</label>
+<input type="number" id="startOffsetInput" value="-45">
+<p>Negative values make classes start earlier.</p>
 
-        // --- DOM ELEMENTS ---
-        const currentTimeElem = document.getElementById('currentTime');
-        const statusMessageElem = document.getElementById('statusMessage');
-        const countdownElem = document.getElementById('countdown');
-        const scheduleListElem = document.getElementById('scheduleList');
-        const settingsToggleBtn = document.getElementById('settingsToggle');
-        const settingsPanel = document.getElementById('settingsPanel');
-        const startOffsetInput = document.getElementById('startOffsetInput');
-        const endOffsetInput = document.getElementById('endOffsetInput');
+<label for="endOffsetInput">Class End Offset (seconds):</p>
+<input type="number" id="endOffsetInput" value="-45">
+<p>Negative values make classes end earlier.</p>
+</div>
+</div>
 
-        // --- GLOBAL OFFSET VARIABLES ---
-        let startOffsetMs = 0;
-        let endOffsetMs = 0;
+<!-- The full class schedule for reference -->
+<div id="schedule">
+<h2 id="scheduleTitle">Today's Schedule</h2>
+<ul id="scheduleList">
+<!-- Schedule items will be populated by JavaScript -->
+</ul>
+</div>
+</div>
 
-        // --- HELPER FUNCTIONS ---
+<script>
+// --- DEFAULT CONFIGURATION (used if no localStorage is found) ---
+const DEFAULT_SCHEDULE = {
+name: 'Default Schedule',
+periods: [
+{ name: '1st Period', start: [8, 0], end: [8, 47] },
+{ name: '2nd Period', start: [8, 52], end: [9, 49] },
+{ name: '3rd Period', start: [9, 54], end: [10, 41] },
+{ name: '4th Period', start: [10, 46],end: [11, 33] },
+{ name: '5th Period', start: [11, 38],end: [12, 25] },
+{ name: '6th Period', start: [12, 30],end: [13, 17] },
+{ name: '7th Period', start: [13, 22],end: [14, 9] },
+{ name: '8th Period', start: [14, 14],end: [15, 1] }
+]
+};
 
-        /**
-         * Formats a time difference in milliseconds into an HH:MM:SS string.
-         * @param {number} ms - The time difference in milliseconds.
-         * @returns {string} The formatted time string.
-         */
-        function formatTimeDifference(ms) {
-            if (ms < 0) ms = 0;
-            const totalSeconds = Math.floor(ms / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
+// --- NEW LATE START SCHEDULE ---
+const LATE_START_SCHEDULE = {
+name: 'Late Start Schedule',
+periods: [
+{ name: 'Period 1', start: [10, 0], end: [10, 30] },
+{ name: 'Period 2', start: [10, 35], end: [11, 5] },
+{ name: 'Period 3', start: [11, 10], end: [11, 40] },
+{ name: 'Period 4', start: [11, 45], end: [12, 25] },
+{ name: 'Period 5', start: [12, 30], end: [13, 10] }, // 1:10 PM
+{ name: 'Period 6', start: [13, 15], end: [13, 55] }, // 1:55 PM
+{ name: 'Period 7', start: [14, 0], end: [14, 30] },   // 2:00 PM
+{ name: 'Period 8', start: [14, 35], end: [15, 5] }    // 3:05 PM
+]
+};
 
-            // Pad with leading zeros if necessary
-            const pad = (num) => num.toString().padStart(2, '0');
+const BUILT_IN_SCHEDULES = [
+DEFAULT_SCHEDULE,
+LATE_START_SCHEDULE
+];
 
-            return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
-        }
+// --- DOM ELEMENTS ---
+const currentTimeElem = document.getElementById('currentTime');
+const statusMessageElem = document.getElementById('statusMessage');
+const countdownElem = document.getElementById('countdown');
+const scheduleTitleElem = document.getElementById('scheduleTitle');
+const scheduleListElem = document.getElementById('scheduleList');
+const settingsToggleBtn = document.getElementById('settingsToggle');
+const settingsPanel = document.getElementById('settingsPanel');
+const startOffsetInput = document.getElementById('startOffsetInput');
+const endOffsetInput = document.getElementById('endOffsetInput');
+// New settings elements
+const presetSelect = document.getElementById('presetSelect');
+const deletePresetBtn = document.getElementById('deletePresetBtn');
+const newPresetNameInput = document.getElementById('newPresetName');
+const saveAsPresetBtn = document.getElementById('saveAsPresetBtn');
+const scheduleEditor = document.getElementById('scheduleEditor');
+const addPeriodBtn = document.getElementById('addPeriodBtn');
+const applyScheduleChangesBtn = document.getElementById('applyScheduleChangesBtn');
+// const restoreDefaultBtn = document.getElementById('restoreDefaultBtn'); // REMOVED
 
-        /**
-         * Creates a Date object for today with a specific hour and minute.
-         * @param {number} hour - The hour (0-23).
-         * @param {number} minute - The minute (0-59).
-         * @returns {Date} The resulting Date object.
-         */
-        function getDateForToday(hour, minute) {
-            const now = new Date();
-            return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0);
-        }
-        
-        // --- OFFSET MANAGEMENT ---
+// --- GLOBAL STATE ---
+let currentSchedule = [];
+let schedulePresets = {};
+let startOffsetMs = 0;
+let endOffsetMs = 0;
 
-        /**
-         * Loads offset values from localStorage or uses defaults.
-         * Updates input fields and global offset variables.
-         */
-        function loadOffsets() {
-            const storedStartOffset = localStorage.getItem('startOffset');
-            const storedEndOffset = localStorage.getItem('endOffset');
+// --- HELPER FUNCTIONS ---
+const formatTimeDifference = (ms) => {
+if (ms < 0) ms = 0;
+const s = Math.floor(ms / 1000);
+return `${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor(s%3600/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+};
+const getDateForToday = (hour, minute) => {
+const now = new Date();
+return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0);
+};
+const format12Hour = (h, m) => {
+const ampm = h >= 12 ? 'PM' : 'AM';
+const hour12 = h % 12 || 12;
+return `${hour12}:${String(m).padStart(2, '0')} ${ampm}`;
+};
 
-            // Apply stored values or defaults (-45 seconds)
-            const defaultOffsetSeconds = -44;
+// --- PRESET & SCHEDULE MANAGEMENT ---
 
-            let currentStartOffsetSeconds = storedStartOffset !== null ? parseInt(storedStartOffset, 10) : defaultOffsetSeconds;
-            let currentEndOffsetSeconds = storedEndOffset !== null ? parseInt(storedEndOffset, 10) : defaultOffsetSeconds;
+function initializePresets() {
+const storedPresetsJson = localStorage.getItem('schedulePresets');
+let userPresets = {};
+if (storedPresetsJson) {
+userPresets = JSON.parse(storedPresetsJson);
+}
 
-            // Update input fields
-            startOffsetInput.value = currentStartOffsetSeconds;
-            endOffsetInput.value = currentEndOffsetSeconds;
+schedulePresets = {}; // Start fresh for current session
 
-            // Convert to milliseconds for calculations
-            startOffsetMs = currentStartOffsetSeconds * 1000;
-            endOffsetMs = currentEndOffsetSeconds * 1000;
-        }
+// Add built-in schedules
+BUILT_IN_SCHEDULES.forEach(builtin => {
+schedulePresets[builtin.name] = builtin.periods;
+});
 
-        /**
-         * Saves current offset values to localStorage.
-         */
-        function saveOffsets() {
-            localStorage.setItem('startOffset', startOffsetInput.value);
-            localStorage.setItem('endOffset', endOffsetInput.value);
+// Overwrite with user-saved presets (if names conflict) and add new user presets
+for (const name in userPresets) {
+schedulePresets[name] = userPresets[name];
+}
 
-            // Also update the global ms variables
-            startOffsetMs = parseInt(startOffsetInput.value, 10) * 1000;
-            endOffsetMs = parseInt(endOffsetInput.value, 10) * 1000;
-            
-            // Re-run display update immediately
-            updateDisplay();
-        }
+// Save back to localStorage for consistency (especially if new built-ins were added)
+localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
 
-        // --- MAIN LOGIC ---
+populatePresetDropdown();
 
-        /**
-         * Populates the schedule list in the HTML.
-         */
-        function displaySchedule() {
-            schedule.forEach(period => {
-                const li = document.createElement('li');
-                li.id = `period-${period.name.replace(' ', '-')}`; // Create a unique ID
-                
-                // Format times for display (12-hour with AM/PM)
-                const format12Hour = (h, m) => {
-                    const ampm = h >= 12 ? 'PM' : 'AM';
-                    const hour12 = h % 12 || 12; // Convert 0 to 12 for 12 AM
-                    const minute = m.toString().padStart(2, '0');
-                    return `${hour12}:${minute} ${ampm}`;
-                };
-                
-                const startTime = format12Hour(period.start[0], period.start[1]);
-                const endTime = format12Hour(period.end[0], period.end[1]);
-                
-                li.textContent = `${period.name}: ${startTime} - ${endTime}`;
-                scheduleListElem.appendChild(li);
-            });
-        }
+const lastUsedPreset = localStorage.getItem('lastUsedPreset');
+if (lastUsedPreset && schedulePresets[lastUsedPreset]) {
+loadSchedule(lastUsedPreset);
+} else {
+// If last used preset is gone or none defined, load the default
+loadSchedule(DEFAULT_SCHEDULE.name);
+}
+}
 
-        /**
-         * The main function that updates the entire display.
-         * It's called every second.
-         */
-        function updateDisplay() {
-            const now = new Date();
+function populatePresetDropdown() {
+presetSelect.innerHTML = '';
+for (const presetName in schedulePresets) {
+const option = document.createElement('option');
+option.value = presetName;
+option.textContent = presetName;
+presetSelect.appendChild(option);
+}
+}
 
-            // 1. Update the current time display
-            currentTimeElem.textContent = now.toLocaleTimeString();
+function loadSchedule(presetName) {
+if (!schedulePresets[presetName]) {
+console.error(`Preset "${presetName}" not found. Loading default.`);
+presetName = DEFAULT_SCHEDULE.name; // Fallback to default if somehow not found
+}
+currentSchedule = schedulePresets[presetName];
+presetSelect.value = presetName;
+localStorage.setItem('lastUsedPreset', presetName);
 
-            let stateFound = false;
+scheduleTitleElem.textContent = `${presetName}`;
+displaySchedule();
+renderScheduleEditor();
+updateDisplay();
+}
 
-            // Remove any existing 'active' class from the schedule list
-            document.querySelectorAll('#scheduleList li').forEach(li => li.classList.remove('active'));
+function saveAsNewPreset() {
+const newName = newPresetNameInput.value.trim();
+if (!newName) {
+alert('Please enter a name for the new preset.');
+return;
+}
+if (schedulePresets[newName]) {
+alert('A preset with this name already exists.');
+return;
+}
+schedulePresets[newName] = getScheduleFromEditor();
+localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
+newPresetNameInput.value = '';
 
-            // 2. Iterate through the schedule to find the current state
-            for (const period of schedule) {
-                // Apply offsets when creating the actual start/end date objects
-                const officialPeriodStart = getDateForToday(period.start[0], period.start[1]);
-                const officialPeriodEnd = getDateForToday(period.end[0], period.end[1]);
-                
-                const actualPeriodStart = new Date(officialPeriodStart.getTime() + startOffsetMs);
-                const actualPeriodEnd = new Date(officialPeriodEnd.getTime() + endOffsetMs);
+populatePresetDropdown();
+loadSchedule(newName); // Load the newly created preset
+}
 
-                const periodId = `period-${period.name.replace(' ', '-')}`;
-                const periodLiElem = document.getElementById(periodId);
+function deleteCurrentPreset() {
+// This check might be too restrictive if someone deletes a user preset
+// and only built-ins remain, but allows deletion if there's at least one custom.
+// For now, allow deletion if there's *any* other preset to fall back to.
+if (Object.keys(schedulePresets).length <= 1) { // If only one preset left (could be a built-in)
+alert("Cannot delete the last remaining schedule. Create a new one first or switch to another preset if available.");
+return;
+}
+const presetNameToDelete = presetSelect.value;
+if (confirm(`Are you sure you want to delete the preset "${presetNameToDelete}"?`)) {
+delete schedulePresets[presetNameToDelete];
+localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
+populatePresetDropdown();
+// After deleting, load the first available preset, which will effectively be a different one.
+loadSchedule(Object.keys(schedulePresets)[0]);
+}
+}
 
-                // Check if we are currently IN a class (with offsets applied)
-                if (now >= actualPeriodStart && now < actualPeriodEnd) {
-                    statusMessageElem.textContent = `${period.name} ends in:`;
-                    const timeDiff = actualPeriodEnd - now;
-                    countdownElem.textContent = formatTimeDifference(timeDiff);
-                    if (periodLiElem) periodLiElem.classList.add('active');
-                    stateFound = true;
-                    break;
-                }
-
-                // Check if the next class is coming up (with offsets applied)
-                if (now < actualPeriodStart) {
-                    statusMessageElem.textContent = `Next class (${period.name}) starts in:`;
-                    const timeDiff = actualPeriodStart - now;
-                    countdownElem.textContent = formatTimeDifference(timeDiff);
-                    stateFound = true;
-                    break;
-                }
-            }
-
-            // 3. Handle edge cases: before school starts or after school ends (with offsets applied)
-            if (!stateFound) {
-                const officialFirstClassStart = getDateForToday(schedule[0].start[0], schedule[0].start[1]);
-                const officialLastClassEnd = getDateForToday(schedule[schedule.length - 1].end[0], schedule[schedule.length - 1].end[1]);
-
-                const actualFirstClassStart = new Date(officialFirstClassStart.getTime() + startOffsetMs);
-                const actualLastClassEnd = new Date(officialLastClassEnd.getTime() + endOffsetMs);
-
-                if (now < actualFirstClassStart) {
-                     statusMessageElem.textContent = `School starts in:`;
-                     const timeDiff = actualFirstClassStart - now;
-                     countdownElem.textContent = formatTimeDifference(timeDiff);
-                } else if (now >= actualLastClassEnd) {
-                    statusMessageElem.textContent = "School is over for the day!";
-                    countdownElem.textContent = "🎉";
-                }
-            }
-        }
-
-        // --- EVENT LISTENERS ---
-        settingsToggleBtn.addEventListener('click', () => {
-            settingsPanel.classList.toggle('visible');
-        });
-
-        startOffsetInput.addEventListener('change', saveOffsets);
-        endOffsetInput.addEventListener('change', saveOffsets);
+// The restoreDefaultPresets function is no longer needed since the button is removed.
+/*
+function restoreDefaultPresets() {
+if (confirm('Are you sure you want to restore all default schedules? This will delete all custom presets and revert any changes to built-in ones.')) {
+localStorage.removeItem('schedulePresets');
+localStorage.removeItem('lastUsedPreset');
+schedulePresets = {}; // Clear in-memory presets
+initializePresets(); // Re-populate with defaults and load
+alert('Default presets restored.');
+}
+}
+*/
 
 
-        // --- INITIALIZATION ---
+function applyScheduleChanges() {
+const currentPresetName = presetSelect.value;
+schedulePresets[currentPresetName] = getScheduleFromEditor();
+localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
+loadSchedule(currentPresetName); // Reload to reflect changes
+alert(`"${currentPresetName}" has been updated.`);
+}
 
-        // Load offsets first, so the inputs and global variables are set
-        loadOffsets();
+// --- SCHEDULE EDITOR UI ---
 
-        // Populate the static schedule list once on page load
-        displaySchedule();
-        
-        // Run the update function immediately on load
-        updateDisplay();
+function renderScheduleEditor() {
+scheduleEditor.innerHTML = ''; // Clear existing editor
+currentSchedule.forEach(period => {
+addPeriodRowToEditor(period);
+});
+}
 
-        // Then, set it to run every second (1000ms) or more frequently (100ms) for smoother countdown
-        setInterval(updateDisplay, 100); // Using 100ms for a smoother second transition
-    </script>
+function addPeriodRowToEditor(period = { name: '', start: [8, 0], end: [9, 0] }) {
+const row = document.createElement('div');
+row.className = 'period-editor-row';
+
+const formatTimeForInput = (timeArr) => `${String(timeArr[0]).padStart(2,'0')}:${String(timeArr[1]).padStart(2,'0')}`;
+
+row.innerHTML = `
+<input type="text" class="period-name" placeholder="Period Name" value="${period.name}">
+<input type="time" class="period-time" value="${formatTimeForInput(period.start)}">
+<input type="time" class="period-time" value="${formatTimeForInput(period.end)}">
+<button class="period-remove-btn">✖</button>
+`;
+
+row.querySelector('.period-remove-btn').addEventListener('click', () => row.remove());
+scheduleEditor.appendChild(row);
+}
+
+function getScheduleFromEditor() {
+const newSchedule = [];
+const rows = scheduleEditor.querySelectorAll('.period-editor-row');
+rows.forEach(row => {
+const name = row.querySelector('.period-name').value;
+const timeInputs = row.querySelectorAll('.period-time');
+const start = timeInputs[0].value.split(':').map(Number);
+const end = timeInputs[1].value.split(':').map(Number);
+
+if (name && !isNaN(start[0]) && !isNaN(end[0])) {
+newSchedule.push({ name, start, end });
+}
+});
+// Sort by start time before returning
+newSchedule.sort((a, b) => a.start[0] * 60 + a.start[1] - (b.start[0] * 60 + b.start[1]));
+return newSchedule;
+}
+
+
+// --- OFFSET MANAGEMENT ---
+function loadOffsets() {
+startOffsetInput.value = localStorage.getItem('startOffset') || -45;
+endOffsetInput.value = localStorage.getItem('endOffset') || -45;
+updateOffsetVariables();
+}
+function saveOffsets() {
+localStorage.setItem('startOffset', startOffsetInput.value);
+localStorage.setItem('endOffset', endOffsetInput.value);
+updateOffsetVariables();
+updateDisplay();
+}
+function updateOffsetVariables() {
+startOffsetMs = parseInt(startOffsetInput.value, 10) * 1000;
+endOffsetMs = parseInt(endOffsetInput.value, 10) * 1000;
+}
+
+// --- MAIN DISPLAY LOGIC ---
+function displaySchedule() {
+scheduleListElem.innerHTML = ''; // Clear previous list
+if (!currentSchedule || currentSchedule.length === 0) return;
+currentSchedule.forEach(period => {
+const li = document.createElement('li');
+li.id = `period-${period.name.replace(/\s+/g, '-')}`;
+const startTime = format12Hour(period.start[0], period.start[1]);
+const endTime = format12Hour(period.end[0], period.end[1]);
+li.textContent = `${period.name}: ${startTime} - ${endTime}`;
+scheduleListElem.appendChild(li);
+});
+}
+
+function updateDisplay() {
+const now = new Date();
+currentTimeElem.textContent = now.toLocaleTimeString();
+
+// Handle empty schedule
+if (!currentSchedule || currentSchedule.length === 0) {
+statusMessageElem.textContent = "No schedule loaded.";
+countdownElem.textContent = "--:--:--";
+return;
+}
+
+let stateFound = false;
+document.querySelectorAll('#scheduleList li').forEach(li => li.classList.remove('active'));
+
+for (const period of currentSchedule) {
+const actualPeriodStart = new Date(getDateForToday(period.start[0], period.start[1]).getTime() + startOffsetMs);
+const actualPeriodEnd = new Date(getDateForToday(period.end[0], period.end[1]).getTime() + endOffsetMs);
+const periodLiElem = document.getElementById(`period-${period.name.replace(/\s+/g, '-')}`);
+
+if (now >= actualPeriodStart && now < actualPeriodEnd) {
+statusMessageElem.textContent = `${period.name} ends in:`;
+countdownElem.textContent = formatTimeDifference(actualPeriodEnd - now);
+if (periodLiElem) periodLiElem.classList.add('active');
+stateFound = true;
+break;
+}
+if (now < actualPeriodStart) {
+statusMessageElem.textContent = `Next up: ${period.name} in:`;
+countdownElem.textContent = formatTimeDifference(actualPeriodStart - now);
+stateFound = true;
+break;
+}
+}
+
+if (!stateFound) {
+const firstClassStart = new Date(getDateForToday(currentSchedule[0].start[0], currentSchedule[0].start[1]).getTime() + startOffsetMs);
+const lastClassEnd = new Date(getDateForToday(currentSchedule[currentSchedule.length - 1].end[0], currentSchedule[currentSchedule.length - 1].end[1]).getTime() + endOffsetMs);
+
+if (now < firstClassStart) {
+statusMessageElem.textContent = `School starts in:`;
+countdownElem.textContent = formatTimeDifference(firstClassStart - now);
+} else if (now >= lastClassEnd) {
+statusMessageElem.textContent = "School is over for the day!";
+countdownElem.textContent = "🎉";
+}
+}
+}
+
+// --- EVENT LISTENERS ---
+settingsToggleBtn.addEventListener('click', () => settingsPanel.classList.toggle('visible'));
+startOffsetInput.addEventListener('change', saveOffsets);
+endOffsetInput.addEventListener('change', saveOffsets);
+// New listeners
+presetSelect.addEventListener('change', () => loadSchedule(presetSelect.value));
+saveAsPresetBtn.addEventListener('click', saveAsNewPreset);
+deletePresetBtn.addEventListener('click', deleteCurrentPreset);
+// restoreDefaultBtn.addEventListener('click', restoreDefaultPresets); // REMOVED
+addPeriodBtn.addEventListener('click', () => addPeriodRowToEditor());
+applyScheduleChangesBtn.addEventListener('click', applyScheduleChanges);
+
+// --- INITIALIZATION ---
+loadOffsets();
+initializePresets(); // This also triggers the first loadSchedule
+setInterval(updateDisplay, 100);
+</script>
 
 </body>
 </html>
