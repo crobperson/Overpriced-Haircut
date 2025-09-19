@@ -612,6 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (now >= actualPeriodStart && now < actualPeriodEnd) {
                 statusMessageElem.textContent = `${period.name} ends in:`;
                 countdownElem.textContent = formatTimeDifference(actualPeriodEnd - now);
+				document.title = countdownElem.textContent;
                 if (periodLiElem) periodLiElem.classList.add('active');
                 stateFound = true;
                 break;
