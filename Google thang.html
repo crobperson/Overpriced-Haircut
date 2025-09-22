@@ -119,7 +119,7 @@ body { display: flex; justify-content: center; align-items: center; padding: 1re
     flex-wrap: wrap; gap: 1rem; flex-shrink: 0;
 }
 .header-title { font-size: 1.25rem; font-weight: 700; }
-.header-controls-left, .header-controls-right { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.header-controls-left, .header-controls-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .model-select-container, .temperature-container { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-color-secondary); }
 
 #model-select, .button-primary {
@@ -311,12 +311,71 @@ body { display: flex; justify-content: center; align-items: center; padding: 1re
 
 #last-updated { display: none; }
 
+/* NEW: Settings Menu Styles */
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.setting-row:last-child {
+    border-bottom: none;
+}
+.setting-row .setting-label {
+    font-size: 1rem;
+    color: var(--text-color-primary);
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-color);
+    transition: .4s;
+    border-radius: 28px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+input:checked + .slider:before {
+    transform: translateX(22px);
+}
+
+
 @media (max-width: 768px) {
     body { padding: 0; }
     .container { height: 100vh; max-height: 100vh; border-radius: 0; border: none; }
     .header { padding: 0.75rem 1rem; flex-direction: column; align-items: stretch; }
     .header-title { text-align: center; margin-bottom: 0.5rem; }
-    .header-controls-left, .header-controls-right { justify-content: space-between; }
+    .header-controls-left, .header-controls-right { justify-content: space-between; gap: 0.5rem; }
     #chat-container { padding: 1rem; }
     #input-area { padding: 0.5rem 0.75rem; }
     .message-wrapper { max-width: 95%; }
@@ -343,7 +402,6 @@ body { display: flex; justify-content: center; align-items: center; padding: 1re
                 <input id=temperature-slider type=range max=1 min=0 step=0.1 value=1>
                 <span id=temperature-value>1.0</span>
             </div>
-            <!-- NEW: Thinking control for Gemini Flash -->
             <div id="thinking-control-container" class="model-select-container" style="display: none;">
                 <input type="checkbox" id="disable-thinking-checkbox">
                 <label for="disable-thinking-checkbox">Disable Thinking</label>
@@ -352,6 +410,8 @@ body { display: flex; justify-content: center; align-items: center; padding: 1re
         <div class="header-controls-right">
             <button id=regenerate-button class="icon-button" aria-label="Regenerate last response" title="Regenerate last response"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></button>
             <button id=clear-chat-button class="icon-button" aria-label="Clear chat" title="Clear chat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+            <!-- NEW: Settings Button -->
+            <button id="settings-button" class="icon-button" aria-label="Settings" title="Settings"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.58-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.49.49 0 0 0-.49-.42h-3.84a.49.49 0 0 0-.49.42l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.58.22l-1.92 3.32a.49.49 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32a.49.49 0 0 0 .58.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54a.49.49 0 0 0 .49.42h3.84a.49.49 0 0 0 .49-.42l.36-2.54c.59-.24 1.13-.57-1.62-.94l2.39.96a.49.49 0 0 0 .58-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.03-1.58z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
             <button id=changelog-button class=button-primary>Changelog</button>
         </div>
     </header>
@@ -383,11 +443,30 @@ body { display: flex; justify-content: center; align-items: center; padding: 1re
 
 <div id=popup-container></div>
 
+<!-- NEW: Settings Modal -->
+<div class=modal id=settingsModal>
+    <div class=modal-content>
+        <div class="modal-header">
+            <h2>Settings</h2>
+            <span class="close settings-close">×</span>
+        </div>
+        <div class="modal-body">
+            <div class="setting-row">
+                <span class="setting-label">Automatic Scrolling</span>
+                <label class="switch">
+                    <input type="checkbox" id="auto-scroll-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class=modal id=changelogModal>
     <div class=modal-content>
         <div class="modal-header">
             <h2>Changelog</h2>
-            <span class=close>×</span>
+            <span class="close changelog-close">×</span>
         </div>
         <div class="modal-body">
             <p><strong>Version 2.1 (May 10, 2025)</strong><br>- Added Image Generation model (Clifton Image Gen). Supports text-to-image and image-to-image (editing by uploading an image with your prompt).</p>
@@ -407,6 +486,7 @@ body { display: flex; justify-content: center; align-items: center; padding: 1re
 
 <script>
 const b = ["01000001 01001001 01111010 01100001 01010011 01111001 01000011 01010001 01110001 01111001 01101010 00110111 01000001 01001101 00111001 01010101 00111000 01011010 01100001 01001100 01010000 01001000 01000111 01011001 00110000 01100100 01110110 01100111 01110101 00110000 01101000 01000101 00110011 01101111 01110010 00110101 01010111 01000011 01100011","01000001 01001001 01111010 01100001 01010011 01111001 01000001 01001110 01100100 01011010 01110001 01001110 01111010 01101000 01001010 01010100 00110010 01110101 00110110 01011000 01001111 01101010 01000001 01111010 01001001 01010010 00110001 01100001 00101101 00110101 00101101 01101110 01001110 01110101 01000111 01100011 01100010 01110110 00110100","01000001 01001001 01111010 01100001 01010011 01111001 01000001 01100101 01011010 01100010 01000110 01101100 01001011 00110001 01100001 01001111 00110101 01110101 01010100 01000011 00110001 01001000 01111000 01010101 01011111 01000100 01000110 01010001 00111000 00110111 01110001 01101111 01010110 00110111 01111001 00101101 01000100 01000101 01110111","01000001 01001001 01111010 01100001 01010011 01111001 01000011 01101001 01100111 01101100 01011010 01110010 01101000 01100011 01100001 00101101 01001111 01010011 01001010 01010011 01010100 00110011 01100111 01000100 01010110 01110100 00111000 01111000 01100100 01001101 01010111 01110110 01000111 01110111 01010001 01000111 01001100 00110100 00110100","01000001 01001001 01111010 01100001 01010011 01111001 01000011 01011000 01001100 01011001 01001101 01101100 00111000 00110011 01000011 00110100 00111001 01101000 00110001 01001101 01010010 00110010 01110001 01010101 01100101 01010100 01010011 01010110 01101110 01101010 01000110 01001001 01110111 01100111 01010011 00110100 01101110 01011111 01100111","01000001 01001001 01111010 01100001 01010011 01111001 01000010 01100011 01110001 01101101 01010110 01010100 00111000 01000001 01100010 01010101 01001111 01101110 01100010 00111000 01000011 01110100 01101000 01001000 01001010 01011000 01001001 01010010 01101000 01100101 01100011 00110100 01110000 00101101 01011010 01101010 01100100 00110010 01010101"];
+
 
 function str(e) {
 e = e.replace(/[^01]/g, "");
@@ -434,10 +514,12 @@ n = "gemini-2.5-flash",
 v = !1,
 temp = 1;
 
-// NEW: Global variable to store raw files for re-uploading
+// NEW: Settings variables
+let autoScrollEnabled = false; // Off by default
+
 let attachedRawFiles = [];
-let currentImagePreviews = []; // This is for local display, not for API payload directly
-let lastApiCallInput = null; // Will store the original user input (text + raw files)
+let currentImagePreviews = [];
+let lastApiCallInput = null;
 let lastBotMessageElement = null;
 let lastBotResponseStatus = null;
 
@@ -445,17 +527,22 @@ let lastBotResponseStatus = null;
 const tempSlider = document.getElementById("temperature-slider"),
 tempValueDisplay = document.getElementById("temperature-value");
 
-// NEW: Get references to the new thinking control elements
 const thinkingControlContainer = document.getElementById("thinking-control-container");
 const disableThinkingCheckbox = document.getElementById("disable-thinking-checkbox");
 
-// NEW: Global variable to track if thinking should be disabled for Flash
 let disableThinkingForFlash = false;
+
+// NEW: Centralized scrolling function
+function scrollToBottom() {
+    if (autoScrollEnabled) {
+        c.scrollTop = c.scrollHeight;
+    }
+}
 
 function d(e) {
 if (v) {
 const t = document.createElement("div");
-t.classList.add("message", "bot-message"), t.textContent = `Error: ${e}`, c.appendChild(t), c.scrollTop = c.scrollHeight
+t.classList.add("message", "bot-message"), t.textContent = `Error: ${e}`, c.appendChild(t), scrollToBottom();
 }
 }
 
@@ -528,13 +615,12 @@ return { text: botTextResponse.trim(), imageBase64: botImageBase64, imageMimeTyp
 }
 
 
-// MODIFIED: z() now accepts an apiKey parameter
 async function z(file, apiKey) {
 return new Promise(async (resolve, reject) => {
 try {
 if (!apiKey) return reject(new Error("No API key provided for file upload."));
 
-const startResponse = await fetch(`${u}/upload/v1beta/files?key=${apiKey}`, { // Use provided apiKey
+const startResponse = await fetch(`${u}/upload/v1beta/files?key=${apiKey}`, {
 method: "POST",
 headers: {
 "X-Goog-Upload-Protocol": "resumable",
@@ -583,12 +669,8 @@ reject(error);
 }
 
 
-// MODIFIED: w() function to handle re-uploading files for each API key
 async function w(apiInput) {
-    // apiInput will now be an object: { text: string, rawFiles: File[], history: Array } for non-image-gen models
-    // For image gen model, apiInput will be the newUserParts array directly.
-
-    lastApiCallInput = apiInput; // Store the original user input for regeneration
+    lastApiCallInput = apiInput;
 
     let botReplied = false;
 
@@ -605,7 +687,7 @@ async function w(apiInput) {
     messageWrapper.appendChild(avatar);
     messageWrapper.appendChild(botMessageDiv);
     c.appendChild(messageWrapper);
-    c.scrollTop = c.scrollHeight;
+    scrollToBottom();
     t.style.display = 'block';
 
     lastBotMessageElement = messageWrapper;
@@ -619,10 +701,9 @@ async function w(apiInput) {
 
     for (const apiKey of k) {
         try {
-            let currentApiContents = []; // Contents for the current API key attempt
+            let currentApiContents = [];
 
             if (n === "gemini-2.0-flash-preview-image-generation") {
-                // For image gen model, apiInput is already the prepared parts array (including base64 image if any)
                 currentApiContents = [{ role: "user", parts: apiInput }];
                 const result = await generateImageApiCall(apiKey, currentApiContents, n);
 
@@ -634,22 +715,19 @@ async function w(apiInput) {
                     contentWasAdded = true;
                 }
                 botReplied = true;
-                break; // Break on success for image gen model
+                break;
             } else {
-                // For other models, we need to process raw files for each API key
                 let userPartsForCurrentApiKey = [];
                 if (apiInput.text && apiInput.text.trim() !== "") {
                     userPartsForCurrentApiKey.push({ text: apiInput.text });
                 }
 
-                // Process raw files for the current API key
                 const fileProcessingPromises = apiInput.rawFiles.map(async (file) => {
                     try {
                         if (file.type.startsWith('text/') || file.type === 'text/html' || file.type === 'application/json' || file.type === 'application/xml') {
-                            const content = await fT(file); // fT doesn't depend on API key, can be cached or re-read
+                            const content = await fT(file);
                             return { text: `--- File Start: ${file.name} ---\n${content}\n--- File End: ${file.name} ---` };
                         } else if (file.type.startsWith('image/') || file.type.startsWith('audio/') || file.type === 'application/pdf' || file.type.startsWith('video/')) {
-                            // MODIFIED: Call z() with the current apiKey
                             const uploadedFile = await z(file, apiKey);
                             return { file_data: { mime_type: file.type, file_uri: uploadedFile.file.uri } };
                         } else {
@@ -658,7 +736,7 @@ async function w(apiInput) {
                         }
                     } catch (error) {
                         console.error(`Error processing file ${file.name} with API key ${apiKey}:`, error);
-                        throw error; // Re-throw to be caught by the outer try-catch
+                        throw error;
                     }
                 });
 
@@ -667,13 +745,12 @@ async function w(apiInput) {
 
                 if (userPartsForCurrentApiKey.length === 0) {
                     console.log("No valid content (text or processed files) to send for this API key attempt.");
-                    continue; // Try next API key if no content could be prepared
+                    continue;
                 }
 
                 const newUserMessage = { role: "user", parts: userPartsForCurrentApiKey };
-                currentApiContents = [...apiInput.history, newUserMessage]; // Combine history with new user message parts
+                currentApiContents = [...apiInput.history, newUserMessage];
 
-                // Call the streaming API
                 const safetySettings = [
                     { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
                     { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
@@ -719,7 +796,7 @@ async function w(apiInput) {
                 const reader = response.body.getReader();
                 let accumulatedResponse = "";
                 let decodedChunk = "";
-                botMessageDiv.innerHTML = ""; // Clear "Clifton is typing..."
+                botMessageDiv.innerHTML = "";
 
                 while (true) {
                     const { done, value } = await reader.read();
@@ -737,7 +814,7 @@ async function w(apiInput) {
                                     if (textPart) {
                                         accumulatedResponse += textPart;
                                         botMessageDiv.innerHTML = marked.parse(accumulatedResponse);
-                                        c.scrollTop = c.scrollHeight;
+                                        scrollToBottom();
                                     }
                                 }
                                 if (jsonData.candidates && jsonData.candidates[0]?.finishReason && jsonData.candidates[0].finishReason !== "STOP") {
@@ -753,15 +830,14 @@ async function w(apiInput) {
                         }
                     }
                 }
-                finalBotTextResponse = accumulatedResponse; // Store the final response
-                botMessageDiv.innerHTML = marked.parse(finalBotTextResponse); // Ensure final render
-                cC(); // Apply code highlighting
+                finalBotTextResponse = accumulatedResponse;
+                botMessageDiv.innerHTML = marked.parse(finalBotTextResponse);
+                cC();
 
                 if (finalBotTextResponse !== null) {
                     botReplied = true;
-                    // Update history with the successfully processed user message
                     h = [...apiInput.history, newUserMessage];
-                    break; // Break on success for other models
+                    break;
                 }
             }
         } catch (error) {
@@ -772,9 +848,8 @@ async function w(apiInput) {
                 tempErrorDiv.classList.add("message", "bot-message");
                 tempErrorDiv.textContent = `API Key Error (trying next key): ${error.message}`;
                 c.appendChild(tempErrorDiv);
-                c.scrollTop = c.scrollHeight;
+                scrollToBottom();
             }
-            // Continue to the next API key in the loop
         }
     }
 
@@ -802,7 +877,6 @@ async function w(apiInput) {
 
             if (contentWasAdded) {
                 lastBotResponseStatus = "success";
-                // For image gen, the user message was already added to history in a()
                 h.push({ role: "model", parts: modelPartsForHistory });
             } else {
                 botMessageDiv.innerHTML = "<i>Image model returned no text or image.</i>";
@@ -828,20 +902,18 @@ async function w(apiInput) {
     }
 
     t.style.display = "none";
-    c.scrollTop = c.scrollHeight;
+    scrollToBottom();
     cC();
 }
 
 
-// MODIFIED: a() function to store raw files and pass them to w()
 async function a() {
     const textInput = i.value.trim();
-    const actualFiles = attachedRawFiles; // Use the globally stored raw files
-    const previewsToShow = [...currentImagePreviews]; // Previews are for display only
+    const actualFiles = attachedRawFiles;
+    const previewsToShow = [...currentImagePreviews];
 
     if (textInput === "" && actualFiles.length === 0) return;
 
-    // Create wrapper for user message (display logic remains the same)
     const messageWrapper = document.createElement("div");
     messageWrapper.classList.add("message-wrapper", "user-message-wrapper");
 
@@ -881,17 +953,16 @@ async function a() {
     messageWrapper.appendChild(userMessageDiv);
     messageWrapper.appendChild(avatar);
     c.appendChild(messageWrapper);
-    c.scrollTop = c.scrollHeight;
+    scrollToBottom();
 
-    // Clear input and file selections after displaying user message
     i.value = "";
     i.style.height = 'auto';
-    f.value = ""; // Clear the file input element
+    f.value = "";
     fileNamesSpan.textContent = '';
     filePreviewContainer.innerHTML = '';
     document.getElementById('attachment-preview').style.display = 'none';
     currentImagePreviews = [];
-    attachedRawFiles = []; // Clear raw files after they've been passed to w()
+    attachedRawFiles = [];
 
     t.style.display = "block";
 
@@ -909,7 +980,7 @@ async function a() {
             errDiv.classList.add("message", "bot-message");
             errDiv.textContent = "For image generation, a text prompt is required. You can optionally include one image for editing.";
             c.appendChild(errDiv);
-            c.scrollTop = c.scrollHeight;
+            scrollToBottom();
             return;
         }
 
@@ -929,18 +1000,13 @@ async function a() {
                 }
             }
         }
-        // Add user message to history *before* calling w() for image gen model
-        // because w() for image gen doesn't modify history, it just makes the API call.
         h.push({ role: "user", parts: newUserParts });
-        await w(newUserParts); // Pass the prepared parts directly
+        await w(newUserParts);
     } else {
-        // For other models, pass raw text and files to w()
-        // w() will handle processing files with the correct API key in its loop
-        const userMessageForHistory = { role: "user", parts: [{ text: textInput }] }; // Only text for history initially
-        h.push(userMessageForHistory); // Add user text message to history
+        const userMessageForHistory = { role: "user", parts: [{ text: textInput }] };
+        h.push(userMessageForHistory);
 
-        // Pass the original text input, raw files, and current history to w()
-        await w({ text: textInput, rawFiles: actualFiles, history: h.slice(0, -1) }); // Pass history *before* adding current user message
+        await w({ text: textInput, rawFiles: actualFiles, history: h.slice(0, -1) });
     }
 }
 
@@ -960,27 +1026,24 @@ temp = parseFloat(tempSlider.value);
 tempValueDisplay.textContent = temp.toFixed(1);
 });
 
-// NEW: Event listener for the new checkbox
 disableThinkingCheckbox.addEventListener('change', () => {
     disableThinkingForFlash = disableThinkingCheckbox.checked;
     console.log(`Disable thinking for Flash: ${disableThinkingForFlash ? 'enabled' : 'disabled'}`);
 });
 
-// Modify the model-select event listener to show/hide the thinking control
 s.addEventListener("change", () => {
     n = s.value;
     console.log(`Model switched to: ${n}`);
     const isImageModel = n === "gemini-2.0-flash-preview-image-generation";
     document.querySelector('.temperature-container').style.display = isImageModel ? 'none' : 'flex';
 
-    // NEW: Logic for thinking control visibility and state
     const isFlashModel = n === "gemini-2.5-flash";
     if (isFlashModel) {
-        thinkingControlContainer.style.display = 'flex'; // Show the control
+        thinkingControlContainer.style.display = 'flex';
     } else {
-        thinkingControlContainer.style.display = 'none'; // Hide it for other models
-        disableThinkingCheckbox.checked = false; // Reset checkbox state
-        disableThinkingForFlash = false; // Reset internal state
+        thinkingControlContainer.style.display = 'none';
+        disableThinkingCheckbox.checked = false;
+        disableThinkingForFlash = false;
     }
 });
 
@@ -992,19 +1055,18 @@ i.addEventListener('input', () => {
 });
 
 const attachmentPreview = document.getElementById('attachment-preview');
-attachmentPreview.style.display = 'none'; // Hide initially
+attachmentPreview.style.display = 'none';
 
-// MODIFIED: f.addEventListener('change', ...) to store raw files
 f.addEventListener('change', function() {
     fileNamesSpan.textContent = '';
     filePreviewContainer.innerHTML = '';
     currentImagePreviews = [];
-    attachedRawFiles = []; // Clear previous raw files
+    attachedRawFiles = [];
 
     let nonImageFileNames = [];
     if (f.files && f.files.length > 0) {
         attachmentPreview.style.display = 'flex';
-        attachedRawFiles = Array.from(f.files); // Store raw files
+        attachedRawFiles = Array.from(f.files);
 
         const filePromises = attachedRawFiles.map(file => {
             return new Promise((resolve) => {
@@ -1032,14 +1094,28 @@ f.addEventListener('change', function() {
     } else { attachmentPreview.style.display = 'none'; }
 });
 
-const ch = document.getElementById("changelogModal"),
-bb = document.getElementById("changelog-button"),
-cl = document.getElementsByClassName("close")[0];
-if (bb && ch && cl) {
-bb.onclick = function() { ch.style.display = "flex" };
-cl.onclick = function() { ch.style.display = "none" };
-window.onclick = function(event) { if (event.target == ch) { ch.style.display = "none"; }};
-} else { console.warn("Changelog modal elements not found."); }
+// MODIFIED: Modal handling to accommodate multiple modals
+function setupModal(buttonId, modalId, closeClass) {
+    const modal = document.getElementById(modalId);
+    const btn = document.getElementById(buttonId);
+    const span = modal.querySelector(closeClass);
+
+    if (btn && modal && span) {
+        btn.onclick = () => modal.style.display = "flex";
+        span.onclick = () => modal.style.display = "none";
+        window.addEventListener('click', (event) => {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        });
+    } else {
+        console.warn(`Modal setup failed for: ${modalId}. One or more elements not found.`);
+    }
+}
+
+setupModal('changelog-button', 'changelogModal', '.changelog-close');
+setupModal('settings-button', 'settingsModal', '.settings-close');
+
 
 function sp(message) {
 const popup = document.createElement("div");
@@ -1078,7 +1154,6 @@ preElement.appendChild(button);
 }));
 }
 
-// MODIFIED: clear chat button to also clear attachedRawFiles
 const cb = document.getElementById("clear-chat-button");
 if (cb) {
 cb.addEventListener("click", () => {
@@ -1086,7 +1161,7 @@ c.innerHTML = ""; h = [];
 lastApiCallInput = null;
 lastBotMessageElement = null;
 lastBotResponseStatus = null;
-attachedRawFiles = []; // Clear raw files on chat clear
+attachedRawFiles = [];
 fileNamesSpan.textContent = '';
 filePreviewContainer.innerHTML = '';
 document.getElementById('attachment-preview').style.display = 'none';
@@ -1095,7 +1170,6 @@ sp("Chat cleared.");
 });
 }
 
-// MODIFIED: regenerate button to pass lastApiCallInput directly to w()
 const regenerateButton = document.getElementById("regenerate-button");
 if (regenerateButton) {
     regenerateButton.addEventListener("click", async () => {
@@ -1108,18 +1182,15 @@ if (regenerateButton) {
             c.removeChild(lastBotMessageElement);
         }
         if (lastBotResponseStatus === "success") {
-            // Remove the last model message from history
             if (h.length > 0 && h[h.length - 1].role === 'model') {
                 h.pop();
             } else {
                 console.warn("History mismatch: last message was not a model message when regenerating a 'success' status.");
             }
-            // Remove the last user message from history
             if (h.length > 0 && h[h.length - 1].role === 'user') {
                 h.pop();
             }
         }
-        // Pass the stored lastApiCallInput directly to w()
         await w(lastApiCallInput);
     });
 } else { console.warn("Regenerate button not found."); }
@@ -1153,13 +1224,41 @@ preloadImage.src = 'https://github.com/crobperson/Overpriced-Haircut/blob/main/S
 const initialIsImageModel = s.value === "gemini-2.0-flash-preview-image-generation";
 document.querySelector('.temperature-container').style.display = initialIsImageModel ? 'none' : 'flex';
 
-// NEW: Initial check on page load for thinking control visibility
 const initialIsFlashModel = s.value === "gemini-2.5-flash";
 if (initialIsFlashModel) {
     thinkingControlContainer.style.display = 'flex';
 } else {
     thinkingControlContainer.style.display = 'none';
 }
+
+// NEW: Settings persistence and handling
+const autoScrollToggle = document.getElementById('auto-scroll-toggle');
+
+function saveSettings() {
+    const settings = {
+        autoScroll: autoScrollEnabled
+    };
+    localStorage.setItem('cliftonAiSettings', JSON.stringify(settings));
+}
+
+function loadSettings() {
+    const savedSettings = localStorage.getItem('cliftonAiSettings');
+    if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        // Use nullish coalescing operator to safely default to false
+        autoScrollEnabled = settings.autoScroll ?? false;
+        autoScrollToggle.checked = autoScrollEnabled;
+    }
+}
+
+autoScrollToggle.addEventListener('change', (e) => {
+    autoScrollEnabled = e.target.checked;
+    saveSettings();
+    sp(`Automatic scrolling ${autoScrollEnabled ? 'enabled' : 'disabled'}.`);
+});
+
+// Load settings on page load
+loadSettings();
 
 cC();
 </script>
