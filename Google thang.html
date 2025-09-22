@@ -1,485 +1,413 @@
 <!doctype html>
 <html lang=en>
+<head>
 <meta charset=UTF-8>
 <meta content="width=device-width,initial-scale=1" name=viewport>
 <title>Google</title>
 <link href="https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true" rel=icon type=image/png>
-<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+<script src=https://cdn.jsdelivr.net/npm/marked/marked.min.js></script>
 <style>
+:root {
+    /* Color Palette (Light Theme) */
+    --bg-color: #f4f7f9;
+    --app-bg-color: #ffffff;
+    --header-footer-bg: #ffffff;
+    --text-color-primary: #1a1d21;
+    --text-color-secondary: #5f6368;
+    --border-color: #e0e2e7;
+    --shadow-color-soft: rgba(0, 0, 0, 0.03);
+    --shadow-color-medium: rgba(0, 0, 0, 0.06);
 
-::-webkit-scrollbar {
-width: 12px;
-background-color: #c0c0c0;
+    --user-msg-bg: linear-gradient(135deg, #0078ff, #0056b3);
+    --user-msg-text: #ffffff;
+    --bot-msg-bg: #f1f3f4;
+    --bot-msg-text: #1a1d21;
+
+    --primary-color: #0078ff;
+    --primary-color-hover: #0056b3;
+    
+    --icon-button-bg: transparent;
+    --icon-button-bg-hover: #e8eaed;
+    --icon-button-fill: #5f6368;
+
+    --input-bg: #f1f3f4;
+    --input-border: #f1f3f4;
+    --input-focus-border: #0078ff;
+    --placeholder-color: #8a8d91;
+
+    --scrollbar-thumb: #bdc1c6;
+    --scrollbar-track: #f1f3f4;
+    
+    --code-bg: #282c34; /* One Dark Pro */
+    --code-text: #abb2bf;
+    --modal-overlay: rgba(0, 0, 0, 0.5);
 }
 
-::-webkit-scrollbar-track {
-background: #c0c0c0;
-border-left: 1px solid #808080;
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #131314;
+        --app-bg-color: #1e1f20;
+        --header-footer-bg: #1e1f20;
+        --text-color-primary: #e8eaed;
+        --text-color-secondary: #969ba1;
+        --border-color: #3c4043;
+        --shadow-color-soft: rgba(0, 0, 0, 0.2);
+        --shadow-color-medium: rgba(0, 0, 0, 0.3);
+
+        --user-msg-bg: linear-gradient(135deg, #3b82f6, #2563eb);
+        --user-msg-text: #ffffff;
+        --bot-msg-bg: #3c4043;
+        --bot-msg-text: #e8eaed;
+
+        --primary-color: #3b82f6;
+        --primary-color-hover: #60a5fa;
+
+        --icon-button-bg: transparent;
+        --icon-button-bg-hover: #3c4043;
+        --icon-button-fill: #969ba1;
+
+        --input-bg: #2d2e30;
+        --input-border: #3c4043;
+        --input-focus-border: #3b82f6;
+        --placeholder-color: #8a8d91;
+
+        --scrollbar-thumb: #5f6368;
+        --scrollbar-track: #2d2e30;
+        
+        --modal-overlay: rgba(0, 0, 0, 0.7);
+    }
 }
 
-::-webkit-scrollbar-thumb {
-background: #a0a0a0;
-border: 1px solid #808080;
+*, *::before, *::after { box-sizing: border-box; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-color-secondary); }
+
+html, body {
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color-primary);
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-::-webkit-scrollbar-thumb:hover {
-background: #808080;
-}
-
-
-body {
-font-family: 'VT323', monospace;
-margin: 0;
-padding: 20px;
-display: flex;
-justify-content: center;
-align-items: center;
-min-height: 100vh;
-background-color: #008080;
-color: #000000;
-}
+body { display: flex; justify-content: center; align-items: center; padding: 1rem; }
 
 .container {
-display: flex;
-flex-direction: column;
-width: 90%;
-max-width: 700px;
-height: 90vh;
-background-color: #c0c0c0;
-border: 2px solid #000000;
-box-shadow: inset -3px -3px #808080, inset 3px 3px #ffffff;
-overflow: hidden;
+    display: flex; flex-direction: column;
+    width: 100%; max-width: 900px;
+    height: 100%; max-height: 95vh;
+    background-color: var(--app-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 12px 32px var(--shadow-color-medium);
+    overflow: hidden;
 }
 
 .header {
-padding: 10px;
-background-color: #c0c0c0;
-border-bottom: 2px solid #000000;
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-wrap: wrap;
+    padding: 1rem 1.5rem;
+    background-color: var(--header-footer-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1rem; flex-shrink: 0;
 }
+.header-title { font-size: 1.25rem; font-weight: 700; }
+.header-controls-left, .header-controls-right { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.model-select-container, .temperature-container { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-color-secondary); }
 
-.model-select-container,
-.temperature-container {
-display: flex;
-align-items: center;
-margin: 5px 0;
-font-size: 16px;
+#model-select, .button-primary {
+    font-family: 'Inter', sans-serif; border-radius: 8px;
+    border: 1px solid var(--border-color); padding: 0.5rem 1rem;
+    font-size: 0.9rem; cursor: pointer;
+    transition: all 0.2s ease;
 }
+#model-select { background-color: var(--input-bg); color: var(--text-color-primary); }
+#model-select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 25%, transparent); }
 
-.model-select-container label,
-.temperature-container label {
-margin-right: 10px;
+#temperature-slider {
+    -webkit-appearance: none; appearance: none;
+    width: 100px; height: 6px; background: var(--border-color);
+    outline: none; border-radius: 3px; cursor: pointer;
 }
-
-#model-select {
-padding: 5px;
-border: 2px solid #000000;
-box-shadow: inset -2px -2px #808080, inset 2px 2px #ffffff;
-font-family: 'VT323', monospace;
-font-size: 16px;
-background-color: #c0c0c0;
-color: #000000;
+#temperature-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 16px; height: 16px; background: var(--primary-color);
+    cursor: pointer; border-radius: 50%; transition: transform 0.2s ease;
 }
+#temperature-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+#temperature-value { font-size: 0.9rem; color: var(--text-color-primary); width: 30px; text-align: right; font-weight: 500; }
 
+.button-primary {
+    background-color: var(--primary-color); color: #ffffff;
+    border-color: var(--primary-color); font-weight: 500;
+}
+.button-primary:hover { background-color: var(--primary-color-hover); border-color: var(--primary-color-hover); transform: translateY(-1px); }
+
+.icon-button {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 50%; border: none;
+    background-color: var(--icon-button-bg); cursor: pointer;
+    transition: background-color 0.2s ease; padding: 0;
+}
+.icon-button:hover { background-color: var(--icon-button-bg-hover); }
+.icon-button svg { width: 22px; height: 22px; stroke: var(--icon-button-fill); fill: none; }
+#send-button svg { fill: var(--icon-button-fill); stroke: none; }
 
 #chat-container {
-flex: 1;
-padding: 10px;
-overflow-y: auto;
-background-color: #ffffff;
-border: 2px solid #000000;
-margin: 10px;
-box-shadow: inset 2px 2px #808080, inset -2px -2px #ffffff;
-display: flex;
-flex-direction: column;
+    flex: 1; padding: 1.5rem; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 1.5rem;
 }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.message-wrapper { display: flex; gap: 10px; max-width: 85%; animation: fadeInUp 0.4s ease-out; }
+.message-wrapper.user-message-wrapper { align-self: flex-end; flex-direction: row-reverse; }
+.message-wrapper.bot-message-wrapper { align-self: flex-start; }
+
+.avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    flex-shrink: 0; background-color: var(--border-color);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 500; font-size: 1rem;
+}
+.user-message-wrapper .avatar { background: var(--user-msg-bg); color: var(--user-msg-text); content: 'U'; }
+.bot-message-wrapper .avatar { background-image: url('https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true'); background-size: 60%; background-repeat: no-repeat; background-position: center; }
 
 .message {
-padding: 10px;
-margin-bottom: 10px;
-border: 2px solid #000000;
-max-width: 75%;
-word-wrap: break-word;
-position: relative;
-white-space: pre-line;
-line-height: 1.4;
-font-size: 18px;
+    padding: 0.75rem 1.25rem; word-wrap: break-word;
+    white-space: pre-wrap; line-height: 1.6; font-size: 1rem;
+    border-radius: 20px;
 }
-
-.user-message {
-background-color: #90ee90; /* Light green */
-align-self: flex-end;
-text-align: right;
-box-shadow: 2px 2px #000000;
-}
-
-.bot-message {
-background-color: #add8e6;
-align-self: flex-start;
-box-shadow: 2px 2px #000000;
-}
+.user-message { background: var(--user-msg-bg); color: var(--user-msg-text); border-bottom-right-radius: 5px; }
+.bot-message { background-color: var(--bot-msg-bg); color: var(--bot-msg-text); border-bottom-left-radius: 5px; }
 
 .bot-message pre {
-background-color: #000000;
-color: #00ff00;
-padding: 10px;
-border: 2px solid #808080;
-overflow-x: auto;
+    background-color: var(--code-bg); color: var(--code-text);
+    padding: 1rem; border-radius: 12px; overflow-x: auto;
+    font-family: 'Roboto Mono', monospace; font-size: 0.9em;
+    position: relative; margin: 1rem 0; border: 1px solid var(--border-color);
 }
-
-.bot-message code {
-color: #00ff00;
-}
-
+.bot-message code { font-family: 'Roboto Mono', monospace; color: inherit; background: none; padding: 0; }
+.bot-message p > code { background-color: color-mix(in srgb, var(--primary-color) 10%, transparent); color: var(--primary-color); padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.9em; }
 
 .copy-button {
-position: absolute;
-top: 5px;
-right: 5px;
-background-color: #c0c0c0;
-border: 1px solid #000000;
-cursor: pointer;
-z-index: 10;
-box-shadow: 1px 1px #000000;
+    position: absolute; top: 10px; right: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px; cursor: pointer; z-index: 10;
+    padding: 6px; display: flex; align-items: center; justify-content: center;
+    transition: background-color 0.2s ease; opacity: 0.5;
 }
-
-.copy-button:active {
-box-shadow: inset 1px 1px #000000;
-}
-
-.copy-button svg {
-width: 16px;
-height: 16px;
-fill: #000000;
-}
+.bot-message pre:hover .copy-button { opacity: 1; }
+.copy-button:hover { background-color: rgba(255, 255, 255, 0.2); }
+.copy-button svg { width: 18px; height: 18px; fill: #fff; }
 
 #input-area {
-display: flex;
-padding: 10px;
-border-top: 2px solid #000000;
-background-color: #c0c0c0;
-align-items: center;
+    padding: 1rem 1.5rem; border-top: 1px solid var(--border-color);
+    background-color: var(--header-footer-bg); flex-shrink: 0;
 }
+#input-wrapper {
+    display: flex; flex-direction: column; gap: 0.5rem;
+    background-color: var(--input-bg); border: 1px solid var(--input-border);
+    border-radius: 16px; padding: 0.5rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+#input-wrapper:focus-within { border-color: var(--input-focus-border); box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus-border) 25%, transparent); }
+
+#main-input-area { display: flex; align-items: flex-end; gap: 0.5rem; }
 
 #input-box {
-flex-grow: 1;
-padding: 8px;
-border: 2px solid #000000;
-box-shadow: inset 2px 2px #808080, inset -2px -2px #ffffff;
-resize: none;
-font-size: 16px;
-outline: 0;
-background-color: #ffffff;
-color: #000000;
-line-height: 1.5;
-font-family: 'VT323', monospace;
+    flex-grow: 1; padding: 0.6rem 0.5rem; border: none; resize: none;
+    font-size: 1rem; outline: 0; background-color: transparent;
+    color: var(--text-color-primary); line-height: 1.5;
+    font-family: 'Inter', sans-serif; max-height: 200px; overflow-y: auto;
+}
+#input-box::placeholder { color: var(--placeholder-color); }
+
+#file-input { display: none; }
+
+#attachment-preview { padding: 0.5rem 0.75rem 0; display: flex; align-items: center; gap: 0.5rem; }
+#file-preview-container { display: flex; gap: 5px; align-items: center; }
+.file-preview-image {
+    height: 40px; width: 40px; object-fit: cover;
+    border: 2px solid var(--border-color); border-radius: 6px;
+}
+#file-names {
+    font-size: 0.8rem; color: var(--text-color-secondary); max-width: 150px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
-#input-box::placeholder {
-color: #808080;
-}
-
-
-#send-button {
-padding: 8px 20px;
-margin-left: 10px;
-background-color: #c0c0c0;
-color: #000000;
-border: 2px solid #000000;
-cursor: pointer;
-font-size: 16px;
-font-family: 'VT323', monospace;
-box-shadow: 2px 2px #000000;
-}
-
-#send-button:active {
-box-shadow: inset 2px 2px #000000;
-}
-
-.file-upload-label {
-display: inline-block;
-padding: 8px 15px;
-margin-right: 10px;
-background-color: #c0c0c0;
-color: #000000;
-border: 2px solid #000000;
-cursor: pointer;
-font-size: 16px;
-font-family: 'VT323', monospace;
-box-shadow: 2px 2px #000000;
-}
-
-.file-upload-label:active {
-box-shadow: inset 2px 2px #000000;
-}
-
-#file-input {
-display: none;
-}
-
+@keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60%, 100% { content: '...'; } }
 #typing-indicator {
-padding: 10px;
-font-style: italic;
-color: #000000;
-background-color: #c0c0c0;
-border-top: 2px solid #000000;
-display: none;
-font-size: 16px;
+    padding: 0.5rem 1.5rem; font-style: italic; color: var(--text-color-secondary);
+    background-color: var(--header-footer-bg); border-top: 1px solid var(--border-color);
+    display: none; font-size: 0.9rem;
 }
-
-@media (max-width:768px) {
-.container {
-width: 95%;
-height: 95vh;
-}
-
-.message {
-max-width: 85%;
-}
-}
-
-@media (max-width:480px) {
-.header {
-flex-direction: column;
-align-items: flex-start;
-}
-
-.model-select-container,
-.temperature-container {
-width: 100%;
-justify-content: space-between;
-margin-bottom: 10px;
-}
-
-#send-button {
-padding: 8px 12px;
-}
-
-.file-upload-label {
-padding: 8px 12px;
-}
-}
+#typing-indicator::after { content: '...'; animation: dots 1.5s infinite; display: inline-block; width: 20px; text-align: left; }
 
 .modal {
-display: none;
-position: fixed;
-z-index: 100;
-left: 0;
-top: 0;
-width: 100%;
-height: 100%;
-overflow: auto;
-background-color: rgba(0, 0, 0, .5);
+    display: none; position: fixed; z-index: 100; left: 0; top: 0;
+    width: 100%; height: 100%; overflow: auto;
+    background-color: var(--modal-overlay); animation: fadeIn 0.3s ease;
+    align-items: center; justify-content: center;
 }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .modal-content {
-background-color: #c0c0c0;
-color: #000000;
-margin: 15% auto;
-padding: 20px;
-border: 2px solid #000000;
-width: 80%;
-max-width: 600px;
-box-shadow: inset -3px -3px #808080, inset 3px 3px #ffffff;
+    background-color: var(--app-bg-color); color: var(--text-color-primary);
+    margin: auto; padding: 0; border: 1px solid var(--border-color);
+    width: 90%; max-width: 600px; border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: slideIn 0.3s ease; display: flex; flex-direction: column;
 }
-
+@keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+.modal-header h2 { margin: 0; font-size: 1.5rem; }
+.modal-body { padding: 1.5rem; max-height: 60vh; overflow-y: auto; }
 .close {
-color: #000000;
-float: right;
-font-size: 28px;
-font-weight: 700;
-cursor: pointer;
+    color: var(--text-color-secondary); font-size: 28px;
+    font-weight: 700; cursor: pointer; transition: color 0.2s ease;
+    line-height: 1;
 }
+.close:hover, .close:focus { color: #ff4d4d; }
 
-.close:hover,
-.close:focus {
-color: #ff0000;
-}
-
-.button-primary,
-.button-secondary {
-padding: 8px 16px;
-margin: 10px 5px;
-background-color: #c0c0c0;
-color: #000000;
-border: 2px solid #000000;
-cursor: pointer;
-font-size: 14px;
-font-family: 'VT323', monospace;
-box-shadow: 2px 2px #000000;
-}
-
-.button-primary:active,
-.button-secondary:active {
-box-shadow: inset 2px 2px #000000;
-}
-
-#last-updated {
-position: fixed;
-top: 10px;
-right: 10px;
-font-size: 14px;
-color: #000000;
-background-color: #c0c0c0;
-padding: 5px 10px;
-border: 1px solid #000000;
-font-weight: 700;
-z-index: 100;
-}
-
-.footer-text {
-font-size: 14px;
-text-align: center;
-color: #000000;
-padding: 10px;
-}
+.footer-text { font-size: 0.8rem; text-align: center; color: var(--text-color-secondary); padding: 0.75rem; }
 
 .popup-message {
-position: fixed;
-top: -60px;
-left: 50%;
-transform: translateX(-50%);
-background-color: #ffff00;
-color: #000000;
-padding: 10px 20px;
-border: 2px solid #000000;
-z-index: 1000;
-opacity: 0;
-transition: opacity .5s ease-out, top .5s ease-out;
-box-shadow: 3px 3px #000000;
+    position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+    background-color: var(--code-bg); color: #fff; padding: 0.75rem 1.5rem;
+    border-radius: 8px; z-index: 1000; opacity: 0;
+    transition: opacity 0.3s ease, bottom 0.3s ease;
+    box-shadow: 0 3px 10px var(--shadow-color-medium); font-weight: 500;
 }
-
-.popup-message.show {
-opacity: 1;
-top: 20px;
-}
-
-#temperature-value {
-font-size: 16px;
-color: #000000;
-width: 30px;
-text-align: right;
-}
-
-#file-names {
-font-size: 14px;
-color: #000000;
-margin-left: 10px;
-margin-top: 5px;
-display: inline-block;
-max-width: 50%;
-overflow: hidden;
-text-overflow: ellipsis;
-white-space: nowrap;
-vertical-align: middle;
-}
-
-#overlay-image {
-display: none;
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-image: url('https://github.com/crobperson/Overpriced-Haircut/blob/main/Screenshot.png?raw=true');
-background-size: cover;
-background-repeat: no-repeat;
-background-position: center;
-background-color: rgba(0,0,0,0.5);
-z-index: 1001;
-pointer-events: none;
-}
-
-#overlay-image.show {
-display: block;
-}
-#file-preview-container {
-display: flex;
-gap: 5px;
-margin-left: 10px;
-margin-right: 5px;
-max-height: 45px;
-overflow: hidden;
-align-items: center;
-}
-
-.file-preview-image {
-max-height: 40px;
-max-width: 40px;
-height: 40px;
-width: 40px;
-object-fit: cover;
-border: 2px solid #000000;
-}
+.popup-message.show { opacity: 1; bottom: 20px; }
 
 .message-image {
-max-width: 150px;
-max-height: 150px;
-margin-top: 8px;
-cursor: pointer;
-display: block;
-border: 2px solid #000000;
+    max-width: 150px; max-height: 150px; margin-top: 8px; cursor: pointer;
+    display: block; border: 2px solid var(--border-color); border-radius: 12px;
 }
-
 .generated-message-image {
-max-width: 100%;
-max-height: 500px;
-margin-top: 8px;
-display: block;
-border: 2px solid #000000;
-object-fit: contain;
+    max-width: 100%; max-height: 500px; margin-top: 8px; display: block;
+    border: 2px solid var(--border-color); border-radius: 12px; object-fit: contain;
 }
+.user-message .images-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; justify-content: flex-end; }
+.user-message > p { margin-bottom: 5px; }
 
-
-.user-message .images-container {
-display: flex;
-flex-wrap: wrap;
-gap: 5px;
-margin-top: 5px;
-justify-content: flex-end;
+#overlay-image {
+    display: none; position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: url('https://github.com/crobperson/Overpriced-Haircut/blob/main/Screenshot.png?raw=true');
+    background-size: cover; background-repeat: no-repeat; background-position: center;
+    background-color: rgba(0,0,0,0.5); z-index: 1001; pointer-events: none;
 }
+#overlay-image.show { display: block; }
 
-.user-message > p {
-margin-bottom: 5px;
+#last-updated { display: none; }
+
+@media (max-width: 768px) {
+    body { padding: 0; }
+    .container { height: 100vh; max-height: 100vh; border-radius: 0; border: none; }
+    .header { padding: 0.75rem 1rem; flex-direction: column; align-items: stretch; }
+    .header-title { text-align: center; margin-bottom: 0.5rem; }
+    .header-controls-left, .header-controls-right { justify-content: space-between; }
+    #chat-container { padding: 1rem; }
+    #input-area { padding: 0.5rem 0.75rem; }
+    .message-wrapper { max-width: 95%; }
+    .modal-content { margin: 5% auto; }
 }
-
 </style>
-<script src=https://cdn.jsdelivr.net/npm/marked/marked.min.js></script>
+</head>
+<body>
+
 <div class=container>
-<div class=header>
-<div class=model-select-container><label for=model-select>AI Model:</label> <select id=model-select>
-<option value=gemini-2.5-flash>Clifton Flash</option>
-<option value=gemini-2.5-pro>Clifton Pro</option>
-<option value=gemini-2.0-flash-preview-image-generation>Clifton Image Gen</option>
-</select></div>
-<div class=temperature-container><label for=temperature-slider>Temp:</label> <input id=temperature-slider
-type=range max=1 min=0 step=0.1 value=1> <span id=temperature-value>1.0</span></div>
-<div>
-<button id=changelog-button class=button-primary>Changelog</button>
-<button id=clear-chat-button class=button-secondary>Clear Chat</button>
-<button id=regenerate-button class=button-secondary>Regenerate</button>
+    <header class=header>
+        <div class="header-title">Clifton AI</div>
+        <div class="header-controls-left">
+            <div class=model-select-container>
+                <label for=model-select>Model:</label>
+                <select id=model-select>
+                    <option value=gemini-2.5-flash>Clifton Flash</option>
+                    <option value=gemini-2.5-pro>Clifton Pro</option>
+                    <option value=gemini-2.0-flash-preview-image-generation>Clifton Image Gen</option>
+                </select>
+            </div>
+            <div class=temperature-container>
+                <label for=temperature-slider>Temp:</label>
+                <input id=temperature-slider type=range max=1 min=0 step=0.1 value=1>
+                <span id=temperature-value>1.0</span>
+            </div>
+            <!-- NEW: Thinking control for Gemini Flash -->
+            <div id="thinking-control-container" class="model-select-container" style="display: none;">
+                <input type="checkbox" id="disable-thinking-checkbox">
+                <label for="disable-thinking-checkbox">Disable Thinking</label>
+            </div>
+        </div>
+        <div class="header-controls-right">
+            <button id=regenerate-button class="icon-button" aria-label="Regenerate last response" title="Regenerate last response"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></button>
+            <button id=clear-chat-button class="icon-button" aria-label="Clear chat" title="Clear chat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+            <button id=changelog-button class=button-primary>Changelog</button>
+        </div>
+    </header>
+    
+    <main id=chat-container></main>
+    
+    <div id=typing-indicator>Clifton is typing</div>
+    
+    <footer id=input-area>
+        <div id="input-wrapper">
+            <div id="attachment-preview">
+                <div id="file-preview-container"></div>
+                <span id=file-names></span>
+            </div>
+            <div id="main-input-area">
+                <label for=file-input class="icon-button file-upload-label" aria-label="Attach files" title="Attach files">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                </label>
+                <input id=file-input type=file accept=".html,image/*,application/pdf,audio/*" multiple>
+                <textarea id=input-box placeholder="Enter your message..." rows=1></textarea>
+                <button id=send-button class="icon-button" aria-label="Send message" title="Send message">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                </button>
+            </div>
+        </div>
+    </footer>
+    <div class=footer-text>Clifton® is not affiliated with Google in anyway!</div>
 </div>
-</div>
-<div id=chat-container></div>
-<div id=typing-indicator>Clifton is typing...</div>
-<div id=input-area><label for=file-input class=file-upload-label>Choose File</label> <input id=file-input type=file
-accept=.html,image/*,application/pdf,audio/* multiple> <span id=file-names></span> <div id="file-preview-container"></div><textarea id=input-box
-placeholder="Enter your message..." rows=1></textarea> <button id=send-button>Send</button></div>
-<p class=footer-text>Clifton® is not affiliated with Google in anyway!</div>
+
 <div id=popup-container></div>
+
 <div class=modal id=changelogModal>
-<div class=modal-content><span class=close>×</span>
-<h2>Changelog</h2>
-<p><strong>Version 2.1 (May 10, 2025)</strong><br>- Added Image Generation model (Clifton Image Gen). Supports text-to-image and image-to-image (editing by uploading an image with your prompt).<br>
-<p><strong>Version 2.0 (May 9, 2025)</strong><br>- Revamped the S**tty UI.<br><p><strong>Version 1.83 (April 9, 2025)</strong><br>- Added Image Previews Along With General Improvements<br><p><strong>Version 1.82 (March 31, 2025)</strong><br>- Improved the Clifton pro and flash model (I like chicken)<br><p><strong>Version 1.81 (Feb 6, 2025)</strong><br>- Improved the Clifton pro model (I've ran out of ideas)<br><p><strong>Version 1.8 (January 31, 2025)</strong><br>- Press ctrl 3 times<br><p><strong>Version 1.7 (January 22, 2025)</strong><br>- The Thinker is back... (Currently the best model)<br><p><strong>Version 1.65 (January 16, 2025)</strong><br>- Message Regeneration<br><p><strong>Version 1.6 (January 14, 2025)</strong><br>- Fixed bug!!!<br>
+    <div class=modal-content>
+        <div class="modal-header">
+            <h2>Changelog</h2>
+            <span class=close>×</span>
+        </div>
+        <div class="modal-body">
+            <p><strong>Version 2.1 (May 10, 2025)</strong><br>- Added Image Generation model (Clifton Image Gen). Supports text-to-image and image-to-image (editing by uploading an image with your prompt).</p>
+            <p><strong>Version 2.0 (May 9, 2025)</strong><br>- Revamped the S**tty UI.</p>
+            <p><strong>Version 1.83 (April 9, 2025)</strong><br>- Added Image Previews Along With General Improvements</p>
+            <p><strong>Version 1.82 (March 31, 2025)</strong><br>- Improved the Clifton pro and flash model (I like chicken)</p>
+            <p><strong>Version 1.81 (Feb 6, 2025)</strong><br>- Improved the Clifton pro model (I've ran out of ideas)</p>
+            <p><strong>Version 1.8 (January 31, 2025)</strong><br>- Press ctrl 3 times</p>
+            <p><strong>Version 1.7 (January 22, 2025)</strong><br>- The Thinker is back... (Currently the best model)</p>
+            <p><strong>Version 1.65 (January 16, 2025)</strong><br>- Message Regeneration</p>
+            <p><strong>Version 1.6 (January 14, 2025)</strong><br>- Fixed bug!!!</p>
+        </div>
+    </div>
 </div>
-</div>
+
 <div id="overlay-image"></div>
+
 <script>
 const b = ["01000001 01001001 01111010 01100001 01010011 01111001 01000011 01010001 01110001 01111001 01101010 00110111 01000001 01001101 00111001 01010101 00111000 01011010 01100001 01001100 01010000 01001000 01000111 01011001 00110000 01100100 01110110 01100111 01110101 00110000 01101000 01000101 00110011 01101111 01110010 00110101 01010111 01000011 01100011","01000001 01001001 01111010 01100001 01010011 01111001 01000001 01001110 01100100 01011010 01110001 01001110 01111010 01101000 01001010 01010100 00110010 01110101 00110110 01011000 01001111 01101010 01000001 01111010 01001001 01010010 00110001 01100001 00101101 00110101 00101101 01101110 01001110 01110101 01000111 01100011 01100010 01110110 00110100","01000001 01001001 01111010 01100001 01010011 01111001 01000001 01100101 01011010 01100010 01000110 01101100 01001011 00110001 01100001 01001111 00110101 01110101 01010100 01000011 00110001 01001000 01111000 01010101 01011111 01000100 01000110 01010001 00111000 00110111 01110001 01101111 01010110 00110111 01111001 00101101 01000100 01000101 01110111","01000001 01001001 01111010 01100001 01010011 01111001 01000011 01101001 01100111 01101100 01011010 01110010 01101000 01100011 01100001 00101101 01001111 01010011 01001010 01010011 01010100 00110011 01100111 01000100 01010110 01110100 00111000 01111000 01100100 01001101 01010111 01110110 01000111 01110111 01010001 01000111 01001100 00110100 00110100","01000001 01001001 01111010 01100001 01010011 01111001 01000011 01011000 01001100 01011001 01001101 01101100 00111000 00110011 01000011 00110100 00111001 01101000 00110001 01001101 01010010 00110010 01110001 01010101 01100101 01010100 01010011 01010110 01101110 01101010 01000110 01001001 01110111 01100111 01010011 00110100 01101110 01011111 01100111","01000001 01001001 01111010 01100001 01010011 01111001 01000010 01100011 01110001 01101101 01010110 01010100 00111000 01000001 01100010 01010101 01001111 01101110 01100010 00111000 01000011 01110100 01101000 01001000 01001010 01011000 01001001 01010010 01101000 01100101 01100011 00110100 01110000 00101101 01011010 01101010 01100100 00110010 01010101"];
+
 function str(e) {
 e = e.replace(/[^01]/g, "");
 let t = "";
@@ -506,20 +434,24 @@ n = "gemini-2.5-flash",
 v = !1,
 temp = 1;
 
-
-let currentImagePreviews = [];
-// New variables for regeneration logic
-let lastApiCallInput = null; // Stores the input (contents array or userParts array) for the last bot generation attempt
-let lastBotMessageElement = null; // Stores the DOM element of the last bot message
-let lastBotResponseStatus = null; // "success", "empty", "error"
+// NEW: Global variable to store raw files for re-uploading
+let attachedRawFiles = [];
+let currentImagePreviews = []; // This is for local display, not for API payload directly
+let lastApiCallInput = null; // Will store the original user input (text + raw files)
+let lastBotMessageElement = null;
+let lastBotResponseStatus = null;
 
 
 const tempSlider = document.getElementById("temperature-slider"),
 tempValueDisplay = document.getElementById("temperature-value");
 
-// The 'd' function is no longer used for general API errors in w(),
-// as w() now handles its own error display.
-// It could be kept for other specific error messages if needed elsewhere.
+// NEW: Get references to the new thinking control elements
+const thinkingControlContainer = document.getElementById("thinking-control-container");
+const disableThinkingCheckbox = document.getElementById("disable-thinking-checkbox");
+
+// NEW: Global variable to track if thinking should be disabled for Flash
+let disableThinkingForFlash = false;
+
 function d(e) {
 if (v) {
 const t = document.createElement("div");
@@ -537,83 +469,6 @@ reader.readAsDataURL(file);
 });
 }
 
-
-async function g(apiKey, contents, modelName, outputElement) {
-const safetySettings = [
-{ "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
-{ "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
-{ "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
-{ "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" },
-];
-
-const apiRequestBody = {
-contents: contents,
-generationConfig: {
-temperature: temp,
-maxOutputTokens: 65536,
-},
-safetySettings: safetySettings,
-};
-
-
-const response = await fetch(`${u}/v1beta/models/${modelName}:streamGenerateContent?alt=sse&key=${apiKey}`, {
-method: "POST",
-headers: {"Content-Type": "application/json"},
-body: JSON.stringify(apiRequestBody)
-});
-
-if (!response.ok) {
-let errorMsg = "Unknown API error";
-try {
-const errorData = await response.json();
-errorMsg = errorData.error?.message || JSON.stringify(errorData);
-} catch (e) {
-errorMsg = `API request failed with status ${response.status}: ${response.statusText}`;
-}
-throw new Error(errorMsg); // Throw error for w() to catch
-}
-
-const reader = response.body.getReader();
-let accumulatedResponse = "";
-let decodedChunk = "";
-outputElement.innerHTML = "";
-
-while (true) {
-const { done, value } = await reader.read();
-if (done) break;
-decodedChunk += new TextDecoder().decode(value);
-let newlineIndex;
-while ((newlineIndex = decodedChunk.indexOf('\n')) >= 0) {
-const line = decodedChunk.substring(0, newlineIndex).trim();
-decodedChunk = decodedChunk.substring(newlineIndex + 1);
-if (line.startsWith("data:")) {
-try {
-const jsonData = JSON.parse(line.substring(5));
-if (jsonData.candidates && jsonData.candidates[0]?.content?.parts) {
-const textPart = jsonData.candidates[0].content.parts[0]?.text;
-if (textPart) {
-accumulatedResponse += textPart;
-outputElement.innerHTML = marked.parse(accumulatedResponse);
-c.scrollTop = c.scrollHeight;
-}
-}
-if (jsonData.candidates && jsonData.candidates[0]?.finishReason && jsonData.candidates[0].finishReason !== "STOP") {
-console.warn("Stream stopped for reason:", jsonData.candidates[0].finishReason);
-}
-if (jsonData.promptFeedback?.blockReason) {
-console.error("Request blocked:", jsonData.promptFeedback.blockReason);
-throw new Error(`Request blocked due to safety settings: ${jsonData.promptFeedback.blockReason}`);
-}
-} catch (e) {
-console.error("Error parsing SSE data line:", e, "Line:", line);
-}
-}
-}
-}
-outputElement.innerHTML = marked.parse(accumulatedResponse);
-cC();
-return accumulatedResponse;
-}
 
 async function generateImageApiCall(apiKey, contents, modelName) {
 const safetySettings = [
@@ -645,7 +500,7 @@ errorMsg = errorData.error?.message || JSON.stringify(errorData);
 } catch (e) {
 errorMsg = `Image API request failed with status ${response.status}: ${response.statusText}`;
 }
-throw new Error(errorMsg); // Throw error for w() to catch
+throw new Error(errorMsg);
 }
 
 const responseData = await response.json();
@@ -673,260 +528,13 @@ return { text: botTextResponse.trim(), imageBase64: botImageBase64, imageMimeTyp
 }
 
 
-
-async function a() {
-const textInput = i.value.trim();
-const actualFiles = Array.from(f.files);
-const previewsToShow = [...currentImagePreviews];
-
-if (textInput === "" && actualFiles.length === 0) return;
-
-const userMessageDiv = document.createElement("div");
-userMessageDiv.classList.add("message", "user-message");
-if (textInput) {
-const textElement = document.createElement('p');
-textElement.textContent = textInput;
-userMessageDiv.appendChild(textElement);
-}
-if (previewsToShow.length > 0) {
-const imageContainer = document.createElement('div');
-imageContainer.className = 'images-container';
-previewsToShow.forEach(previewData => {
-const img = document.createElement('img');
-img.src = previewData.dataUrl;
-img.classList.add('message-image');
-img.title = previewData.name;
-img.alt = previewData.name;
-imageContainer.appendChild(img);
-});
-userMessageDiv.appendChild(imageContainer);
-}
-if (!textInput && previewsToShow.length === 0 && actualFiles.length > 0) {
-const fileInfoElement = document.createElement('p');
-fileInfoElement.textContent = `Attached ${actualFiles.length} file(s): ${actualFiles.map(file => file.name).join(', ')}`;
-userMessageDiv.appendChild(fileInfoElement);
-}
-c.appendChild(userMessageDiv);
-c.scrollTop = c.scrollHeight;
-
-i.value = "";
-f.value = "";
-fileNamesSpan.textContent = '';
-filePreviewContainer.innerHTML = '';
-currentImagePreviews = [];
-
-t.style.display = "block";
-
-let newUserParts = [];
-if (textInput) {
-newUserParts.push({ text: textInput });
-}
-
-if (n === "gemini-2.0-flash-preview-image-generation") {
-let hasTextPrompt = newUserParts.some(p => p.text && p.text.trim() !== "");
-if (!hasTextPrompt) {
-console.log("Image Gen: Text prompt is required.");
-t.style.display = "none";
-const errDiv = document.createElement("div");
-errDiv.classList.add("message", "bot-message");
-errDiv.textContent = "For image generation, a text prompt is required. You can optionally include one image for editing.";
-c.appendChild(errDiv);
-c.scrollTop = c.scrollHeight;
-return;
-}
-
-if (actualFiles.length > 0) {
-const imageFile = actualFiles.find(file => file.type.startsWith('image/'));
-if (imageFile) {
-try {
-const base64Data = await fileToBase64(imageFile);
-newUserParts.push({
-inline_data: {
-mime_type: imageFile.type,
-data: base64Data
-}
-});
-} catch (error) {
-console.error(`Error converting image ${imageFile.name} to base64:`, error);
-// d(`Failed to process image ${imageFile.name} for generation: ${error.message}`); // Removed d() call here
-}
-}
-}
-const userMessageForHistory = { role: "user", parts: newUserParts };
-h.push(userMessageForHistory); // Add user message to history
-lastApiCallInput = newUserParts; // Store input for regeneration
-await w(newUserParts);
-} else {
-let fileProcessingPromises = actualFiles.map(async (file) => {
-try {
-if (file.type.startsWith('text/') || file.type === 'text/html' || file.type === 'application/json' || file.type === 'application/xml') {
-const content = await fT(file);
-return { text: `--- File Start: ${file.name} ---\n${content}\n--- File End: ${file.name} ---` };
-} else if (file.type.startsWith('image/') || file.type.startsWith('audio/') || file.type === 'application/pdf' || file.type.startsWith('video/')) {
-const uploadedFile = await z(file);
-return { file_data: { mime_type: file.type, file_uri: uploadedFile.file.uri } };
-} else {
-console.warn(`Unsupported file type for direct API processing: ${file.name} (${file.type}). Sending as text note.`);
-return { text: `[Attached file: ${file.name} (${file.type}) - Content not processed]` };
-}
-} catch (error) {
-console.error(`Error processing file ${file.name}:`, error);
-// d(`Failed to process file ${file.name}: ${error.message}`); // Removed d() call here
-return null;
-}
-});
-const filePartsForApi = (await Promise.all(fileProcessingPromises)).filter(p => p !== null);
-newUserParts.push(...filePartsForApi);
-
-if (newUserParts.length > 0) {
-const newUserMessage = { role: "user", parts: newUserParts };
-const historyForApi = [...h, newUserMessage];
-h.push(newUserMessage); // Add user message to history
-lastApiCallInput = historyForApi; // Store input for regeneration
-await w(historyForApi);
-} else {
-console.log("No valid content (text or processed files) to send.");
-t.style.display = "none";
-}
-}
-}
-
-
-
-function fT(file) {
-return new Promise(((resolve, reject) => {
-const reader = new FileReader;
-reader.onload = e => resolve(e.target.result);
-reader.onerror = e => reject(e);
-reader.readAsText(file);
-}))
-}
-
-
-// Renamed argument from conversationHistoryOrPartsForImageGen to apiInput
-async function w(apiInput) {
-    lastApiCallInput = apiInput; // Store the input for potential regeneration
-
-    let botReplied = false;
-    const botMessageDiv = document.createElement("div");
-    botMessageDiv.classList.add("message", "bot-message");
-    botMessageDiv.innerHTML = "<i>Clifton is typing...</i>";
-    c.appendChild(botMessageDiv);
-    c.scrollTop = c.scrollHeight;
-    t.style.display = 'block';
-
-    lastBotMessageElement = botMessageDiv; // Store reference to the current bot message div
-    lastBotResponseStatus = null; // Reset status for this new attempt
-
-    let finalBotTextResponse = "";
-    let finalBotImageBase64 = null;
-    let finalBotImageMimeType = null;
-    let contentWasAdded = false; // For image model, tracks if text or image was generated
-    let errorOccurredDuringApiCall = false; // Flag to track if any API call failed
-
-    for (const apiKey of k) {
-        try {
-            if (n === "gemini-2.0-flash-preview-image-generation") {
-                const userParts = apiInput; // For image gen, apiInput is just the user parts
-                const imageGenContents = [{ role: "user", parts: userParts }];
-
-                const result = await generateImageApiCall(apiKey, imageGenContents, n);
-                
-                finalBotTextResponse = result.text;
-                finalBotImageBase64 = result.imageBase64;
-                finalBotImageMimeType = result.imageMimeType;
-
-                if (finalBotTextResponse || finalBotImageBase64) {
-                    contentWasAdded = true;
-                }
-                botReplied = true; // An attempt was made and we got a response (even if empty)
-                break; // Stop trying other keys if one succeeded
-            } else {
-                // For text models, apiInput is the full history
-                finalBotTextResponse = await g(apiKey, apiInput, n, botMessageDiv);
-                if (finalBotTextResponse !== null) { // g() returns null on error, empty string on empty response
-                    botReplied = true;
-                    break; // Stop trying other keys if one succeeded
-                }
-            }
-        } catch (error) {
-            console.error(`Error during API call with key [...] for model ${n}: ${error.message}`);
-            errorOccurredDuringApiCall = true; // Mark that an error occurred
-            if (v) { // Only display immediate error if verbose mode is on
-                const tempErrorDiv = document.createElement("div");
-                tempErrorDiv.classList.add("message", "bot-message");
-                tempErrorDiv.textContent = `API Key Error: ${error.message}`;
-                c.appendChild(tempErrorDiv);
-                c.scrollTop = c.scrollHeight;
-            }
-        }
-    }
-
-    // After trying all API keys
-    if (botReplied) {
-        if (n === "gemini-2.0-flash-preview-image-generation") {
-            botMessageDiv.innerHTML = ''; // Clear "typing..."
-            let modelPartsForHistory = [];
-
-            if (finalBotTextResponse) {
-                const textElement = document.createElement('div');
-                textElement.innerHTML = marked.parse(finalBotTextResponse);
-                botMessageDiv.appendChild(textElement);
-                modelPartsForHistory.push({ text: finalBotTextResponse });
-            }
-            if (finalBotImageBase64) {
-                const imgElement = document.createElement('img');
-                imgElement.src = `data:${finalBotImageMimeType};base64,${finalBotImageBase64}`;
-                imgElement.classList.add('generated-message-image');
-                imgElement.alt = "Generated Image";
-                botMessageDiv.appendChild(imgElement);
-                if (!finalBotTextResponse) { // If only image, add a placeholder text for history
-                    modelPartsForHistory.push({ text: "[Image Generated]" });
-                }
-            }
-
-            if (contentWasAdded) {
-                lastBotResponseStatus = "success";
-                h.push({ role: "model", parts: modelPartsForHistory });
-            } else {
-                botMessageDiv.innerHTML = "<i>Image model returned no text or image.</i>";
-                lastBotResponseStatus = "empty";
-            }
-        } else { // Text model
-            if (finalBotTextResponse.trim() !== "") {
-                // g() already updated botMessageDiv.innerHTML with parsed markdown
-                lastBotResponseStatus = "success";
-                h.push({ role: "model", parts: [{ text: finalBotTextResponse }] });
-            } else {
-                botMessageDiv.innerHTML = "<i>Received an empty response.</i>";
-                lastBotResponseStatus = "empty";
-            }
-        }
-    } else {
-        // All API keys failed or no response was received
-        if (errorOccurredDuringApiCall) {
-            botMessageDiv.innerHTML = `<span style="color: red;">Error: I'm sorry, I'm currently unable to process your request after trying all available resources. Please try again later.</span>`;
-            lastBotResponseStatus = "error";
-        } else {
-            botMessageDiv.innerHTML = "<i>Received an empty response after trying all resources.</i>";
-            lastBotResponseStatus = "empty";
-        }
-    }
-
-    t.style.display = "none";
-    c.scrollTop = c.scrollHeight;
-    cC();
-}
-
-
-
-async function z(file) {
+// MODIFIED: z() now accepts an apiKey parameter
+async function z(file, apiKey) {
 return new Promise(async (resolve, reject) => {
 try {
-const uploadApiKey = k[0];
-if (!uploadApiKey) return reject(new Error("No API key available for file uploads."));
+if (!apiKey) return reject(new Error("No API key provided for file upload."));
 
-const startResponse = await fetch(`${u}/upload/v1beta/files?key=${uploadApiKey}`, {
+const startResponse = await fetch(`${u}/upload/v1beta/files?key=${apiKey}`, { // Use provided apiKey
 method: "POST",
 headers: {
 "X-Goog-Upload-Protocol": "resumable",
@@ -975,71 +583,460 @@ reject(error);
 }
 
 
+// MODIFIED: w() function to handle re-uploading files for each API key
+async function w(apiInput) {
+    // apiInput will now be an object: { text: string, rawFiles: File[], history: Array } for non-image-gen models
+    // For image gen model, apiInput will be the newUserParts array directly.
+
+    lastApiCallInput = apiInput; // Store the original user input for regeneration
+
+    let botReplied = false;
+
+    const messageWrapper = document.createElement("div");
+    messageWrapper.classList.add("message-wrapper", "bot-message-wrapper");
+
+    const avatar = document.createElement("div");
+    avatar.classList.add("avatar");
+
+    const botMessageDiv = document.createElement("div");
+    botMessageDiv.classList.add("message", "bot-message");
+    botMessageDiv.innerHTML = "<i>Clifton is typing...</i>";
+
+    messageWrapper.appendChild(avatar);
+    messageWrapper.appendChild(botMessageDiv);
+    c.appendChild(messageWrapper);
+    c.scrollTop = c.scrollHeight;
+    t.style.display = 'block';
+
+    lastBotMessageElement = messageWrapper;
+    lastBotResponseStatus = null;
+
+    let finalBotTextResponse = "";
+    let finalBotImageBase64 = null;
+    let finalBotImageMimeType = null;
+    let contentWasAdded = false;
+    let errorOccurredDuringApiCall = false;
+
+    for (const apiKey of k) {
+        try {
+            let currentApiContents = []; // Contents for the current API key attempt
+
+            if (n === "gemini-2.0-flash-preview-image-generation") {
+                // For image gen model, apiInput is already the prepared parts array (including base64 image if any)
+                currentApiContents = [{ role: "user", parts: apiInput }];
+                const result = await generateImageApiCall(apiKey, currentApiContents, n);
+
+                finalBotTextResponse = result.text;
+                finalBotImageBase64 = result.imageBase64;
+                finalBotImageMimeType = result.imageMimeType;
+
+                if (finalBotTextResponse || finalBotImageBase64) {
+                    contentWasAdded = true;
+                }
+                botReplied = true;
+                break; // Break on success for image gen model
+            } else {
+                // For other models, we need to process raw files for each API key
+                let userPartsForCurrentApiKey = [];
+                if (apiInput.text && apiInput.text.trim() !== "") {
+                    userPartsForCurrentApiKey.push({ text: apiInput.text });
+                }
+
+                // Process raw files for the current API key
+                const fileProcessingPromises = apiInput.rawFiles.map(async (file) => {
+                    try {
+                        if (file.type.startsWith('text/') || file.type === 'text/html' || file.type === 'application/json' || file.type === 'application/xml') {
+                            const content = await fT(file); // fT doesn't depend on API key, can be cached or re-read
+                            return { text: `--- File Start: ${file.name} ---\n${content}\n--- File End: ${file.name} ---` };
+                        } else if (file.type.startsWith('image/') || file.type.startsWith('audio/') || file.type === 'application/pdf' || file.type.startsWith('video/')) {
+                            // MODIFIED: Call z() with the current apiKey
+                            const uploadedFile = await z(file, apiKey);
+                            return { file_data: { mime_type: file.type, file_uri: uploadedFile.file.uri } };
+                        } else {
+                            console.warn(`Unsupported file type for direct API processing: ${file.name} (${file.type}). Sending as text note.`);
+                            return { text: `[Attached file: ${file.name} (${file.type}) - Content not processed]` };
+                        }
+                    } catch (error) {
+                        console.error(`Error processing file ${file.name} with API key ${apiKey}:`, error);
+                        throw error; // Re-throw to be caught by the outer try-catch
+                    }
+                });
+
+                const filePartsForApi = (await Promise.all(fileProcessingPromises)).filter(p => p !== null);
+                userPartsForCurrentApiKey.push(...filePartsForApi);
+
+                if (userPartsForCurrentApiKey.length === 0) {
+                    console.log("No valid content (text or processed files) to send for this API key attempt.");
+                    continue; // Try next API key if no content could be prepared
+                }
+
+                const newUserMessage = { role: "user", parts: userPartsForCurrentApiKey };
+                currentApiContents = [...apiInput.history, newUserMessage]; // Combine history with new user message parts
+
+                // Call the streaming API
+                const safetySettings = [
+                    { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
+                    { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
+                    { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
+                    { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" },
+                ];
+
+                const generationConfig = {
+                    temperature: temp,
+                    maxOutputTokens: 65536,
+                };
+
+                if (n === "gemini-2.5-flash" && disableThinkingForFlash) {
+                    generationConfig.thinkingConfig = {
+                        thinkingBudget: 0
+                    };
+                    console.log("API Request: Disabling thinking for gemini-2.5-flash model.");
+                }
+
+                const apiRequestBody = {
+                    contents: currentApiContents,
+                    generationConfig: generationConfig,
+                    safetySettings: safetySettings,
+                };
+
+                const response = await fetch(`${u}/v1beta/models/${n}:streamGenerateContent?alt=sse&key=${apiKey}`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify(apiRequestBody)
+                });
+
+                if (!response.ok) {
+                    let errorMsg = "Unknown API error";
+                    try {
+                        const errorData = await response.json();
+                        errorMsg = errorData.error?.message || JSON.stringify(errorData);
+                    } catch (e) {
+                        errorMsg = `API request failed with status ${response.status}: ${response.statusText}`;
+                    }
+                    throw new Error(errorMsg);
+                }
+
+                const reader = response.body.getReader();
+                let accumulatedResponse = "";
+                let decodedChunk = "";
+                botMessageDiv.innerHTML = ""; // Clear "Clifton is typing..."
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    decodedChunk += new TextDecoder().decode(value);
+                    let newlineIndex;
+                    while ((newlineIndex = decodedChunk.indexOf('\n')) >= 0) {
+                        const line = decodedChunk.substring(0, newlineIndex).trim();
+                        decodedChunk = decodedChunk.substring(newlineIndex + 1);
+                        if (line.startsWith("data:")) {
+                            try {
+                                const jsonData = JSON.parse(line.substring(5));
+                                if (jsonData.candidates && jsonData.candidates[0]?.content?.parts) {
+                                    const textPart = jsonData.candidates[0].content.parts[0]?.text;
+                                    if (textPart) {
+                                        accumulatedResponse += textPart;
+                                        botMessageDiv.innerHTML = marked.parse(accumulatedResponse);
+                                        c.scrollTop = c.scrollHeight;
+                                    }
+                                }
+                                if (jsonData.candidates && jsonData.candidates[0]?.finishReason && jsonData.candidates[0].finishReason !== "STOP") {
+                                    console.warn("Stream stopped for reason:", jsonData.candidates[0].finishReason);
+                                }
+                                if (jsonData.promptFeedback?.blockReason) {
+                                    console.error("Request blocked:", jsonData.promptFeedback.blockReason);
+                                    throw new Error(`Request blocked due to safety settings: ${jsonData.promptFeedback.blockReason}`);
+                                }
+                            } catch (e) {
+                                console.error("Error parsing SSE data line:", e, "Line:", line);
+                            }
+                        }
+                    }
+                }
+                finalBotTextResponse = accumulatedResponse; // Store the final response
+                botMessageDiv.innerHTML = marked.parse(finalBotTextResponse); // Ensure final render
+                cC(); // Apply code highlighting
+
+                if (finalBotTextResponse !== null) {
+                    botReplied = true;
+                    // Update history with the successfully processed user message
+                    h = [...apiInput.history, newUserMessage];
+                    break; // Break on success for other models
+                }
+            }
+        } catch (error) {
+            console.error(`Error during API call with key [...] for model ${n}: ${error.message}`);
+            errorOccurredDuringApiCall = true;
+            if (v) {
+                const tempErrorDiv = document.createElement("div");
+                tempErrorDiv.classList.add("message", "bot-message");
+                tempErrorDiv.textContent = `API Key Error (trying next key): ${error.message}`;
+                c.appendChild(tempErrorDiv);
+                c.scrollTop = c.scrollHeight;
+            }
+            // Continue to the next API key in the loop
+        }
+    }
+
+    if (botReplied) {
+        if (n === "gemini-2.0-flash-preview-image-generation") {
+            botMessageDiv.innerHTML = '';
+            let modelPartsForHistory = [];
+
+            if (finalBotTextResponse) {
+                const textElement = document.createElement('div');
+                textElement.innerHTML = marked.parse(finalBotTextResponse);
+                botMessageDiv.appendChild(textElement);
+                modelPartsForHistory.push({ text: finalBotTextResponse });
+            }
+            if (finalBotImageBase64) {
+                const imgElement = document.createElement('img');
+                imgElement.src = `data:${finalBotImageMimeType};base64,${finalBotImageBase64}`;
+                imgElement.classList.add('generated-message-image');
+                imgElement.alt = "Generated Image";
+                botMessageDiv.appendChild(imgElement);
+                if (!finalBotTextResponse) {
+                    modelPartsForHistory.push({ text: "[Image Generated]" });
+                }
+            }
+
+            if (contentWasAdded) {
+                lastBotResponseStatus = "success";
+                // For image gen, the user message was already added to history in a()
+                h.push({ role: "model", parts: modelPartsForHistory });
+            } else {
+                botMessageDiv.innerHTML = "<i>Image model returned no text or image.</i>";
+                lastBotResponseStatus = "empty";
+            }
+        } else {
+            if (finalBotTextResponse.trim() !== "") {
+                lastBotResponseStatus = "success";
+                h.push({ role: "model", parts: [{ text: finalBotTextResponse }] });
+            } else {
+                botMessageDiv.innerHTML = "<i>Received an empty response.</i>";
+                lastBotResponseStatus = "empty";
+            }
+        }
+    } else {
+        if (errorOccurredDuringApiCall) {
+            botMessageDiv.innerHTML = `<span style="color: red;">Error: I'm sorry, I'm currently unable to process your request after trying all available resources. Please try again later.</span>`;
+            lastBotResponseStatus = "error";
+        } else {
+            botMessageDiv.innerHTML = "<i>Received an empty response after trying all resources.</i>";
+            lastBotResponseStatus = "empty";
+        }
+    }
+
+    t.style.display = "none";
+    c.scrollTop = c.scrollHeight;
+    cC();
+}
+
+
+// MODIFIED: a() function to store raw files and pass them to w()
+async function a() {
+    const textInput = i.value.trim();
+    const actualFiles = attachedRawFiles; // Use the globally stored raw files
+    const previewsToShow = [...currentImagePreviews]; // Previews are for display only
+
+    if (textInput === "" && actualFiles.length === 0) return;
+
+    // Create wrapper for user message (display logic remains the same)
+    const messageWrapper = document.createElement("div");
+    messageWrapper.classList.add("message-wrapper", "user-message-wrapper");
+
+    const avatar = document.createElement("div");
+    avatar.classList.add("avatar");
+    avatar.textContent = 'U';
+
+    const userMessageDiv = document.createElement("div");
+    userMessageDiv.classList.add("message", "user-message");
+
+    if (textInput) {
+        const textElement = document.createElement('p');
+        textElement.style.margin = 0;
+        textElement.textContent = textInput;
+        userMessageDiv.appendChild(textElement);
+    }
+    if (previewsToShow.length > 0) {
+        const imageContainer = document.createElement('div');
+        imageContainer.className = 'images-container';
+        previewsToShow.forEach(previewData => {
+            const img = document.createElement('img');
+            img.src = previewData.dataUrl;
+            img.classList.add('message-image');
+            img.title = previewData.name;
+            img.alt = previewData.name;
+            imageContainer.appendChild(img);
+        });
+        userMessageDiv.appendChild(imageContainer);
+    }
+    if (!textInput && previewsToShow.length === 0 && actualFiles.length > 0) {
+        const fileInfoElement = document.createElement('p');
+        fileInfoElement.style.margin = 0;
+        fileInfoElement.textContent = `Attached ${actualFiles.length} file(s): ${actualFiles.map(file => file.name).join(', ')}`;
+        userMessageDiv.appendChild(fileInfoElement);
+    }
+
+    messageWrapper.appendChild(userMessageDiv);
+    messageWrapper.appendChild(avatar);
+    c.appendChild(messageWrapper);
+    c.scrollTop = c.scrollHeight;
+
+    // Clear input and file selections after displaying user message
+    i.value = "";
+    i.style.height = 'auto';
+    f.value = ""; // Clear the file input element
+    fileNamesSpan.textContent = '';
+    filePreviewContainer.innerHTML = '';
+    document.getElementById('attachment-preview').style.display = 'none';
+    currentImagePreviews = [];
+    attachedRawFiles = []; // Clear raw files after they've been passed to w()
+
+    t.style.display = "block";
+
+    if (n === "gemini-2.0-flash-preview-image-generation") {
+        let newUserParts = [];
+        if (textInput) {
+            newUserParts.push({ text: textInput });
+        }
+
+        let hasTextPrompt = newUserParts.some(p => p.text && p.text.trim() !== "");
+        if (!hasTextPrompt) {
+            console.log("Image Gen: Text prompt is required.");
+            t.style.display = "none";
+            const errDiv = document.createElement("div");
+            errDiv.classList.add("message", "bot-message");
+            errDiv.textContent = "For image generation, a text prompt is required. You can optionally include one image for editing.";
+            c.appendChild(errDiv);
+            c.scrollTop = c.scrollHeight;
+            return;
+        }
+
+        if (actualFiles.length > 0) {
+            const imageFile = actualFiles.find(file => file.type.startsWith('image/'));
+            if (imageFile) {
+                try {
+                    const base64Data = await fileToBase64(imageFile);
+                    newUserParts.push({
+                        inline_data: {
+                            mime_type: imageFile.type,
+                            data: base64Data
+                        }
+                    });
+                } catch (error) {
+                    console.error(`Error converting image ${imageFile.name} to base64:`, error);
+                }
+            }
+        }
+        // Add user message to history *before* calling w() for image gen model
+        // because w() for image gen doesn't modify history, it just makes the API call.
+        h.push({ role: "user", parts: newUserParts });
+        await w(newUserParts); // Pass the prepared parts directly
+    } else {
+        // For other models, pass raw text and files to w()
+        // w() will handle processing files with the correct API key in its loop
+        const userMessageForHistory = { role: "user", parts: [{ text: textInput }] }; // Only text for history initially
+        h.push(userMessageForHistory); // Add user text message to history
+
+        // Pass the original text input, raw files, and current history to w()
+        await w({ text: textInput, rawFiles: actualFiles, history: h.slice(0, -1) }); // Pass history *before* adding current user message
+    }
+}
+
+
+function fT(file) {
+return new Promise(((resolve, reject) => {
+const reader = new FileReader;
+reader.onload = e => resolve(e.target.result);
+reader.onerror = e => reject(e);
+reader.readAsText(file);
+}))
+}
+
+
 tempSlider.addEventListener("input", () => {
 temp = parseFloat(tempSlider.value);
 tempValueDisplay.textContent = temp.toFixed(1);
-const isImageModel = n === "gemini-2.0-flash-preview-image-generation";
-document.querySelector('.temperature-container').style.display = isImageModel ? 'none' : 'flex';
-
 });
 
+// NEW: Event listener for the new checkbox
+disableThinkingCheckbox.addEventListener('change', () => {
+    disableThinkingForFlash = disableThinkingCheckbox.checked;
+    console.log(`Disable thinking for Flash: ${disableThinkingForFlash ? 'enabled' : 'disabled'}`);
+});
+
+// Modify the model-select event listener to show/hide the thinking control
 s.addEventListener("change", () => {
-n = s.value;
-console.log(`Model switched to: ${n}`);
-const isImageModel = n === "gemini-2.0-flash-preview-image-generation";
-document.querySelector('.temperature-container').style.display = isImageModel ? 'none' : 'flex';
+    n = s.value;
+    console.log(`Model switched to: ${n}`);
+    const isImageModel = n === "gemini-2.0-flash-preview-image-generation";
+    document.querySelector('.temperature-container').style.display = isImageModel ? 'none' : 'flex';
 
-
-
+    // NEW: Logic for thinking control visibility and state
+    const isFlashModel = n === "gemini-2.5-flash";
+    if (isFlashModel) {
+        thinkingControlContainer.style.display = 'flex'; // Show the control
+    } else {
+        thinkingControlContainer.style.display = 'none'; // Hide it for other models
+        disableThinkingCheckbox.checked = false; // Reset checkbox state
+        disableThinkingForFlash = false; // Reset internal state
+    }
 });
 
 m.addEventListener("click", a);
 i.addEventListener("keydown", (e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); a(); }}));
+i.addEventListener('input', () => {
+    i.style.height = 'auto';
+    i.style.height = (i.scrollHeight) + 'px';
+});
 
+const attachmentPreview = document.getElementById('attachment-preview');
+attachmentPreview.style.display = 'none'; // Hide initially
+
+// MODIFIED: f.addEventListener('change', ...) to store raw files
 f.addEventListener('change', function() {
-fileNamesSpan.textContent = '';
-filePreviewContainer.innerHTML = '';
-currentImagePreviews = [];
-let nonImageFileNames = [];
-if (f.files && f.files.length > 0) {
-const filePromises = Array.from(f.files).map(file => {
-return new Promise((resolve) => {
-if (file.type.startsWith('image/')) {
-const reader = new FileReader();
-reader.onload = (e) => {
-const dataUrl = e.target.result;
-currentImagePreviews.push({ name: file.name, dataUrl: dataUrl });
-const img = document.createElement('img');
-img.src = dataUrl;
-img.classList.add('file-preview-image');
-img.title = file.name;
-img.alt = file.name;
-filePreviewContainer.appendChild(img);
-resolve();
-};
-reader.onerror = () => { console.error("Error reading file:", file.name); nonImageFileNames.push(file.name + " (preview failed)"); resolve(); };
-reader.readAsDataURL(file);
-} else { nonImageFileNames.push(file.name); resolve(); }
-});
-});
-Promise.all(filePromises).then(() => {
-if (nonImageFileNames.length > 0) { fileNamesSpan.textContent = nonImageFileNames.join(', '); }
-filePreviewContainer.style.display = currentImagePreviews.length > 0 ? 'flex' : 'none';
-});
-} else { filePreviewContainer.style.display = 'none'; }
-});
+    fileNamesSpan.textContent = '';
+    filePreviewContainer.innerHTML = '';
+    currentImagePreviews = [];
+    attachedRawFiles = []; // Clear previous raw files
 
+    let nonImageFileNames = [];
+    if (f.files && f.files.length > 0) {
+        attachmentPreview.style.display = 'flex';
+        attachedRawFiles = Array.from(f.files); // Store raw files
 
-const ld = document.createElement("p");
-ld.id = "last-updated";
-ld.textContent = "Last updated: May 22th, 2025, 10:00 AM";
-document.body.appendChild(ld);
+        const filePromises = attachedRawFiles.map(file => {
+            return new Promise((resolve) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const dataUrl = e.target.result;
+                        currentImagePreviews.push({ name: file.name, dataUrl: dataUrl });
+                        const img = document.createElement('img');
+                        img.src = dataUrl;
+                        img.classList.add('file-preview-image');
+                        img.title = file.name;
+                        img.alt = file.name;
+                        filePreviewContainer.appendChild(img);
+                        resolve();
+                    };
+                    reader.onerror = () => { console.error("Error reading file:", file.name); nonImageFileNames.push(file.name + " (preview failed)"); resolve(); };
+                    reader.readAsDataURL(file);
+                } else { nonImageFileNames.push(file.name); resolve(); }
+            });
+        });
+        Promise.all(filePromises).then(() => {
+            if (nonImageFileNames.length > 0) { fileNamesSpan.textContent = nonImageFileNames.join(', '); }
+        });
+    } else { attachmentPreview.style.display = 'none'; }
+});
 
 const ch = document.getElementById("changelogModal"),
 bb = document.getElementById("changelog-button"),
 cl = document.getElementsByClassName("close")[0];
 if (bb && ch && cl) {
-bb.onclick = function() { ch.style.display = "block" };
+bb.onclick = function() { ch.style.display = "flex" };
 cl.onclick = function() { ch.style.display = "none" };
 window.onclick = function(event) { if (event.target == ch) { ch.style.display = "none"; }};
 } else { console.warn("Changelog modal elements not found."); }
@@ -1058,69 +1055,71 @@ setTimeout(() => { if (popup.parentNode) { popup.remove(); }}, 500);
 }
 
 function cC() {
-c.querySelectorAll(".bot-message pre > code").forEach((codeBlock => {
-const preElement = codeBlock.parentElement;
-if (preElement && !preElement.querySelector(".copy-button")) {
+c.querySelectorAll(".bot-message pre").forEach((preElement => {
+if (!preElement.querySelector(".copy-button")) {
+const codeBlock = preElement.querySelector('code');
+if (!codeBlock) return;
 const button = document.createElement("button");
 button.className = "copy-button";
-button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2zm0 16H8V7h11v14z"/></svg>';
 button.title = "Copy code";
 button.addEventListener("click", () => {
 navigator.clipboard.writeText(codeBlock.innerText).then(() => {
-button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>';
+button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>';
 button.title = "Copied!";
 setTimeout(() => {
-button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2zm0 16H8V7h11v14z"/></svg>';
 button.title = "Copy code";
 }, 1500);
 }).catch(err => { console.error("Failed to copy code: ", err); button.title = "Copy failed!"; });
 });
-if (getComputedStyle(preElement).position === 'static') { preElement.style.position = "relative"; }
 preElement.appendChild(button);
 }
 }));
 }
 
+// MODIFIED: clear chat button to also clear attachedRawFiles
 const cb = document.getElementById("clear-chat-button");
 if (cb) {
 cb.addEventListener("click", () => {
 c.innerHTML = ""; h = [];
-lastApiCallInput = null; // Clear regeneration context
+lastApiCallInput = null;
 lastBotMessageElement = null;
 lastBotResponseStatus = null;
+attachedRawFiles = []; // Clear raw files on chat clear
+fileNamesSpan.textContent = '';
+filePreviewContainer.innerHTML = '';
+document.getElementById('attachment-preview').style.display = 'none';
+currentImagePreviews = [];
 sp("Chat cleared.");
 });
 }
 
+// MODIFIED: regenerate button to pass lastApiCallInput directly to w()
 const regenerateButton = document.getElementById("regenerate-button");
 if (regenerateButton) {
     regenerateButton.addEventListener("click", async () => {
-        if (!lastApiCallInput) { // Check if there's any input to regenerate from
+        if (!lastApiCallInput) {
             sp("Nothing to regenerate.");
             return;
         }
-
         sp("Regenerating response...");
-
-        // Remove the last bot message from the DOM
         if (lastBotMessageElement && lastBotMessageElement.parentNode === c) {
             c.removeChild(lastBotMessageElement);
         }
-
-        // If the last response was successful, remove it from the history (h)
-        // because we are replacing it with a new regenerated response.
         if (lastBotResponseStatus === "success") {
-            // Ensure the last message in history is indeed a model message before popping
+            // Remove the last model message from history
             if (h.length > 0 && h[h.length - 1].role === 'model') {
                 h.pop();
             } else {
                 console.warn("History mismatch: last message was not a model message when regenerating a 'success' status.");
             }
+            // Remove the last user message from history
+            if (h.length > 0 && h[h.length - 1].role === 'user') {
+                h.pop();
+            }
         }
-        // If lastBotResponseStatus was "empty" or "error", the message was never added to `h`
-        // (or was added as an error message but not a 'model' role), so no need to pop from `h`.
-
-        // Call w() with the stored input to regenerate
+        // Pass the stored lastApiCallInput directly to w()
         await w(lastApiCallInput);
     });
 } else { console.warn("Regenerate button not found."); }
@@ -1154,7 +1153,15 @@ preloadImage.src = 'https://github.com/crobperson/Overpriced-Haircut/blob/main/S
 const initialIsImageModel = s.value === "gemini-2.0-flash-preview-image-generation";
 document.querySelector('.temperature-container').style.display = initialIsImageModel ? 'none' : 'flex';
 
+// NEW: Initial check on page load for thinking control visibility
+const initialIsFlashModel = s.value === "gemini-2.5-flash";
+if (initialIsFlashModel) {
+    thinkingControlContainer.style.display = 'flex';
+} else {
+    thinkingControlContainer.style.display = 'none';
+}
 
 cC();
 </script>
+</body>
 </html>
