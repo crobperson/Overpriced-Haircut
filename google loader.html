@@ -47,13 +47,14 @@ button:active {
 <button id="launchPDFButton">Click To Run Clifton's PDF To PNG Converter</button>
 <button id="launchTDButton">Click To Run Clifton's Todo List</button>
 <button id="launchGButton">Click To Visit Clifton's Game Center</button>
-
+<button id="launchCodeButton">Click To Run Clifton's Code Editor</button>
 <script>
 const launchButton = document.getElementById("launchButton");
 const launchSDButton = document.getElementById("launchSDButton");
 const launchPDFButton = document.getElementById("launchPDFButton");
 const launchTDButton = document.getElementById("launchTDButton");
 const launchGButton = document.getElementById("launchGButton");
+const launchCodeButton = document.getElementById("launchCodeButton");
 
 // Function to fetch and display Google HTML
 function launchGoogle() {
@@ -77,6 +78,10 @@ function launchTDThang() {
 }
 function launchGThang() {
   const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/refs/heads/main/Working-Center.html";
+  fetchAndDisplay(url);
+}
+function launchCodeThang() {
+  const url = "https://raw.githubusercontent.com/crobperson/Overpriced-Haircut/refs/heads/main/Code%20Editor.html";
   fetchAndDisplay(url);
 }
 // Common function to fetch and display HTML
@@ -117,6 +122,9 @@ launchTDButton.addEventListener("click", () => {
 });
 launchGButton.addEventListener("click", () => {
   launchGThang();
+});
+launchCodeButton.addEventListener("click", () => {
+  launchCodeThang();
 });
 </script>
 
