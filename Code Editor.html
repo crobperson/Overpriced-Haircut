@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tab</title>
+    <style>
+        /* Basic styles for a clean, modern look */
+        :root {
+            --bg-color: #f4f7f9;
+            --editor-bg: #2b2b2b;
+            --editor-text: #f8f8f2;
+            --button-bg: #4a90e2;
+            --button-hover-bg: #357ABD;
+            --text-color: #333;
+            --border-color: #ddd;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .button, .file-label {
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s ease;
+            text-align: center;
+        }
+
+        .button:hover, .file-label:hover {
+            background-color: var(--button-hover-bg);
+        }
+
+        /* Hide the default file input */
+        #fileInput {
+            display: none;
+        }
+
+        .editor-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #codeEditor {
+            width: 100%;
+            height: 100%;
+            flex-grow: 1;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+            line-height: 1.5;
+            background-color: var(--editor-bg);
+            color: var(--editor-text);
+            resize: vertical;
+            /* Enable tabs in textarea */
+            tab-size: 4;
+            -moz-tab-size: 4;
+            -o-tab-size: 4;
+        }
+
+        #codeEditor:focus {
+            outline: 2px solid var(--button-bg);
+            border-color: var(--button-bg);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Simple HTML Editor</h1>
+        </header>
+
+        <div class="controls">
+            <!-- File input is hidden, label acts as the button -->
+            <label for="fileInput" class="file-label">Open File</label>
+            <input type="file" id="fileInput" accept=".html,.htm,.txt">
+            
+            <button id="previewButton" class="button">Preview in New Tab</button>
+            <button id="saveButton" class="button">Download as HTML File</button>
+        </div>
+
+        <div class="editor-wrapper">
+            <textarea id="codeEditor" placeholder="Write your HTML code here..."><!-- Default starter code -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Awesome Page</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Hello, World!</h1>
+    <p>This is a preview of your HTML code.</p>
+    <p>You can edit this in the editor and click "Preview" again.</p>
+
+</body>
+</html></textarea>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const codeEditor = document.getElementById('codeEditor');
+            const fileInput = document.getElementById('fileInput');
+            const previewButton = document.getElementById('previewButton');
+            const saveButton = document.getElementById('saveButton');
+
+            // --- Handle File Loading ---
+            fileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    codeEditor.value = e.target.result;
+                };
+                reader.readAsText(file);
+                
+                event.target.value = null;
+            });
+
+            // --- Handle Previewing the Code ---
+            previewButton.addEventListener('click', () => {
+                const code = codeEditor.value;
+                const blob = new Blob([code], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                window.open(url, '_blank');
+            });
+            
+            // --- Handle Saving/Downloading the Code ---
+            saveButton.addEventListener('click', () => {
+                const code = codeEditor.value;
+                const blob = new Blob([code], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'index.html';
+                document.body.appendChild(a);
+                a.click();
+                
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+            
+            // --- FIXED: Enable using the Tab key for indentation in the textarea ---
+            codeEditor.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    e.preventDefault(); // Prevent focus from changing
+
+                    // Use the more efficient execCommand to insert the tab character.
+                    // This is much faster and avoids the "freezing" issue.
+                    document.execCommand('insertText', false, '\t');
+                }
+            });
+        });
+    </script>
+
+
+</body>
+</html>
