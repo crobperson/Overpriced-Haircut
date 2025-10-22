@@ -123,6 +123,19 @@ h1#currentTime {
     min-height: 1.2em;
     margin: 0.1em 0;
 }
+#dingCountdownDisplay {
+    font-size: 4em;
+    font-weight: 700;
+    color: var(--color-danger);
+    margin-top: 0.2em;
+    min-height: 1.2em;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+#dingCountdownDisplay.visible {
+    opacity: 1;
+}
 
 /* --- SCHEDULE LIST --- */
 #schedule {
@@ -147,6 +160,7 @@ h1#currentTime {
     transition: background-color 0.2s ease;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 #schedule li:hover {
     background-color: var(--color-surface-secondary);
@@ -159,6 +173,11 @@ h1#currentTime {
 #schedule li .period-name {
     flex-grow: 1;
 }
+.period-details {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 #schedule li .period-times {
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.9em;
@@ -167,6 +186,53 @@ h1#currentTime {
 #schedule li.active .period-times {
     opacity: 1;
 }
+.period-actions {
+    display: flex;
+    gap: 5px;
+}
+.adjust-btn {
+    background-color: var(--color-surface-secondary);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-weight: 600;
+    font-size: 0.75em;
+    width: 24px;
+    height: 24px;
+    line-height: 22px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+.adjust-btn:hover {
+    background-color: var(--color-border);
+    color: var(--color-text-primary);
+}
+.adjust-btn.armed {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+    transform: scale(1.1);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--color-primary) 40%, transparent);
+}
+.adjust-btn.has-offset {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+#schedule li.active .adjust-btn {
+    background-color: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.5);
+    color: white;
+}
+#schedule li.active .adjust-btn:hover {
+    background-color: rgba(255,255,255,0.4);
+}
+#schedule li.active .adjust-btn.armed {
+    background-color: var(--color-success);
+    border-color: var(--color-success);
+}
+
 
 /* --- SETTINGS PANEL --- */
 #settingsPanel {
@@ -213,7 +279,7 @@ h1#currentTime {
     font-size: 0.9em;
     color: var(--color-text-secondary);
 }
-#settingsPanel input, #settingsPanel select {
+#settingsPanel input:not([type="checkbox"]), #settingsPanel select { /* Exclude checkbox */
     width: 100%;
     padding: 10px 12px;
     margin-bottom: 1em;
@@ -225,6 +291,18 @@ h1#currentTime {
     font-size: 1em;
     font-family: var(--font-family);
     transition: border-color 0.2s, box-shadow 0.2s;
+}
+#settingsPanel input[type="checkbox"] { /* Style for checkbox */
+    width: auto;
+    margin-right: 5px;
+    margin-bottom: 0;
+    accent-color: var(--color-primary); /* Style checkbox itself */
+    transform: scale(1.2); /* Make it a bit bigger */
+}
+#settingsPanel input[type="range"] {
+    padding: 0;
+    margin-bottom: 0;
+    accent-color: var(--color-primary);
 }
 #settingsPanel input:focus-visible, #settingsPanel select:focus-visible {
     outline: none;
@@ -268,12 +346,29 @@ h1#currentTime {
 /* Schedule Editor Styles */
 .period-editor-row {
     display: grid;
-    grid-template-columns: 3fr 2fr 2fr auto;
+    grid-template-columns: 2.5fr 2fr 2fr auto;
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
 }
 .period-editor-row input { margin-bottom: 0; }
+.time-group {
+    display: flex;
+    gap: 5px;
+}
+.time-group input[type="time"] {
+    flex-grow: 1;
+    min-width: 80px;
+}
+.time-group input[type="number"] {
+    width: 60px;
+    -moz-appearance: textfield;
+}
+.time-group input[type="number"]::-webkit-outer-spin-button,
+.time-group input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
 .period-remove-btn {
     background: none; border: none;
     color: var(--color-danger);
@@ -308,6 +403,33 @@ h1#currentTime {
 @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
 @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
 
+/* --- WAVEFORM FEATURE STYLES --- */
+#recordBtn.recording {
+    background-color: var(--color-danger);
+    color: white;
+}
+#recordBtn.recording:hover {
+    background-color: var(--color-danger-hover);
+}
+#waveformCanvas {
+    cursor: crosshair;
+}
+#waveformTooltip {
+    position: absolute;
+    display: none;
+    background-color: color-mix(in srgb, var(--color-shadow) 80%, transparent);
+    color: var(--color-text-primary);
+    padding: 6px 10px;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.85em;
+    pointer-events: none;
+    top: 10px;
+    left: 10px;
+    backdrop-filter: blur(5px);
+    line-height: 1.5;
+    text-align: left;
+}
+
 </style>
 </head>
 <body>
@@ -321,6 +443,7 @@ h1#currentTime {
     <h1 id="currentTime"></h1>
     <p id="statusMessage">Loading...</p>
     <div id="countdown">--:--:--</div>
+    <p id="dingCountdownDisplay"></p>
 
     <div id="settingsPanel">
         <h3>
@@ -361,6 +484,32 @@ h1#currentTime {
             <label for="endOffsetInput">Class End Offset (seconds):</p>
             <input type="number" id="endOffsetInput" value="-45">
             <p class="description">Negative values make classes end earlier.</p>
+        </fieldset>
+        
+        <fieldset>
+            <legend>Audio Settings</legend>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5em;">
+                <input type="checkbox" id="dingCountdownToggle">
+                <label for="dingCountdownToggle" style="margin-bottom: 0; cursor: pointer;">Enable Ding Countdown</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5em;">
+                <label for="dingVolumeSlider" style="margin-bottom: 0; flex-shrink: 0;">Volume:</label>
+                <input type="range" id="dingVolumeSlider" min="0" max="1" step="0.01" value="0.8" style="width: 100%;">
+            </div>
+            <button id="playDingSoundBtn" class="secondary" style="width: auto;">Play Ding Sound</button>
+        </fieldset>
+
+        <fieldset>
+            <legend>Bell Time Fine-Tuning</legend>
+            <p class="description" style="margin-top: 0;">Record the bell to find its exact time. Hover over the waveform to see the timestamp.</p>
+            <div class="button-group" style="margin-bottom: 1em;">
+                <button id="recordBtn">Record Bell</button>
+                <span id="recordStatus" style="line-height: 35px; color: var(--color-text-secondary); font-size: 0.9em;"></span>
+            </div>
+            <div id="waveformContainer" style="position: relative;">
+                <canvas id="waveformCanvas" style="width: 100%; height: 100px; background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm);"></canvas>
+                <div id="waveformTooltip"></div>
+            </div>
         </fieldset>
     </div>
 
@@ -407,6 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentTimeElem = document.getElementById('currentTime');
     const statusMessageElem = document.getElementById('statusMessage');
     const countdownElem = document.getElementById('countdown');
+    const dingCountdownDisplay = document.getElementById('dingCountdownDisplay');
     const scheduleTitleElem = document.getElementById('scheduleTitle');
     const scheduleListElem = document.getElementById('scheduleList');
     const settingsToggleBtn = document.getElementById('settingsToggle');
@@ -423,17 +573,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const addPeriodBtn = document.getElementById('addPeriodBtn');
     const applyScheduleChangesBtn = document.getElementById('applyScheduleChangesBtn');
     const toastContainer = document.getElementById('toast-container');
+    // Audio Elements
+    const dingCountdownToggle = document.getElementById('dingCountdownToggle');
+    const playDingSoundBtn = document.getElementById('playDingSoundBtn');
+    const dingVolumeSlider = document.getElementById('dingVolumeSlider');
+    const dingSound = new Audio('https://github.com/crobperson/Overpriced-Haircut/raw/refs/heads/main/jigga.wav');
+
+    // Waveform elements
+    const recordBtn = document.getElementById('recordBtn');
+    const recordStatus = document.getElementById('recordStatus');
+    const waveformCanvas = document.getElementById('waveformCanvas');
+    const waveformTooltip = document.getElementById('waveformTooltip');
 
     // --- GLOBAL STATE ---
     let currentSchedule = [];
     let schedulePresets = {};
     let startOffsetMs = 0;
     let endOffsetMs = 0;
+    let activeAdjustment = null;
+    // Audio State
+    let dingCountdownEnabled = localStorage.getItem('dingCountdownEnabled') === 'true';
+    let dingVolume = parseFloat(localStorage.getItem('dingVolume')) || 0.8;
+    let dingsPlayedForEvent = new Set(); // Tracks which seconds (3, 2, 1) have dinged
+    const DING_THRESHOLD_MS = 5 * 1000; // Show ding countdown when <= 3 seconds
+
+    // Waveform state
+    let audioContext;
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+    let recordedAudioBuffer = null;
+    let recordingStartTime = null;
+    let adjustmentTarget = null;
+    let resizeTimer;
 
     // --- HELPER FUNCTIONS ---
     const formatTimeDifference = (ms) => {
         if (ms < 0) ms = 0;
-        const totalSeconds = Math.floor(ms / 1000);
+        const totalSeconds = Math.ceil(ms / 1000);
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
@@ -456,6 +633,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.setAttribute('data-theme', theme);
         themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
         localStorage.setItem('theme', theme);
+        if (recordedAudioBuffer) {
+            drawWaveform(recordedAudioBuffer);
+        }
     }
     function toggleTheme() {
         const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
@@ -488,7 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(`Preset "${presetName}" not found. Loading default.`);
             presetName = DEFAULT_SCHEDULE.name;
         }
-        currentSchedule = schedulePresets[presetName];
+        currentSchedule = JSON.parse(JSON.stringify(schedulePresets[presetName])); // Deep copy
         presetSelect.value = presetName;
         localStorage.setItem('lastUsedPreset', presetName);
         scheduleTitleElem.textContent = presetName;
@@ -537,10 +717,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const row = document.createElement('div');
         row.className = 'period-editor-row';
         const formatTimeForInput = (timeArr) => `${String(timeArr[0]).padStart(2, '0')}:${String(timeArr[1]).padStart(2, '0')}`;
+        const startOffsetSec = (period.startOffset || 0) / 1000;
+        const endOffsetSec = (period.endOffset || 0) / 1000;
+
         row.innerHTML = `
             <input type="text" class="period-name" placeholder="Period Name" value="${period.name}">
-            <input type="time" class="period-start" value="${formatTimeForInput(period.start)}">
-            <input type="time" class="period-end" value="${formatTimeForInput(period.end)}">
+            <div class="time-group">
+                <input type="time" class="period-start" value="${formatTimeForInput(period.start)}">
+                <input type="number" class="period-start-offset" value="${startOffsetSec}" title="Start Offset (seconds)" placeholder="0s">
+            </div>
+            <div class="time-group">
+                <input type="time" class="period-end" value="${formatTimeForInput(period.end)}">
+                <input type="number" class="period-end-offset" value="${endOffsetSec}" title="End Offset (seconds)" placeholder="0s">
+            </div>
             <button class="period-remove-btn">✖</button>
         `;
         row.querySelector('.period-remove-btn').addEventListener('click', () => row.remove());
@@ -552,8 +741,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const name = row.querySelector('.period-name').value;
             const start = row.querySelector('.period-start').value.split(':').map(Number);
             const end = row.querySelector('.period-end').value.split(':').map(Number);
+            const startOffset = parseFloat(row.querySelector('.period-start-offset').value) || 0;
+            const endOffset = parseFloat(row.querySelector('.period-end-offset').value) || 0;
+
             if (name && !isNaN(start[0]) && !isNaN(end[0])) {
-                newSchedule.push({ name, start, end });
+                const periodData = { name, start, end };
+                if (startOffset !== 0) periodData.startOffset = startOffset * 1000;
+                if (endOffset !== 0) periodData.endOffset = endOffset * 1000;
+                newSchedule.push(periodData);
             }
         });
         return newSchedule.sort((a, b) => a.start[0] * 60 + a.start[1] - (b.start[0] * 60 + b.start[1]));
@@ -577,16 +772,238 @@ document.addEventListener('DOMContentLoaded', () => {
         endOffsetMs = parseInt(endOffsetInput.value, 10) * 1000;
     }
 
+    // --- INDIVIDUAL TIME ADJUSTMENT ---
+    function armForAdjustment(button) {
+        cancelAdjustment(); // Cancel any previous one
+        const periodIndex = parseInt(button.dataset.periodIndex, 10);
+        const eventType = button.dataset.eventType;
+        const period = currentSchedule[periodIndex];
+        if (!period) return;
+
+        activeAdjustment = { periodIndex, eventType, element: button };
+        button.classList.add('armed');
+        updateDisplay(); // Trigger an update to show the "listening" message
+    }
+    function cancelAdjustment() {
+        if (activeAdjustment) {
+            activeAdjustment.element.classList.remove('armed');
+            activeAdjustment = null;
+            updateDisplay(); // Trigger an update to restore the status message
+        }
+    }
+    function executeAdjustment() {
+        if (!activeAdjustment) return;
+
+        const now = new Date();
+        const { periodIndex, eventType } = activeAdjustment;
+        const period = currentSchedule[periodIndex];
+        const baseTime = getDateForToday(period[eventType][0], period[eventType][1]);
+        const globalOffset = eventType === 'start' ? startOffsetMs : endOffsetMs;
+        const newIndividualOffset = now.getTime() - (baseTime.getTime() + globalOffset);
+
+        period[`${eventType}Offset`] = newIndividualOffset;
+        showToast(`${period.name} ${eventType} time adjusted!`, 'success');
+        
+        const currentPresetName = presetSelect.value;
+        if (schedulePresets[currentPresetName]) {
+            schedulePresets[currentPresetName] = JSON.parse(JSON.stringify(currentSchedule));
+            localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
+        }
+        
+        cancelAdjustment();
+        displaySchedule(); // Redraw to show offset indicator
+        renderScheduleEditor(); // Redraw editor to show new offset value
+        updateDisplay(); // Immediately reflect the change
+    }
+
+    // --- WAVEFORM VISUALIZATION ---
+    function toggleRecording() {
+        if (isRecording) {
+            stopRecording();
+        } else {
+            startRecording();
+        }
+    }
+    async function startRecording() {
+        if (!audioContext) {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                return showToast('Web Audio API not supported.', 'error');
+            }
+        }
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            return showToast('Microphone access not supported.', 'error');
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            recordingStartTime = Date.now();
+            adjustmentTarget = findNextEvent(new Date(recordingStartTime));
+
+            isRecording = true;
+            recordBtn.classList.add('recording');
+            recordBtn.textContent = 'Stop Recording';
+            if (adjustmentTarget) {
+                recordStatus.textContent = `Recording... Targeting '${adjustmentTarget.name}'`;
+            } else {
+                recordStatus.textContent = 'Recording... (No upcoming event found)';
+            }
+            recordedAudioBuffer = null;
+            drawWaveform(null);
+
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                processRecording(audioBlob);
+                audioChunks = [];
+                stream.getTracks().forEach(track => track.stop()); // Turn off mic indicator
+            };
+            mediaRecorder.start();
+        } catch (err) {
+            showToast('Microphone access denied.', 'error');
+        }
+    }
+    function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+        }
+        isRecording = false;
+        recordBtn.classList.remove('recording');
+        recordBtn.textContent = 'Record Bell';
+        recordStatus.textContent = 'Processing...';
+    }
+    async function processRecording(blob) {
+        if (!audioContext) return;
+        try {
+            const arrayBuffer = await blob.arrayBuffer();
+            recordedAudioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            recordStatus.textContent = 'Recording complete. Hover to inspect.';
+            drawWaveform(recordedAudioBuffer);
+        } catch (e) {
+            recordStatus.textContent = 'Failed to process audio.';
+            showToast('Could not decode audio data.', 'error');
+        }
+    }
+    function drawWaveform(buffer, cursorX = null) {
+        const canvas = waveformCanvas;
+        const ctx = canvas.getContext('2d');
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        canvas.width = width; // Set actual drawing resolution
+        canvas.height = height;
+
+        ctx.clearRect(0, 0, width, height);
+
+        if (!buffer) {
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary');
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = "14px " + getComputedStyle(document.documentElement).getPropertyValue('--font-family');
+            ctx.fillText('No recording yet', width / 2, height / 2);
+            return;
+        }
+
+        const data = buffer.getChannelData(0);
+        const step = Math.ceil(data.length / width);
+        const amp = height / 2;
+
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-primary');
+        ctx.beginPath();
+
+        for (let i = 0; i < width; i++) {
+            let min = 1.0;
+            let max = -1.0;
+            for (let j = 0; j < step; j++) {
+                const datum = data[(i * step) + j];
+                if (datum < min) min = datum;
+                if (datum > max) max = datum;
+            }
+            ctx.moveTo(i, (1 + min) * amp);
+            ctx.lineTo(i, (1 + max) * amp);
+        }
+        ctx.stroke();
+
+        if (cursorX !== null) {
+            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-danger');
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(cursorX, 0);
+            ctx.lineTo(cursorX, height);
+            ctx.stroke();
+        }
+    }
+    function handleWaveformHover(e) {
+        if (!recordedAudioBuffer) return;
+        const rect = waveformCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        drawWaveform(recordedAudioBuffer, x);
+
+        const timeInRecordingSec = (x / waveformCanvas.clientWidth) * recordedAudioBuffer.duration;
+        let tooltipContent = `Time: ${formatWaveformTime(timeInRecordingSec)}`;
+
+        if (adjustmentTarget && recordingStartTime) {
+            const bellRealTime = recordingStartTime + (timeInRecordingSec * 1000);
+            const scheduledTime = adjustmentTarget.time.getTime();
+            const offsetMs = bellRealTime - scheduledTime;
+            const offsetSec = (offsetMs / 1000).toFixed(3);
+            
+            tooltipContent += `<br>Target: ${adjustmentTarget.name}`;
+            tooltipContent += `<br><b>Needed Offset: ${offsetSec > 0 ? '+' : ''}${offsetSec}s</b>`;
+        }
+
+        waveformTooltip.style.display = 'block';
+        waveformTooltip.innerHTML = tooltipContent;
+    }
+    function handleWaveformLeave() {
+        if (!recordedAudioBuffer) return;
+        waveformTooltip.style.display = 'none';
+        drawWaveform(recordedAudioBuffer);
+    }
+    function formatWaveformTime(seconds) {
+        const min = Math.floor(seconds / 60);
+        const sec = Math.floor(seconds % 60);
+        const ms = Math.floor((seconds * 1000) % 1000);
+        return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}.${String(ms).padStart(3, '0')}`;
+    }
+    function findNextEvent(now) {
+        const allEvents = [];
+        currentSchedule.forEach(period => {
+            const individualStartOffset = period.startOffset || 0;
+            const individualEndOffset = period.endOffset || 0;
+            allEvents.push({
+                name: `${period.name} Start`,
+                time: new Date(getDateForToday(period.start[0], period.start[1]).getTime() + startOffsetMs + individualStartOffset)
+            });
+            allEvents.push({
+                name: `${period.name} End`,
+                time: new Date(getDateForToday(period.end[0], period.end[1]).getTime() + endOffsetMs + individualEndOffset)
+            });
+        });
+        allEvents.sort((a, b) => a.time - b.time);
+        return allEvents.find(event => event.time > now) || null;
+    }
+
     // --- MAIN DISPLAY LOGIC ---
     function displaySchedule() {
         scheduleListElem.innerHTML = '';
         if (!currentSchedule || currentSchedule.length === 0) return;
-        currentSchedule.forEach(period => {
+        currentSchedule.forEach((period, index) => {
             const li = document.createElement('li');
             li.id = `period-${period.name.replace(/\s+/g, '-')}`;
+            const startHasOffset = period.startOffset ? 'has-offset' : '';
+            const endHasOffset = period.endOffset ? 'has-offset' : '';
             li.innerHTML = `
                 <span class="period-name">${period.name}</span>
-                <span class="period-times">${format12Hour(period.start[0], period.start[1])} - ${format12Hour(period.end[0], period.end[1])}</span>
+                <div class="period-details">
+                    <span class="period-times">${format12Hour(period.start[0], period.start[1])} - ${format12Hour(period.end[0], period.end[1])}</span>
+                    <div class="period-actions">
+                        <button class="adjust-btn ${startHasOffset}" title="Adjust Start Time" data-period-index="${index}" data-event-type="start">S</button>
+                        <button class="adjust-btn ${endHasOffset}" title="Adjust End Time" data-period-index="${index}" data-event-type="end">E</button>
+                    </div>
+                </div>
             `;
             scheduleListElem.appendChild(li);
         });
@@ -598,15 +1015,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!currentSchedule || currentSchedule.length === 0) {
             statusMessageElem.textContent = "No schedule loaded.";
             countdownElem.textContent = "--:--:--";
+            dingCountdownDisplay.classList.remove('visible');
             return;
         }
 
         let stateFound = false;
         document.querySelectorAll('#scheduleList li.active').forEach(li => li.classList.remove('active'));
 
+        let nextDingEventTime = null;
+
         for (const period of currentSchedule) {
-            const actualPeriodStart = new Date(getDateForToday(period.start[0], period.start[1]).getTime() + startOffsetMs);
-            const actualPeriodEnd = new Date(getDateForToday(period.end[0], period.end[1]).getTime() + endOffsetMs);
+            const individualStartOffset = period.startOffset || 0;
+            const individualEndOffset = period.endOffset || 0;
+            const actualPeriodStart = new Date(getDateForToday(period.start[0], period.start[1]).getTime() + startOffsetMs + individualStartOffset);
+            const actualPeriodEnd = new Date(getDateForToday(period.end[0], period.end[1]).getTime() + endOffsetMs + individualEndOffset);
             const periodLiElem = document.getElementById(`period-${period.name.replace(/\s+/g, '-')}`);
 
             if (now >= actualPeriodStart && now < actualPeriodEnd) {
@@ -615,27 +1037,71 @@ document.addEventListener('DOMContentLoaded', () => {
 				document.title = countdownElem.textContent;
                 if (periodLiElem) periodLiElem.classList.add('active');
                 stateFound = true;
+                nextDingEventTime = actualPeriodEnd;
                 break;
             }
             if (now < actualPeriodStart) {
                 statusMessageElem.textContent = `Next up: ${period.name} in:`;
                 countdownElem.textContent = formatTimeDifference(actualPeriodStart - now);
+                document.title = countdownElem.textContent;
                 stateFound = true;
+                nextDingEventTime = actualPeriodStart;
                 break;
             }
         }
 
         if (!stateFound) {
-            const firstClassStart = new Date(getDateForToday(currentSchedule[0].start[0], currentSchedule[0].start[1]).getTime() + startOffsetMs);
-            const lastClassEnd = new Date(getDateForToday(currentSchedule[currentSchedule.length - 1].end[0], currentSchedule[currentSchedule.length - 1].end[1]).getTime() + endOffsetMs);
+            const firstPeriod = currentSchedule[0];
+            const lastPeriod = currentSchedule[currentSchedule.length - 1];
+            const firstClassStart = new Date(getDateForToday(firstPeriod.start[0], firstPeriod.start[1]).getTime() + startOffsetMs + (firstPeriod.startOffset || 0));
+            const lastClassEnd = new Date(getDateForToday(lastPeriod.end[0], lastPeriod.end[1]).getTime() + endOffsetMs + (lastPeriod.endOffset || 0));
 
             if (now < firstClassStart) {
                 statusMessageElem.textContent = `School starts in:`;
                 countdownElem.textContent = formatTimeDifference(firstClassStart - now);
+                nextDingEventTime = firstClassStart;
             } else if (now >= lastClassEnd) {
                 statusMessageElem.textContent = "School is over for the day!";
                 countdownElem.textContent = "🎉";
+                nextDingEventTime = null;
             }
+        }
+
+        // Ding Countdown & Sound Logic
+        if (dingCountdownEnabled && nextDingEventTime) {
+            const timeUntilDingMs = nextDingEventTime.getTime() - now.getTime();
+            if (timeUntilDingMs > 0 && timeUntilDingMs <= DING_THRESHOLD_MS) {
+                const secondsRemaining = Math.ceil(timeUntilDingMs / 1000);
+                dingCountdownDisplay.textContent = secondsRemaining;
+                dingCountdownDisplay.classList.add('visible');
+
+                // Play sound for 3, 2, and 1 seconds remaining
+                if ([1, 2, 3, 4, 5].includes(secondsRemaining) && !dingsPlayedForEvent.has(secondsRemaining)) {
+                    dingSound.currentTime = 0;
+                    dingSound.play().catch(e => console.error("Error playing ding sound:", e));
+                    dingsPlayedForEvent.add(secondsRemaining);
+                }
+            } else {
+                dingCountdownDisplay.classList.remove('visible');
+                // Reset for the next event
+                if (dingsPlayedForEvent.size > 0) {
+                    dingsPlayedForEvent.clear();
+                }
+            }
+        } else {
+            dingCountdownDisplay.classList.remove('visible');
+            // Reset for the next event
+            if (dingsPlayedForEvent.size > 0) {
+                dingsPlayedForEvent.clear();
+            }
+        }
+
+
+        if (activeAdjustment) {
+            const { periodIndex, eventType } = activeAdjustment;
+            const period = currentSchedule[periodIndex];
+            statusMessageElem.textContent = `Press SPACE for ${period.name} ${eventType} bell`;
+            dingCountdownDisplay.classList.remove('visible');
         }
     }
 
@@ -652,11 +1118,74 @@ document.addEventListener('DOMContentLoaded', () => {
     addPeriodBtn.addEventListener('click', () => addPeriodRowToEditor());
     applyScheduleChangesBtn.addEventListener('click', applyScheduleChanges);
 
+    // Audio Listeners
+    dingCountdownToggle.addEventListener('change', () => {
+        dingCountdownEnabled = dingCountdownToggle.checked;
+        localStorage.setItem('dingCountdownEnabled', dingCountdownEnabled);
+        updateDisplay();
+    });
+    playDingSoundBtn.addEventListener('click', () => {
+        dingSound.currentTime = 0;
+        dingSound.play().catch(e => console.error("Error playing ding sound:", e));
+    });
+    dingVolumeSlider.addEventListener('input', () => {
+        dingVolume = parseFloat(dingVolumeSlider.value);
+        dingSound.volume = dingVolume;
+        localStorage.setItem('dingVolume', dingVolume);
+        if (dingSound.paused) {
+            dingSound.play().catch(e => console.error("Error playing ding sound:", e));
+        } else {
+            dingSound.currentTime = 0;
+        }
+    });
+
+    scheduleListElem.addEventListener('click', e => {
+        const button = e.target.closest('.adjust-btn');
+        if (button) {
+            if (activeAdjustment && activeAdjustment.element === button) {
+                cancelAdjustment();
+            } else {
+                armForAdjustment(button);
+            }
+        }
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.code === 'Space' && activeAdjustment) {
+            e.preventDefault();
+            executeAdjustment();
+        } else if (e.code === 'Escape' && activeAdjustment) {
+            e.preventDefault();
+            cancelAdjustment();
+        }
+    });
+
+    // Waveform listeners
+    recordBtn.addEventListener('click', toggleRecording);
+    waveformCanvas.addEventListener('mousemove', handleWaveformHover);
+    waveformCanvas.addEventListener('mouseleave', handleWaveformLeave);
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (recordedAudioBuffer) {
+                drawWaveform(recordedAudioBuffer);
+            } else {
+                drawWaveform(null);
+            }
+        }, 250);
+    });
+
     // --- INITIALIZATION ---
     loadOffsets();
     initializePresets();
     const savedTheme = localStorage.getItem('theme') || 'light';
     applyTheme(savedTheme);
+    // Initialize Audio Settings
+    dingCountdownToggle.checked = dingCountdownEnabled;
+    dingVolumeSlider.value = dingVolume;
+    dingSound.volume = dingVolume;
+    
+    drawWaveform(null);
     setInterval(updateDisplay, 100);
 });
 </script>
