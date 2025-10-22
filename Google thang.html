@@ -1,454 +1,535 @@
 <!doctype html>
-<html lang=en>
+<html lang="en">
 <head>
-<meta charset=UTF-8>
-<meta content="width=device-width,initial-scale=1" name=viewport>
-<title>Google</title>
-<link href="https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true" rel=icon type=image/png>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
-<script src=https://cdn.jsdelivr.net/npm/marked/marked.min.js></script>
-<style>
-:root {
-    /* Color Palette (Light Theme) */
-    --bg-color: #f4f7f9;
-    --app-bg-color: #ffffff;
-    --header-footer-bg: #ffffff;
-    --text-color-primary: #1a1d21;
-    --text-color-secondary: #5f6368;
-    --border-color: #e0e2e7;
-    --shadow-color-soft: rgba(0, 0, 0, 0.03);
-    --shadow-color-medium: rgba(0, 0, 0, 0.06);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google</title>
+    <link rel="icon" href="https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            /* Sizing & Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --container-max-width: 900px;
+            --sidebar-width: 260px;
+            --app-max-height: 95vh;
 
-    --user-msg-bg: linear-gradient(135deg, #0078ff, #0056b3);
-    --user-msg-text: #ffffff;
-    --bot-msg-bg: #f1f3f4;
-    --bot-msg-text: #1a1d21;
+            /* Typography */
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: 'Roboto Mono', monospace;
+            --fs-sm: 0.875rem; /* 14px */
+            --fs-base: 1rem;    /* 16px */
+            --fs-md: 1.125rem; /* 18px */
+            --fs-lg: 1.25rem;  /* 20px */
+            --fw-regular: 400;
+            --fw-medium: 500;
+            --fw-semibold: 600;
+            --fw-bold: 700;
+            --lh-base: 1.6;
 
-    --primary-color: #0078ff;
-    --primary-color-hover: #0056b3;
-    
-    --icon-button-bg: transparent;
-    --icon-button-bg-hover: #e8eaed;
-    --icon-button-fill: #5f6368;
+            /* Transitions */
+            --transition-fast: 150ms ease;
+            --transition-medium: 300ms ease;
+        }
 
-    --input-bg: #f1f3f4;
-    --input-border: #f1f3f4;
-    --input-focus-border: #0078ff;
-    --placeholder-color: #8a8d91;
+        [data-theme="light"] {
+            --bg-primary: #f7f8fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f3f5;
+            --bg-overlay: rgba(33, 37, 41, 0.5);
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-tertiary: #adb5bd;
+            --border-primary: #dee2e6;
+            --border-secondary: #e9ecef;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --accent-primary: #007bff;
+            --accent-primary-hover: #0069d9;
+            --accent-primary-active: #005cbf;
+            --accent-primary-text: #ffffff;
+            --accent-secondary: #e7f3ff;
+            --user-msg-bg: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-hover));
+            --user-msg-text: #ffffff;
+            --bot-msg-bg: var(--bg-tertiary);
+            --bot-msg-text: var(--text-primary);
+            --icon-fill: #495057;
+            --icon-fill-hover: var(--text-primary);
+            --code-bg: #212529;
+            --code-text: #f8f9fa;
+            --code-header-bg: #343a40;
+            --scrollbar-thumb: #ced4da;
+            --scrollbar-track: var(--bg-tertiary);
+        }
 
-    --scrollbar-thumb: #bdc1c6;
-    --scrollbar-track: #f1f3f4;
-    
-    --code-bg: #282c34; /* One Dark Pro */
-    --code-text: #abb2bf;
-    --modal-overlay: rgba(0, 0, 0, 0.5);
-}
+        [data-theme="dark"] {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2a2a2a;
+            --bg-overlay: rgba(0, 0, 0, 0.7);
+            --text-primary: #e9ecef;
+            --text-secondary: #adb5bd;
+            --text-tertiary: #6c757d;
+            --border-primary: #3c3c3c;
+            --border-secondary: #2c2c2c;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --accent-primary: #3b82f6;
+            --accent-primary-hover: #60a5fa;
+            --accent-primary-active: #2563eb;
+            --accent-primary-text: #ffffff;
+            --accent-secondary: #252c3b;
+            --user-msg-bg: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-active));
+            --user-msg-text: #ffffff;
+            --bot-msg-bg: var(--bg-tertiary);
+            --bot-msg-text: var(--text-primary);
+            --icon-fill: #969ba1;
+            --icon-fill-hover: var(--text-primary);
+            --code-bg: #161616;
+            --code-text: #d4d4d4;
+            --code-header-bg: #2a2a2a;
+            --scrollbar-thumb: #495057;
+            --scrollbar-track: var(--bg-tertiary);
+        }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-color: #131314;
-        --app-bg-color: #1e1f20;
-        --header-footer-bg: #1e1f20;
-        --text-color-primary: #e8eaed;
-        --text-color-secondary: #969ba1;
-        --border-color: #3c4043;
-        --shadow-color-soft: rgba(0, 0, 0, 0.2);
-        --shadow-color-medium: rgba(0, 0, 0, 0.3);
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: var(--fs-base);
+            line-height: var(--lh-base);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--space-md);
+        }
+        img { max-width: 100%; display: block; }
+        button, input, select, textarea { font: inherit; color: inherit; }
+        :focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; border-radius: var(--radius-sm); }
 
-        --user-msg-bg: linear-gradient(135deg, #3b82f6, #2563eb);
-        --user-msg-text: #ffffff;
-        --bot-msg-bg: #3c4043;
-        --bot-msg-text: #e8eaed;
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; border: 2px solid var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
 
-        --primary-color: #3b82f6;
-        --primary-color-hover: #60a5fa;
+        .main-layout {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            max-height: var(--app-max-height);
+            max-width: calc(var(--container-max-width) + var(--sidebar-width));
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
 
-        --icon-button-bg: transparent;
-        --icon-button-bg-hover: #3c4043;
-        --icon-button-fill: #969ba1;
+        /* Chat History Sidebar */
+        #chat-history-sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-primary);
+            border-right: 1px solid var(--border-primary);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transition: margin-left var(--transition-medium);
+        }
+        .sidebar-header {
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--border-primary);
+        }
+        #new-chat-btn {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #chat-history-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: var(--space-sm);
+            list-style: none;
+        }
+        .chat-history-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background-color var(--transition-fast);
+            margin-bottom: var(--space-xs);
+        }
+        .chat-history-item:hover { background-color: var(--bg-tertiary); }
+        .chat-history-item.active { background-color: var(--accent-secondary); }
+        .chat-title {
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: var(--fs-sm);
+        }
+        .chat-actions button {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+        }
+        .chat-history-item:hover .chat-actions button,
+        .chat-history-item.active .chat-actions button {
+            visibility: visible;
+            opacity: 1;
+        }
+        .delete-chat-btn svg { width: 16px; height: 16px; }
 
-        --input-bg: #2d2e30;
-        --input-border: #3c4043;
-        --input-focus-border: #3b82f6;
-        --placeholder-color: #8a8d91;
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-secondary);
+            overflow: hidden;
+        }
 
-        --scrollbar-thumb: #5f6368;
-        --scrollbar-track: #2d2e30;
-        
-        --modal-overlay: rgba(0, 0, 0, 0.7);
-    }
-}
+        /* Header */
+        .chat-header {
+            padding: var(--space-sm) var(--space-lg);
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+            flex-shrink: 0;
+        }
+        #sidebar-toggle { display: none; }
+        .chat-header-title { font-size: var(--fs-lg); font-weight: var(--fw-bold); }
+        .chat-header-controls { display: flex; align-items: center; gap: var(--space-sm); flex-wrap: wrap; }
+        .control-group { display: flex; align-items: center; gap: var(--space-sm); font-size: var(--fs-sm); color: var(--text-secondary); }
+        .control-group label { font-weight: var(--fw-medium); }
 
-*, *::before, *::after { box-sizing: border-box; }
+        /* Main Chat Area */
+        #chat-container {
+            flex: 1;
+            padding: var(--space-lg);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message-wrapper { display: flex; gap: var(--space-md); max-width: 85%; animation: fadeInUp 0.4s ease-out; }
+        .message-wrapper.user { align-self: flex-end; flex-direction: row-reverse; }
+        .message-wrapper.bot { align-self: flex-start; }
+        .avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            flex-shrink: 0; background-color: var(--border-primary);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: var(--fw-semibold); font-size: var(--fs-base);
+            margin-top: var(--space-xs);
+        }
+        .user .avatar { background: var(--user-msg-bg); color: var(--user-msg-text); }
+        .bot .avatar { background-image: url('https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true'); background-size: 60%; background-repeat: no-repeat; background-position: center; background-color: var(--bg-tertiary); }
+        .message-content { display: flex; flex-direction: column; gap: var(--space-sm); position: relative; }
+        .message-content:hover .message-actions { opacity: 1; }
+        .message { padding: var(--space-sm) var(--space-md); word-wrap: break-word; white-space: pre-wrap; border-radius: var(--radius-lg); }
+        .user .message { background: var(--user-msg-bg); color: var(--user-msg-text); border-bottom-right-radius: var(--radius-sm); }
+        .bot .message { background-color: var(--bot-msg-bg); color: var(--bot-msg-text); border-bottom-left-radius: var(--radius-sm); }
+        .message p { margin-bottom: var(--space-sm); }
+        .message p:last-child { margin-bottom: 0; }
+        .message ul, .message ol { padding-left: var(--space-lg); }
+        .message a { color: var(--accent-primary); text-decoration: none; }
+        .message a:hover { text-decoration: underline; }
+        .message-actions { position: absolute; top: -12px; right: 0; display: flex; gap: var(--space-xs); opacity: 0; transition: opacity var(--transition-fast); }
+        .user .message-actions { left: 0; right: auto; }
 
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--scrollbar-track); }
-::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-color-secondary); }
+        /* Code Blocks */
+        .bot-message pre {
+            background-color: var(--code-bg); color: var(--code-text);
+            border-radius: var(--radius-md);
+            font-family: var(--font-mono); font-size: var(--fs-sm);
+            position: relative; margin: var(--space-sm) 0; border: 1px solid var(--border-primary);
+            overflow: hidden;
+        }
+        .code-header { display: flex; justify-content: space-between; align-items: center; background-color: var(--code-header-bg); padding: var(--space-xs) var(--space-md); }
+        .code-language { font-size: 0.8rem; color: var(--text-tertiary); font-weight: var(--fw-medium); }
+        .bot-message pre code { display: block; padding: var(--space-md); overflow-x: auto; }
+        .bot-message p > code { background-color: var(--accent-secondary); color: var(--accent-primary); padding: 0.2em 0.4em; border-radius: var(--radius-sm); font-size: 0.9em; }
 
-html, body {
-    margin: 0; padding: 0; height: 100%;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color-primary);
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
+        /* Input Area */
+        .chat-input-area { padding: var(--space-md) var(--space-lg); border-top: 1px solid var(--border-primary); background-color: var(--bg-secondary); flex-shrink: 0; }
+        .input-wrapper {
+            display: flex; flex-direction: column; gap: var(--space-sm);
+            background-color: var(--bg-tertiary); border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md); padding: var(--space-sm);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+        .input-wrapper:focus-within { border-color: var(--accent-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-primary) 25%, transparent); }
+        .main-input-controls { display: flex; align-items: flex-end; gap: var(--space-sm); }
+        #input-box {
+            flex-grow: 1; padding: var(--space-sm); border: none; resize: none;
+            outline: 0; background-color: transparent; max-height: 200px;
+        }
+        #input-box::placeholder { color: var(--text-secondary); }
+        #file-input { display: none; }
+        #attachment-preview { padding: 0 var(--space-sm); display: none; align-items: center; gap: var(--space-sm); }
+        #file-preview-container { display: flex; gap: var(--space-xs); align-items: center; flex-wrap: wrap; }
+        .file-preview-image { height: 40px; width: 40px; object-fit: cover; border: 2px solid var(--border-primary); border-radius: var(--radius-sm); }
+        #file-names { font-size: var(--fs-sm); color: var(--text-secondary); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-body { display: flex; justify-content: center; align-items: center; padding: 1rem; }
+        /* Buttons & Controls */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md); border: 1px solid var(--border-primary);
+            background-color: var(--bg-secondary);
+            font-weight: var(--fw-medium); font-size: var(--fs-sm);
+            cursor: pointer; transition: all var(--transition-fast);
+        }
+        .btn:hover { background-color: var(--bg-tertiary); border-color: var(--text-tertiary); }
+        .btn-primary { background-color: var(--accent-primary); color: var(--accent-primary-text); border-color: var(--accent-primary); }
+        .btn-primary:hover { background-color: var(--accent-primary-hover); border-color: var(--accent-primary-hover); }
+        .btn-primary:active { background-color: var(--accent-primary-active); border-color: var(--accent-primary-active); }
+        .btn-icon {
+            width: 40px; height: 40px; padding: 0; border-radius: 50%; border: none;
+            background-color: transparent; color: var(--icon-fill);
+        }
+        .btn-icon:hover { background-color: var(--bg-tertiary); color: var(--icon-fill-hover); }
+        .btn-icon svg { width: 22px; height: 22px; }
+        .btn:disabled, .btn-icon:disabled, select:disabled { cursor: not-allowed; opacity: 0.5; background-color: var(--bg-tertiary); }
+        .btn-primary:disabled { background-color: var(--text-tertiary); border-color: var(--text-tertiary); }
+        #send-button svg { fill: currentColor; }
+        .copy-btn { background-color: color-mix(in srgb, var(--code-header-bg) 50%, transparent); border: none; color: var(--text-secondary); }
+        .copy-btn:hover { background-color: var(--border-primary); color: var(--text-primary); }
+        .message-action-btn { background-color: var(--bg-tertiary); border: 1px solid var(--border-primary); width: 28px; height: 28px; }
+        .message-action-btn svg { width: 16px; height: 16px; }
+        #clear-attachments-btn { width: 24px; height: 24px; font-size: 1.2rem; line-height: 1; }
 
-.container {
-    display: flex; flex-direction: column;
-    width: 100%; max-width: 900px;
-    height: 100%; max-height: 95vh;
-    background-color: var(--app-bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    box-shadow: 0 12px 32px var(--shadow-color-medium);
-    overflow: hidden;
-}
+        /* Form Elements */
+        select, input[type="range"] {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            padding: var(--space-sm);
+            font-size: var(--fs-sm);
+            cursor: pointer;
+        }
+        select:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-primary) 25%, transparent); }
+        #temperature-slider { -webkit-appearance: none; appearance: none; width: 100px; height: 6px; padding: 0; background: var(--border-secondary); outline: none; border-radius: 3px; }
+        #temperature-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; background: var(--accent-primary); cursor: pointer; border-radius: 50%; transition: transform var(--transition-fast); }
+        #temperature-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        #temperature-value { font-size: var(--fs-sm); color: var(--text-primary); width: 30px; text-align: right; font-weight: var(--fw-medium); }
 
-.header {
-    padding: 1rem 1.5rem;
-    background-color: var(--header-footer-bg);
-    border-bottom: 1px solid var(--border-color);
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 1rem; flex-shrink: 0;
-}
-.header-title { font-size: 1.25rem; font-weight: 700; }
-.header-controls-left, .header-controls-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-.model-select-container, .temperature-container { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-color-secondary); }
+        /* Typing Indicator & Footer */
+        #typing-indicator {
+            padding: var(--space-sm) var(--space-lg); font-style: italic; color: var(--text-secondary);
+            background-color: var(--bg-secondary); border-top: 1px solid var(--border-primary);
+            display: none; font-size: var(--fs-sm);
+        }
+        @keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60%, 100% { content: '...'; } }
+        #typing-indicator::after { content: '...'; animation: dots 1.5s infinite; display: inline-block; width: 20px; text-align: left; }
+        .app-footer { font-size: 0.75rem; text-align: center; color: var(--text-secondary); padding: var(--space-sm); }
 
-#model-select, .button-primary {
-    font-family: 'Inter', sans-serif; border-radius: 8px;
-    border: 1px solid var(--border-color); padding: 0.5rem 1rem;
-    font-size: 0.9rem; cursor: pointer;
-    transition: all 0.2s ease;
-}
-#model-select { background-color: var(--input-bg); color: var(--text-color-primary); }
-#model-select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 25%, transparent); }
+        /* Modal */
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: var(--bg-overlay);
+            align-items: center; justify-content: center;
+            animation: fadeIn var(--transition-medium);
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content {
+            background-color: var(--bg-secondary);
+            width: 90%; max-width: 600px; border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            animation: slideIn var(--transition-medium);
+            display: flex; flex-direction: column;
+            max-height: 80vh;
+        }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { padding: var(--space-lg); border-bottom: 1px solid var(--border-primary); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { margin: 0; font-size: var(--fs-lg); font-weight: var(--fw-semibold); }
+        .modal-body { padding: var(--space-lg); overflow-y: auto; }
+        .modal-footer { padding: var(--space-md) var(--space-lg); border-top: 1px solid var(--border-primary); display: flex; justify-content: flex-end; gap: var(--space-sm); }
+        .close-btn {
+            font-size: 2rem; font-weight: var(--fw-bold); line-height: 1; cursor: pointer;
+            color: var(--text-tertiary); transition: color var(--transition-fast);
+            background: none; border: none; padding: 0;
+        }
+        .close-btn:hover { color: var(--text-primary); }
 
-#temperature-slider {
-    -webkit-appearance: none; appearance: none;
-    width: 100px; height: 6px; background: var(--border-color);
-    outline: none; border-radius: 3px; cursor: pointer;
-}
-#temperature-slider::-webkit-slider-thumb {
-    -webkit-appearance: none; appearance: none;
-    width: 16px; height: 16px; background: var(--primary-color);
-    cursor: pointer; border-radius: 50%; transition: transform 0.2s ease;
-}
-#temperature-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
-#temperature-value { font-size: 0.9rem; color: var(--text-color-primary); width: 30px; text-align: right; font-weight: 500; }
+        /* Settings Modal Specifics */
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: var(--space-md) 0; border-bottom: 1px solid var(--border-primary); }
+        .setting-row:last-child { border-bottom: none; }
+        .setting-label { font-size: var(--fs-base); color: var(--text-primary); }
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: var(--border-primary); transition: .4s; border-radius: 28px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
 
-.button-primary {
-    background-color: var(--primary-color); color: #ffffff;
-    border-color: var(--primary-color); font-weight: 500;
-}
-.button-primary:hover { background-color: var(--primary-color-hover); border-color: var(--primary-color-hover); transform: translateY(-1px); }
+        /* System Prompt Modal */
+        #system-prompt-textarea { width: 100%; min-height: 120px; resize: vertical; background-color: var(--bg-tertiary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); padding: var(--space-sm); }
 
-.icon-button {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 40px; height: 40px; border-radius: 50%; border: none;
-    background-color: var(--icon-button-bg); cursor: pointer;
-    transition: background-color 0.2s ease; padding: 0;
-}
-.icon-button:hover { background-color: var(--icon-button-bg-hover); }
-.icon-button svg { width: 22px; height: 22px; stroke: var(--icon-button-fill); fill: none; }
-#send-button svg { fill: var(--icon-button-fill); stroke: none; }
+        /* Utility & Misc */
+        .popup-message {
+            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+            background-color: var(--code-bg); color: var(--code-text); padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md); z-index: 2000; opacity: 0;
+            transition: opacity var(--transition-medium), bottom var(--transition-medium);
+            box-shadow: var(--shadow-md); font-weight: var(--fw-medium);
+        }
+        .popup-message.show { opacity: 1; bottom: var(--space-lg); }
+        .user-message .images-container { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-sm); justify-content: flex-end; }
+        .message-image { max-width: 150px; max-height: 150px; cursor: pointer; border: 2px solid var(--border-primary); border-radius: var(--radius-md); }
+        .generated-message-image { max-width: 100%; max-height: 500px; margin-top: var(--space-sm); border: 2px solid var(--border-primary); border-radius: var(--radius-md); object-fit: contain; }
+        #overlay-image { display: none; position: fixed; inset: 0; background-size: cover; background-position: center; background-color: rgba(0,0,0,0.5); z-index: 1001; cursor: pointer; }
+        #overlay-image.show { display: block; }
 
-#chat-container {
-    flex: 1; padding: 1.5rem; overflow-y: auto;
-    display: flex; flex-direction: column; gap: 1.5rem;
-}
-
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-.message-wrapper { display: flex; gap: 10px; max-width: 85%; animation: fadeInUp 0.4s ease-out; }
-.message-wrapper.user-message-wrapper { align-self: flex-end; flex-direction: row-reverse; }
-.message-wrapper.bot-message-wrapper { align-self: flex-start; }
-
-.avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    flex-shrink: 0; background-color: var(--border-color);
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 500; font-size: 1rem;
-}
-.user-message-wrapper .avatar { background: var(--user-msg-bg); color: var(--user-msg-text); content: 'U'; }
-.bot-message-wrapper .avatar { background-image: url('https://github.com/crobperson/Overpriced-Haircut/blob/main/favicon.png?raw=true'); background-size: 60%; background-repeat: no-repeat; background-position: center; }
-
-.message {
-    padding: 0.75rem 1.25rem; word-wrap: break-word;
-    white-space: pre-wrap; line-height: 1.6; font-size: 1rem;
-    border-radius: 20px;
-}
-.user-message { background: var(--user-msg-bg); color: var(--user-msg-text); border-bottom-right-radius: 5px; }
-.bot-message { background-color: var(--bot-msg-bg); color: var(--bot-msg-text); border-bottom-left-radius: 5px; }
-
-.bot-message pre {
-    background-color: var(--code-bg); color: var(--code-text);
-    padding: 1rem; border-radius: 12px; overflow-x: auto;
-    font-family: 'Roboto Mono', monospace; font-size: 0.9em;
-    position: relative; margin: 1rem 0; border: 1px solid var(--border-color);
-}
-.bot-message code { font-family: 'Roboto Mono', monospace; color: inherit; background: none; padding: 0; }
-.bot-message p > code { background-color: color-mix(in srgb, var(--primary-color) 10%, transparent); color: var(--primary-color); padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.9em; }
-
-.copy-button {
-    position: absolute; top: 10px; right: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px; cursor: pointer; z-index: 10;
-    padding: 6px; display: flex; align-items: center; justify-content: center;
-    transition: background-color 0.2s ease; opacity: 0.5;
-}
-.bot-message pre:hover .copy-button { opacity: 1; }
-.copy-button:hover { background-color: rgba(255, 255, 255, 0.2); }
-.copy-button svg { width: 18px; height: 18px; fill: #fff; }
-
-#input-area {
-    padding: 1rem 1.5rem; border-top: 1px solid var(--border-color);
-    background-color: var(--header-footer-bg); flex-shrink: 0;
-}
-#input-wrapper {
-    display: flex; flex-direction: column; gap: 0.5rem;
-    background-color: var(--input-bg); border: 1px solid var(--input-border);
-    border-radius: 16px; padding: 0.5rem;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-#input-wrapper:focus-within { border-color: var(--input-focus-border); box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus-border) 25%, transparent); }
-
-#main-input-area { display: flex; align-items: flex-end; gap: 0.5rem; }
-
-#input-box {
-    flex-grow: 1; padding: 0.6rem 0.5rem; border: none; resize: none;
-    font-size: 1rem; outline: 0; background-color: transparent;
-    color: var(--text-color-primary); line-height: 1.5;
-    font-family: 'Inter', sans-serif; max-height: 200px; overflow-y: auto;
-}
-#input-box::placeholder { color: var(--placeholder-color); }
-
-#file-input { display: none; }
-
-#attachment-preview { padding: 0.5rem 0.75rem 0; display: flex; align-items: center; gap: 0.5rem; }
-#file-preview-container { display: flex; gap: 5px; align-items: center; }
-.file-preview-image {
-    height: 40px; width: 40px; object-fit: cover;
-    border: 2px solid var(--border-color); border-radius: 6px;
-}
-#file-names {
-    font-size: 0.8rem; color: var(--text-color-secondary); max-width: 150px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-
-@keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60%, 100% { content: '...'; } }
-#typing-indicator {
-    padding: 0.5rem 1.5rem; font-style: italic; color: var(--text-color-secondary);
-    background-color: var(--header-footer-bg); border-top: 1px solid var(--border-color);
-    display: none; font-size: 0.9rem;
-}
-#typing-indicator::after { content: '...'; animation: dots 1.5s infinite; display: inline-block; width: 20px; text-align: left; }
-
-.modal {
-    display: none; position: fixed; z-index: 100; left: 0; top: 0;
-    width: 100%; height: 100%; overflow: auto;
-    background-color: var(--modal-overlay); animation: fadeIn 0.3s ease;
-    align-items: center; justify-content: center;
-}
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-.modal-content {
-    background-color: var(--app-bg-color); color: var(--text-color-primary);
-    margin: auto; padding: 0; border: 1px solid var(--border-color);
-    width: 90%; max-width: 600px; border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    animation: slideIn 0.3s ease; display: flex; flex-direction: column;
-}
-@keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-.modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-.modal-header h2 { margin: 0; font-size: 1.5rem; }
-.modal-body { padding: 1.5rem; max-height: 60vh; overflow-y: auto; }
-.close {
-    color: var(--text-color-secondary); font-size: 28px;
-    font-weight: 700; cursor: pointer; transition: color 0.2s ease;
-    line-height: 1;
-}
-.close:hover, .close:focus { color: #ff4d4d; }
-
-.footer-text { font-size: 0.8rem; text-align: center; color: var(--text-color-secondary); padding: 0.75rem; }
-
-.popup-message {
-    position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
-    background-color: var(--code-bg); color: #fff; padding: 0.75rem 1.5rem;
-    border-radius: 8px; z-index: 1000; opacity: 0;
-    transition: opacity 0.3s ease, bottom 0.3s ease;
-    box-shadow: 0 3px 10px var(--shadow-color-medium); font-weight: 500;
-}
-.popup-message.show { opacity: 1; bottom: 20px; }
-
-.message-image {
-    max-width: 150px; max-height: 150px; margin-top: 8px; cursor: pointer;
-    display: block; border: 2px solid var(--border-color); border-radius: 12px;
-}
-.generated-message-image {
-    max-width: 100%; max-height: 500px; margin-top: 8px; display: block;
-    border: 2px solid var(--border-color); border-radius: 12px; object-fit: contain;
-}
-.user-message .images-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; justify-content: flex-end; }
-.user-message > p { margin-bottom: 5px; }
-
-#overlay-image {
-    display: none; position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-image: url('https://github.com/crobperson/Overpriced-Haircut/blob/main/Screenshot.png?raw=true');
-    background-size: cover; background-repeat: no-repeat; background-position: center;
-    background-color: rgba(0,0,0,0.5); z-index: 1001; pointer-events: none;
-}
-#overlay-image.show { display: block; }
-
-#last-updated { display: none; }
-
-/* NEW: Settings Menu Styles */
-.setting-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border-color);
-}
-.setting-row:last-child {
-    border-bottom: none;
-}
-.setting-row .setting-label {
-    font-size: 1rem;
-    color: var(--text-color-primary);
-}
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 28px;
-}
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--border-color);
-    transition: .4s;
-    border-radius: 28px;
-}
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-}
-input:checked + .slider {
-    background-color: var(--primary-color);
-}
-input:focus + .slider {
-    box-shadow: 0 0 1px var(--primary-color);
-}
-input:checked + .slider:before {
-    transform: translateX(22px);
-}
-
-
-@media (max-width: 768px) {
-    body { padding: 0; }
-    .container { height: 100vh; max-height: 100vh; border-radius: 0; border: none; }
-    .header { padding: 0.75rem 1rem; flex-direction: column; align-items: stretch; }
-    .header-title { text-align: center; margin-bottom: 0.5rem; }
-    .header-controls-left, .header-controls-right { justify-content: space-between; gap: 0.5rem; }
-    #chat-container { padding: 1rem; }
-    #input-area { padding: 0.5rem 0.75rem; }
-    .message-wrapper { max-width: 95%; }
-    .modal-content { margin: 5% auto; }
-}
-</style>
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-layout {
+                max-width: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            #chat-history-sidebar {
+                position: absolute;
+                z-index: 1100;
+                height: 100%;
+                margin-left: calc(-1 * var(--sidebar-width));
+                box-shadow: var(--shadow-md);
+            }
+            #chat-history-sidebar.show {
+                margin-left: 0;
+            }
+            #sidebar-toggle {
+                display: inline-flex;
+            }
+        }
+        @media (max-width: 768px) {
+            body { padding: 0; }
+            .main-layout { height: 100vh; }
+            .chat-header { padding: var(--space-sm) var(--space-md); flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+            .chat-header-title { text-align: center; }
+            .chat-header-controls { justify-content: space-around; }
+            #chat-container { padding: var(--space-md); }
+            .chat-input-area { padding: var(--space-sm) var(--space-md); }
+            .message-wrapper { max-width: 95%; }
+            .modal-content { margin: 5% auto; }
+        }
+    </style>
 </head>
 <body>
 
-<div class=container>
-    <header class=header>
-        <div class="header-title">Clifton AI</div>
-        <div class="header-controls-left">
-            <div class=model-select-container>
-                <label for=model-select>Model:</label>
-                <select id=model-select>
-                    <option value=gemini-2.5-flash>Clifton Flash</option>
-                    <option value=gemini-2.5-pro>Clifton Pro</option>
-                    <option value=gemini-2.0-flash-preview-image-generation>Clifton Image Gen</option>
-                </select>
-            </div>
-            <div class=temperature-container>
-                <label for=temperature-slider>Temp:</label>
-                <input id=temperature-slider type=range max=1 min=0 step=0.1 value=1>
-                <span id=temperature-value>1.0</span>
-            </div>
-            <div id="thinking-control-container" class="model-select-container" style="display: none;">
-                <input type="checkbox" id="disable-thinking-checkbox">
-                <label for="disable-thinking-checkbox">Disable Thinking</label>
-            </div>
+<div class="main-layout">
+    <aside id="chat-history-sidebar">
+        <div class="sidebar-header">
+            <button id="new-chat-btn" class="btn">
+                <span>New Chat</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
         </div>
-        <div class="header-controls-right">
-            <button id=regenerate-button class="icon-button" aria-label="Regenerate last response" title="Regenerate last response"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></button>
-            <button id=clear-chat-button class="icon-button" aria-label="Clear chat" title="Clear chat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-            <!-- NEW: Settings Button -->
-            <button id="settings-button" class="icon-button" aria-label="Settings" title="Settings"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.58-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.49.49 0 0 0-.49-.42h-3.84a.49.49 0 0 0-.49.42l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.58.22l-1.92 3.32a.49.49 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32a.49.49 0 0 0 .58.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54a.49.49 0 0 0 .49.42h3.84a.49.49 0 0 0 .49-.42l.36-2.54c.59-.24 1.13-.57-1.62-.94l2.39.96a.49.49 0 0 0 .58-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.03-1.58z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
-            <button id=changelog-button class=button-primary>Changelog</button>
-        </div>
-    </header>
-    
-    <main id=chat-container></main>
-    
-    <div id=typing-indicator>Clifton is typing</div>
-    
-    <footer id=input-area>
-        <div id="input-wrapper">
-            <div id="attachment-preview">
-                <div id="file-preview-container"></div>
-                <span id=file-names></span>
+        <ul id="chat-history-list"></ul>
+    </aside>
+
+    <div class="app-container">
+        <header class="chat-header">
+            <button id="sidebar-toggle" class="btn-icon" aria-label="Toggle history" title="Toggle history">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <div class="chat-header-title">Clifton AI</div>
+            <div class="chat-header-controls">
+                <div class="control-group">
+                    <label for="model-select">Model:</label>
+                    <select id="model-select">
+                        <option value="gemini-2.5-flash">Clifton Flash</option>
+                        <option value="gemini-2.5-pro">Clifton Pro</option>
+                        <option value="gemini-2.0-flash-preview-image-generation">Clifton Image Gen</option>
+                    </select>
+                </div>
+                <div class="control-group" id="temperature-control-group">
+                    <label for="temperature-slider">Temp:</label>
+                    <input id="temperature-slider" type="range" max="1" min="0" step="0.1" value="1">
+                    <span id="temperature-value">1.0</span>
+                </div>
             </div>
-            <div id="main-input-area">
-                <label for=file-input class="icon-button file-upload-label" aria-label="Attach files" title="Attach files">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-                </label>
-                <input id=file-input type=file accept=".html,image/*,application/pdf,audio/*" multiple>
-                <textarea id=input-box placeholder="Enter your message..." rows=1></textarea>
-                <button id=send-button class="icon-button" aria-label="Send message" title="Send message">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+            <nav class="chat-header-controls" aria-label="Chat actions">
+                <button id="theme-toggle-button" class="btn-icon" aria-label="Toggle theme" title="Toggle theme">
+                    <!-- Icon will be set by JS -->
                 </button>
+                <button id="system-prompt-button" class="btn-icon" aria-label="Set system prompt" title="Set system prompt">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </button>
+                <button id="regenerate-button" class="btn-icon" aria-label="Regenerate last response" title="Regenerate last response">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                </button>
+                <button id="settings-button" class="btn-icon" aria-label="Settings" title="Settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </button>
+                <button id="changelog-button" class="btn">Changelog</button>
+            </nav>
+        </header>
+        
+        <main id="chat-container"></main>
+        
+        <div id="typing-indicator">Clifton is typing</div>
+        
+        <footer class="chat-input-area">
+            <div class="input-wrapper">
+                <div id="attachment-preview">
+                    <div id="file-preview-container"></div>
+                    <span id="file-names"></span>
+                    <button id="clear-attachments-btn" class="btn-icon" title="Clear attachments" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <div class="main-input-controls">
+                    <label for="file-input" class="btn-icon file-upload-label" aria-label="Attach files" title="Attach files">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                    </label>
+                    <input id="file-input" type="file" accept=".html,image/*,application/pdf,audio/*" multiple>
+                    <textarea id="input-box" placeholder="Enter your message..." rows="1"></textarea>
+                    <button id="stop-generating-button" class="btn-icon" aria-label="Stop generating" title="Stop generating" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"></path></svg>
+                    </button>
+                    <button id="send-button" class="btn-icon" aria-label="Send message" title="Send message" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                    </button>
+                </div>
             </div>
-        </div>
-    </footer>
-    <div class=footer-text>Clifton® is not affiliated with Google in anyway!</div>
+            <div class="app-footer">Clifton® is not affiliated with Google in any way.</div>
+        </footer>
+    </div>
 </div>
 
-<div id=popup-container></div>
+<div id="popup-container"></div>
 
-<!-- NEW: Settings Modal -->
-<div class=modal id=settingsModal>
-    <div class=modal-content>
+<!-- Modals -->
+<div class="modal" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <div class="modal-content">
         <div class="modal-header">
-            <h2>Settings</h2>
-            <span class="close settings-close">×</span>
+            <h2 id="settingsModalTitle">Settings</h2>
+            <button class="close-btn settings-close" aria-label="Close">&times;</button>
         </div>
         <div class="modal-body">
             <div class="setting-row">
@@ -458,17 +539,41 @@ input:checked + .slider:before {
                     <span class="slider"></span>
                 </label>
             </div>
+            <div class="setting-row" id="thinking-control-container" style="display: none;">
+                <span class="setting-label">Disable Thinking (Flash)</span>
+                <label class="switch">
+                    <input type="checkbox" id="disable-thinking-checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
         </div>
     </div>
 </div>
 
-<div class=modal id=changelogModal>
-    <div class=modal-content>
+<div class="modal" id="systemPromptModal" role="dialog" aria-modal="true" aria-labelledby="systemPromptModalTitle">
+    <div class="modal-content">
         <div class="modal-header">
-            <h2>Changelog</h2>
-            <span class="close changelog-close">×</span>
+            <h2 id="systemPromptModalTitle">System Prompt</h2>
+            <button class="close-btn system-prompt-close" aria-label="Close">&times;</button>
         </div>
         <div class="modal-body">
+            <p style="font-size: var(--fs-sm); color: var(--text-secondary); margin-bottom: var(--space-md);">Set a persistent instruction for the AI. This will be included at the start of every new conversation.</p>
+            <textarea id="system-prompt-textarea" placeholder="e.g., You are a helpful assistant that always responds in Markdown."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button id="save-system-prompt" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="changelogModal" role="dialog" aria-modal="true" aria-labelledby="changelogModalTitle">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="changelogModalTitle">Changelog</h2>
+            <button class="close-btn changelog-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p><strong>Version 2.2 (May 11, 2025)</strong><br>- Added automatic chat saving and history, similar to ChatGPT.</p>
             <p><strong>Version 2.1 (May 10, 2025)</strong><br>- Added Image Generation model (Clifton Image Gen). Supports text-to-image and image-to-image (editing by uploading an image with your prompt).</p>
             <p><strong>Version 2.0 (May 9, 2025)</strong><br>- Revamped the S**tty UI.</p>
             <p><strong>Version 1.83 (April 9, 2025)</strong><br>- Added Image Previews Along With General Improvements</p>
@@ -482,785 +587,903 @@ input:checked + .slider:before {
     </div>
 </div>
 
-<div id="overlay-image"></div>
+<div id="overlay-image" style="background-image: url('https://github.com/crobperson/Overpriced-Haircut/blob/main/Screenshot.png?raw=true');"></div>
 
 <script>
-const b = ["01000001 01001001 01111010 01100001 01010011 01111001 01000011 01010001 01110001 01111001 01101010 00110111 01000001 01001101 00111001 01010101 00111000 01011010 01100001 01001100 01010000 01001000 01000111 01011001 00110000 01100100 01110110 01100111 01110101 00110000 01101000 01000101 00110011 01101111 01110010 00110101 01010111 01000011 01100011","01000001 01001001 01111010 01100001 01010011 01111001 01000001 01001110 01100100 01011010 01110001 01001110 01111010 01101000 01001010 01010100 00110010 01110101 00110110 01011000 01001111 01101010 01000001 01111010 01001001 01010010 00110001 01100001 00101101 00110101 00101101 01101110 01001110 01110101 01000111 01100011 01100010 01110110 00110100","01000001 01001001 01111010 01100001 01010011 01111001 01000001 01100101 01011010 01100010 01000110 01101100 01001011 00110001 01100001 01001111 00110101 01110101 01010100 01000011 00110001 01001000 01111000 01010101 01011111 01000100 01000110 01010001 00111000 00110111 01110001 01101111 01010110 00110111 01111001 00101101 01000100 01000101 01110111","01000001 01001001 01111010 01100001 01010011 01111001 01000011 01101001 01100111 01101100 01011010 01110010 01101000 01100011 01100001 00101101 01001111 01010011 01001010 01010011 01010100 00110011 01100111 01000100 01010110 01110100 00111000 01111000 01100100 01001101 01010111 01110110 01000111 01110111 01010001 01000111 01001100 00110100 00110100","01000001 01001001 01111010 01100001 01010011 01111001 01000011 01011000 01001100 01011001 01001101 01101100 00111000 00110011 01000011 00110100 00111001 01101000 00110001 01001101 01010010 00110010 01110001 01010101 01100101 01010100 01010011 01010110 01101110 01101010 01000110 01001001 01110111 01100111 01010011 00110100 01101110 01011111 01100111","01000001 01001001 01111010 01100001 01010011 01111001 01000010 01100011 01110001 01101101 01010110 01010100 00111000 01000001 01100010 01010101 01001111 01101110 01100010 00111000 01000011 01110100 01101000 01001000 01001010 01011000 01001001 01010010 01101000 01100101 01100011 00110100 01110000 00101101 01011010 01101010 01100100 00110010 01010101"];
+'use strict';
 
+// --- DOM ELEMENTS ---
+const dom = {
+    chatContainer: document.getElementById("chat-container"),
+    inputBox: document.getElementById("input-box"),
+    sendButton: document.getElementById("send-button"),
+    stopGeneratingButton: document.getElementById("stop-generating-button"),
+    typingIndicator: document.getElementById("typing-indicator"),
+    modelSelect: document.getElementById("model-select"),
+    fileInput: document.getElementById("file-input"),
+    popupContainer: document.getElementById("popup-container"),
+    fileNamesSpan: document.getElementById("file-names"),
+    filePreviewContainer: document.getElementById("file-preview-container"),
+    attachmentPreview: document.getElementById('attachment-preview'),
+    clearAttachmentsBtn: document.getElementById('clear-attachments-btn'),
+    tempSlider: document.getElementById("temperature-slider"),
+    tempValueDisplay: document.getElementById("temperature-value"),
+    thinkingControlContainer: document.getElementById("thinking-control-container"),
+    disableThinkingCheckbox: document.getElementById("disable-thinking-checkbox"),
+    regenerateButton: document.getElementById("regenerate-button"),
+    themeToggleButton: document.getElementById("theme-toggle-button"),
+    systemPromptTextarea: document.getElementById('system-prompt-textarea'),
+    overlayImage: document.getElementById('overlay-image'),
+    temperatureControlGroup: document.getElementById('temperature-control-group'),
+    sidebar: document.getElementById('chat-history-sidebar'),
+    sidebarToggle: document.getElementById('sidebar-toggle'),
+    newChatBtn: document.getElementById('new-chat-btn'),
+    chatHistoryList: document.getElementById('chat-history-list'),
+};
 
-function str(e) {
-e = e.replace(/[^01]/g, "");
-let t = "";
-for (let n = 0; n < e.length; n += 8) {
-let o = e.substring(n, n + 8);
-o.length < 8 ? console.warn(`Incomplete byte found at index ${n}: ${o}. Skipping.`) : t += String.fromCharCode(parseInt(o, 2))
+// --- STATE MANAGEMENT ---
+const appState = {
+    history: [],
+    currentModel: "gemini-2.5-flash",
+    temperature: 1.0,
+    isLoading: false,
+    debugMode: false,
+    autoScroll: true,
+    disableThinking: false,
+    systemPrompt: '',
+    attachedRawFiles: [],
+    currentImagePreviews: [],
+    lastApiCallInput: null,
+    lastBotMessageElement: null,
+    lastBotResponseStatus: null,
+    apiAbortController: null,
+    allChats: {},
+    currentChatId: null,
+    lastWorkingApiKey: null,
+};
+
+// --- API & CONSTANTS ---
+const API_KEYS_BINARY = ["01000001 01001001 01111010 01100001 01010011 01111001 01000011 01010001 01110001 01111001 01101010 00110111 01000001 01001101 00111001 01010101 00111000 01011010 01100001 01001100 01010000 01001000 01000111 01011001 00110000 01100100 01110110 01100111 01110101 00110000 01101000 01000101 00110011 01101111 01110010 00110101 01010111 01000011 01100011","01000001 01001001 01111010 01100001 01010011 01111001 01000001 01001110 01100100 01011010 01110001 01001110 01111010 01101000 01001010 01010100 00110010 01110101 00110110 01011000 01001111 01101010 01000001 01111010 01001001 01010010 00110001 01100001 00101101 00110101 00101101 01101110 01001110 01110101 01000111 01100011 01100010 01110110 00110100","01000001 01001001 01111010 01100001 01010011 01111001 01000001 01100101 01011010 01100010 01000110 01101100 01001011 00110001 01100001 01001111 00110101 01110101 01010100 01000011 00110001 01001000 01111000 01010101 01011111 01000100 01000110 01010001 00111000 00110111 01110001 01101111 01010110 00110111 01111001 00101101 01000100 01000101 01110111","01000001 01001001 01111010 01100001 01010011 01111001 01000011 01101001 01100111 01101100 01011010 01110010 01101000 01100011 01100001 00101101 01001111 01010011 01001010 01010011 01010100 00110011 01100111 01000100 01010110 01110100 00111000 01111000 01100100 01001101 01010111 01110110 01000111 01110111 01010001 01000111 01001100 00110100 00110100","01000001 01001001 01111010 01100001 01010011 01111001 01000011 01011000 01001100 01011001 01001101 01101100 00111000 00110011 01000011 00110100 00111001 01101000 00110001 01001101 01010010 00110010 01110001 01010101 01100101 01010100 01010011 01010110 01101110 01101010 01000110 01001001 01110111 01100111 01010011 00110100 01101110 01011111 01100111","01000001 01001001 01111010 01100001 01010011 01111001 01000010 01100011 01110001 01101101 01010110 01010100 00111000 01000001 01100010 01010101 01001111 01101110 01100010 00111000 01000011 01110100 01101000 01001000 01001010 01011000 01001001 01010010 01101000 01100101 01100011 00110100 01110000 00101101 01011010 01101010 01100100 00110010 01010101"];
+const API_BASE_URL = "https://generativelanguage.googleapis.com";
+const API_KEYS = API_KEYS_BINARY.map(binaryToString);
+const ICONS = {
+    moon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`,
+    sun: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`
+};
+
+// --- UTILITY FUNCTIONS ---
+function binaryToString(binary) {
+    binary = binary.replace(/[^01]/g, "");
+    let text = "";
+    for (let i = 0; i < binary.length; i += 8) {
+        let byte = binary.substring(i, i + 8);
+        if (byte.length === 8) {
+            text += String.fromCharCode(parseInt(byte, 2));
+        }
+    }
+    return text;
 }
-return t
+
+function showPopup(message) {
+    const popup = document.createElement("div");
+    popup.className = "popup-message";
+    popup.textContent = message;
+    dom.popupContainer.appendChild(popup);
+    requestAnimationFrame(() => popup.classList.add("show"));
+    setTimeout(() => {
+        popup.classList.remove("show");
+        popup.addEventListener('transitionend', () => popup.remove(), { once: true });
+    }, 2500);
 }
-const k = b.map(str),
-u = "https://generativelanguage.googleapis.com",
-c = document.getElementById("chat-container"),
-i = document.getElementById("input-box"),
-m = document.getElementById("send-button"),
-t = document.getElementById("typing-indicator"),
-s = document.getElementById("model-select"),
-f = document.getElementById("file-input"),
-p = document.getElementById("popup-container"),
-fileNamesSpan = document.getElementById("file-names"),
-filePreviewContainer = document.getElementById("file-preview-container");
 
-let h = [],
-n = "gemini-2.5-flash",
-v = !1,
-temp = 1;
-
-// NEW: Settings variables
-let autoScrollEnabled = false; // Off by default
-
-let attachedRawFiles = [];
-let currentImagePreviews = [];
-let lastApiCallInput = null;
-let lastBotMessageElement = null;
-let lastBotResponseStatus = null;
-
-
-const tempSlider = document.getElementById("temperature-slider"),
-tempValueDisplay = document.getElementById("temperature-value");
-
-const thinkingControlContainer = document.getElementById("thinking-control-container");
-const disableThinkingCheckbox = document.getElementById("disable-thinking-checkbox");
-
-let disableThinkingForFlash = false;
-
-// NEW: Centralized scrolling function
 function scrollToBottom() {
-    if (autoScrollEnabled) {
-        c.scrollTop = c.scrollHeight;
+    if (appState.autoScroll) {
+        dom.chatContainer.scrollTop = dom.chatContainer.scrollHeight;
     }
 }
 
-function d(e) {
-if (v) {
-const t = document.createElement("div");
-t.classList.add("message", "bot-message"), t.textContent = `Error: ${e}`, c.appendChild(t), scrollToBottom();
-}
-}
-
-
-function fileToBase64(file) {
-return new Promise((resolve, reject) => {
-const reader = new FileReader();
-reader.onload = () => resolve(reader.result.split(',')[1]);
-reader.onerror = error => reject(error);
-reader.readAsDataURL(file);
-});
+function updateSendButtonState() {
+    const hasText = dom.inputBox.value.trim().length > 0;
+    const hasFiles = appState.attachedRawFiles.length > 0;
+    dom.sendButton.disabled = !(hasText || hasFiles) || appState.isLoading;
 }
 
-
-async function generateImageApiCall(apiKey, contents, modelName) {
-const safetySettings = [
-{ "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
-{ "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
-{ "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
-{ "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" },
-];
-
-const apiRequestBody = {
-contents: contents,
-generationConfig: {
-responseModalities: ["TEXT", "IMAGE"]
-},
-safetySettings: safetySettings,
-};
-
-const response = await fetch(`${u}/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify(apiRequestBody)
-});
-
-if (!response.ok) {
-let errorMsg = "Unknown API error (Image Generation)";
-try {
-const errorData = await response.json();
-errorMsg = errorData.error?.message || JSON.stringify(errorData);
-} catch (e) {
-errorMsg = `Image API request failed with status ${response.status}: ${response.statusText}`;
-}
-throw new Error(errorMsg);
+function setLoadingState(isLoading) {
+    appState.isLoading = isLoading;
+    dom.typingIndicator.style.display = isLoading ? 'block' : 'none';
+    dom.sendButton.style.display = isLoading ? 'none' : 'inline-flex';
+    dom.stopGeneratingButton.style.display = isLoading ? 'inline-flex' : 'none';
+    dom.regenerateButton.disabled = isLoading;
+    dom.newChatBtn.disabled = isLoading;
+    dom.inputBox.disabled = isLoading;
+    dom.chatHistoryList.style.pointerEvents = isLoading ? 'none' : 'auto';
+    dom.modelSelect.disabled = isLoading;
+    updateSendButtonState();
 }
 
-const responseData = await response.json();
-let botTextResponse = "";
-let botImageBase64 = null;
-let botImageMimeType = "image/png";
+// --- CHAT HISTORY MANAGEMENT ---
 
-if (responseData.candidates && responseData.candidates[0]?.content?.parts) {
-for (const part of responseData.candidates[0].content.parts) {
-if (part.text) {
-botTextResponse += part.text;
-}
-if (part.inlineData && part.inlineData.data) {
-botImageBase64 = part.inlineData.data;
-botImageMimeType = part.inlineData.mimeType;
-}
-}
-}
-
-if (responseData.promptFeedback?.blockReason) {
-console.error("Request blocked (Image Gen):", responseData.promptFeedback.blockReason);
-throw new Error(`Request blocked due to safety settings (Image Gen): ${responseData.promptFeedback.blockReason}`);
-}
-return { text: botTextResponse.trim(), imageBase64: botImageBase64, imageMimeType: botImageMimeType };
+function saveAllChats() {
+    try {
+        localStorage.setItem('cliftonAiChats', JSON.stringify(appState.allChats));
+        if (appState.currentChatId) {
+            localStorage.setItem('cliftonAiLastChatId', appState.currentChatId);
+        } else {
+            localStorage.removeItem('cliftonAiLastChatId');
+        }
+    } catch (error) {
+        console.error("Failed to save chats to localStorage:", error);
+        showPopup("Error: Chat history is too large to save.");
+    }
 }
 
-
-async function z(file, apiKey) {
-return new Promise(async (resolve, reject) => {
-try {
-if (!apiKey) return reject(new Error("No API key provided for file upload."));
-
-const startResponse = await fetch(`${u}/upload/v1beta/files?key=${apiKey}`, {
-method: "POST",
-headers: {
-"X-Goog-Upload-Protocol": "resumable",
-"X-Goog-Upload-Command": "start",
-"X-Goog-Upload-Header-Content-Length": file.size.toString(),
-"X-Goog-Upload-Header-Content-Type": file.type,
-"Content-Type": "application/json"
-},
-body: JSON.stringify({ file: { display_name: file.name }})
-});
-
-if (!startResponse.ok || startResponse.status !== 200) {
-let errorMsg = `Failed to start upload (Status: ${startResponse.status})`;
-try { errorMsg = (await startResponse.json()).error?.message || errorMsg; } catch (_) {}
-return reject(new Error(errorMsg));
+function loadAllChats() {
+    try {
+        const savedChats = localStorage.getItem('cliftonAiChats');
+        if (savedChats) {
+            appState.allChats = JSON.parse(savedChats);
+        }
+    } catch (error) {
+        console.error("Failed to load chats from localStorage:", error);
+        appState.allChats = {};
+    }
 }
 
-const uploadUrl = startResponse.headers.get("X-Goog-Upload-URL");
-if (!uploadUrl) return reject(new Error("Failed to get upload URL from start response."));
-
-const uploadResponse = await fetch(uploadUrl, {
-method: "POST",
-headers: {
-"X-Goog-Upload-Offset": "0",
-"X-Goog-Upload-Command": "upload, finalize"
-},
-body: file
-});
-
-if (!uploadResponse.ok) {
-let errorMsg = `File upload failed (Status: ${uploadResponse.status})`;
-try {
-const errorData = await uploadResponse.json();
-errorMsg = errorData.error?.message || JSON.stringify(errorData) || errorMsg;
-} catch (_) { errorMsg += `: ${uploadResponse.statusText}`; }
-return reject(new Error(errorMsg));
-}
-const uploadResult = await uploadResponse.json();
-if (!uploadResult.file?.uri) return reject(new Error("Upload succeeded but response did not contain file URI."));
-resolve({ file: { uri: uploadResult.file.uri } });
-} catch (error) {
-console.error("File Upload z() Error:", error);
-reject(error);
-}
-});
+function generateChatTitle(text) {
+    const words = text.split(' ');
+    return words.slice(0, 5).join(' ') + (words.length > 5 ? '...' : '');
 }
 
+function startNewChat() {
+    if (appState.isLoading) return;
+    appState.history = [];
+    appState.currentChatId = null;
+    appState.lastApiCallInput = null;
+    appState.lastBotMessageElement = null;
+    appState.lastBotResponseStatus = null;
+    dom.chatContainer.innerHTML = "";
+    renderHistorySidebar();
+    saveAllChats();
+    dom.inputBox.focus();
+}
 
-async function w(apiInput) {
-    lastApiCallInput = apiInput;
+function loadChat(chatId) {
+    if (appState.isLoading && appState.currentChatId !== chatId) {
+        appState.apiAbortController?.abort();
+    }
+    if (!appState.allChats[chatId] || appState.currentChatId === chatId) return;
+    
+    appState.currentChatId = chatId;
+    appState.history = appState.allChats[chatId].history;
+    rebuildChatUIFromHistory();
+    renderHistorySidebar();
+    saveAllChats();
+}
+
+function deleteChat(chatId) {
+    if (!appState.allChats[chatId]) return;
+    
+    const chatTitle = appState.allChats[chatId].title;
+    if (confirm(`Are you sure you want to delete "${chatTitle}"?`)) {
+        if (appState.currentChatId === chatId && appState.isLoading) {
+            appState.apiAbortController?.abort();
+        }
+        delete appState.allChats[chatId];
+        if (appState.currentChatId === chatId) {
+            startNewChat();
+        } else {
+            renderHistorySidebar();
+            saveAllChats();
+        }
+        showPopup("Chat deleted.");
+    }
+}
+
+function renderHistorySidebar() {
+    dom.chatHistoryList.innerHTML = '';
+    const sortedChats = Object.values(appState.allChats).sort((a, b) => b.id - a.id);
+
+    sortedChats.forEach(chat => {
+        const li = document.createElement('li');
+        li.className = 'chat-history-item';
+        li.dataset.chatId = chat.id;
+        if (chat.id === appState.currentChatId) {
+            li.classList.add('active');
+        }
+
+        li.innerHTML = `
+            <span class="chat-title">${chat.title}</span>
+            <div class="chat-actions">
+                <button class="btn-icon delete-chat-btn" title="Delete chat">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+            </div>
+        `;
+        dom.chatHistoryList.appendChild(li);
+    });
+}
+
+function rebuildChatUIFromHistory() {
+    dom.chatContainer.innerHTML = '';
+    appState.history.forEach(message => {
+        if (message.role === 'user') {
+            const text = message.parts.find(p => p.text)?.text || '';
+            appendMessage('user', text);
+        } else if (message.role === 'model') {
+            const text = message.parts.find(p => p.text)?.text || '';
+            const botMessageWrapper = appendMessage('bot', '');
+            const messageDiv = botMessageWrapper.querySelector('.message');
+            messageDiv.innerHTML = marked.parse(text);
+            messageDiv.dataset.rawText = text;
+        }
+    });
+    addCodeSyntaxHighlighting();
+    scrollToBottom();
+}
+
+
+// --- MAIN APPLICATION LOGIC ---
+
+async function sendMessage() {
+    const textInput = dom.inputBox.value.trim();
+    const files = [...appState.attachedRawFiles];
+    const imagePreviews = [...appState.currentImagePreviews];
+
+    if (textInput === "" && files.length === 0) return;
+
+    const userMessageForHistory = { role: "user", parts: [{ text: textInput }] };
+
+    if (!appState.currentChatId) {
+        const newChatId = Date.now().toString();
+        const title = textInput ? generateChatTitle(textInput) : (files.length > 0 ? `Chat with image${files.length > 1 ? 's' : ''}` : "New Chat");
+        appState.currentChatId = newChatId;
+        appState.allChats[newChatId] = { id: newChatId, title: title, history: [userMessageForHistory] };
+        appState.history = appState.allChats[newChatId].history;
+        renderHistorySidebar();
+        saveAllChats();
+    } else {
+        appState.history.push(userMessageForHistory);
+        saveAllChats();
+    }
+
+    setLoadingState(true);
+    appendMessage('user', textInput, imagePreviews);
+    clearAttachmentUI();
+    dom.inputBox.value = "";
+    dom.inputBox.style.height = 'auto';
+    updateSendButtonState();
+
+    let apiInput;
+    if (appState.currentModel === "gemini-2.0-flash-preview-image-generation") {
+        let parts = [];
+        if (textInput) parts.push({ text: textInput });
+        
+        const imageFiles = files.filter(file => file.type.startsWith('image/'));
+        const nonImageFilesCount = files.length - imageFiles.length;
+        if (nonImageFilesCount > 0) {
+            showPopup(`${nonImageFilesCount} non-image file(s) were ignored as they are not supported by this model.`);
+        }
+
+        const base64Promises = imageFiles.map(file => fileToBase64(file).catch(error => {
+            console.error(`Error converting image ${file.name} to base64:`, error);
+            showPopup(`Failed to process image: ${file.name}`);
+            return null;
+        }));
+        const base64Results = await Promise.all(base64Promises);
+
+        base64Results.forEach((base64Data, index) => {
+            if (base64Data) {
+                parts.push({ inline_data: { mime_type: imageFiles[index].type, data: base64Data } });
+            }
+        });
+        apiInput = { parts };
+    } else {
+        apiInput = { text: textInput, rawFiles: files, history: [...appState.history] };
+    }
+    
+    appState.lastApiCallInput = { payload: apiInput, model: appState.currentModel };
+    
+    await getBotResponse(apiInput);
+    setLoadingState(false);
+}
+
+async function getBotResponse(apiInput) {
+    appState.apiAbortController = new AbortController();
+    const botMessageWrapper = appendMessage('bot', '<i>Clifton is typing...</i>');
+    const botMessageDiv = botMessageWrapper.querySelector('.message');
+    appState.lastBotMessageElement = botMessageWrapper;
+    appState.lastBotResponseStatus = null;
 
     let botReplied = false;
+    let finalResponseText = "";
+    let finalResponseImage = null;
 
-    const messageWrapper = document.createElement("div");
-    messageWrapper.classList.add("message-wrapper", "bot-message-wrapper");
+    const orderedApiKeys = getApiKeysInOrder();
 
-    const avatar = document.createElement("div");
-    avatar.classList.add("avatar");
-
-    const botMessageDiv = document.createElement("div");
-    botMessageDiv.classList.add("message", "bot-message");
-    botMessageDiv.innerHTML = "<i>Clifton is typing...</i>";
-
-    messageWrapper.appendChild(avatar);
-    messageWrapper.appendChild(botMessageDiv);
-    c.appendChild(messageWrapper);
-    scrollToBottom();
-    t.style.display = 'block';
-
-    lastBotMessageElement = messageWrapper;
-    lastBotResponseStatus = null;
-
-    let finalBotTextResponse = "";
-    let finalBotImageBase64 = null;
-    let finalBotImageMimeType = null;
-    let contentWasAdded = false;
-    let errorOccurredDuringApiCall = false;
-
-    for (const apiKey of k) {
+    for (const apiKey of orderedApiKeys) {
         try {
-            let currentApiContents = [];
-
-            if (n === "gemini-2.0-flash-preview-image-generation") {
-                currentApiContents = [{ role: "user", parts: apiInput }];
-                const result = await generateImageApiCall(apiKey, currentApiContents, n);
-
-                finalBotTextResponse = result.text;
-                finalBotImageBase64 = result.imageBase64;
-                finalBotImageMimeType = result.imageMimeType;
-
-                if (finalBotTextResponse || finalBotImageBase64) {
-                    contentWasAdded = true;
-                }
+            if (appState.currentModel === "gemini-2.0-flash-preview-image-generation") {
+                const result = await generateImageApiCall(apiKey, apiInput.parts);
+                finalResponseText = result.text;
+                finalResponseImage = { base64: result.imageBase64, mimeType: result.imageMimeType };
                 botReplied = true;
-                break;
             } else {
-                let userPartsForCurrentApiKey = [];
-                if (apiInput.text && apiInput.text.trim() !== "") {
-                    userPartsForCurrentApiKey.push({ text: apiInput.text });
-                }
-
-                const fileProcessingPromises = apiInput.rawFiles.map(async (file) => {
-                    try {
-                        if (file.type.startsWith('text/') || file.type === 'text/html' || file.type === 'application/json' || file.type === 'application/xml') {
-                            const content = await fT(file);
-                            return { text: `--- File Start: ${file.name} ---\n${content}\n--- File End: ${file.name} ---` };
-                        } else if (file.type.startsWith('image/') || file.type.startsWith('audio/') || file.type === 'application/pdf' || file.type.startsWith('video/')) {
-                            const uploadedFile = await z(file, apiKey);
-                            return { file_data: { mime_type: file.type, file_uri: uploadedFile.file.uri } };
-                        } else {
-                            console.warn(`Unsupported file type for direct API processing: ${file.name} (${file.type}). Sending as text note.`);
-                            return { text: `[Attached file: ${file.name} (${file.type}) - Content not processed]` };
-                        }
-                    } catch (error) {
-                        console.error(`Error processing file ${file.name} with API key ${apiKey}:`, error);
-                        throw error;
-                    }
-                });
-
-                const filePartsForApi = (await Promise.all(fileProcessingPromises)).filter(p => p !== null);
-                userPartsForCurrentApiKey.push(...filePartsForApi);
-
-                if (userPartsForCurrentApiKey.length === 0) {
-                    console.log("No valid content (text or processed files) to send for this API key attempt.");
-                    continue;
-                }
-
-                const newUserMessage = { role: "user", parts: userPartsForCurrentApiKey };
-                currentApiContents = [...apiInput.history, newUserMessage];
-
-                const safetySettings = [
-                    { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
-                    { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
-                    { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
-                    { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" },
-                ];
-
-                const generationConfig = {
-                    temperature: temp,
-                    maxOutputTokens: 65536,
-                };
-
-                if (n === "gemini-2.5-flash" && disableThinkingForFlash) {
-                    generationConfig.thinkingConfig = {
-                        thinkingBudget: 0
-                    };
-                    console.log("API Request: Disabling thinking for gemini-2.5-flash model.");
-                }
-
-                const apiRequestBody = {
-                    contents: currentApiContents,
-                    generationConfig: generationConfig,
-                    safetySettings: safetySettings,
-                };
-
-                const response = await fetch(`${u}/v1beta/models/${n}:streamGenerateContent?alt=sse&key=${apiKey}`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify(apiRequestBody)
-                });
-
-                if (!response.ok) {
-                    let errorMsg = "Unknown API error";
-                    try {
-                        const errorData = await response.json();
-                        errorMsg = errorData.error?.message || JSON.stringify(errorData);
-                    } catch (e) {
-                        errorMsg = `API request failed with status ${response.status}: ${response.statusText}`;
-                    }
-                    throw new Error(errorMsg);
-                }
-
-                const reader = response.body.getReader();
+                const stream = await getStandardApiStream(apiKey, apiInput);
                 let accumulatedResponse = "";
-                let decodedChunk = "";
                 botMessageDiv.innerHTML = "";
 
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    decodedChunk += new TextDecoder().decode(value);
-                    let newlineIndex;
-                    while ((newlineIndex = decodedChunk.indexOf('\n')) >= 0) {
-                        const line = decodedChunk.substring(0, newlineIndex).trim();
-                        decodedChunk = decodedChunk.substring(newlineIndex + 1);
-                        if (line.startsWith("data:")) {
-                            try {
-                                const jsonData = JSON.parse(line.substring(5));
-                                if (jsonData.candidates && jsonData.candidates[0]?.content?.parts) {
-                                    const textPart = jsonData.candidates[0].content.parts[0]?.text;
-                                    if (textPart) {
-                                        accumulatedResponse += textPart;
-                                        botMessageDiv.innerHTML = marked.parse(accumulatedResponse);
-                                        scrollToBottom();
-                                    }
-                                }
-                                if (jsonData.candidates && jsonData.candidates[0]?.finishReason && jsonData.candidates[0].finishReason !== "STOP") {
-                                    console.warn("Stream stopped for reason:", jsonData.candidates[0].finishReason);
-                                }
-                                if (jsonData.promptFeedback?.blockReason) {
-                                    console.error("Request blocked:", jsonData.promptFeedback.blockReason);
-                                    throw new Error(`Request blocked due to safety settings: ${jsonData.promptFeedback.blockReason}`);
-                                }
-                            } catch (e) {
-                                console.error("Error parsing SSE data line:", e, "Line:", line);
-                            }
-                        }
-                    }
+                for await (const chunk of stream) {
+                    accumulatedResponse += chunk;
+                    botMessageDiv.innerHTML = marked.parse(accumulatedResponse);
+                    scrollToBottom();
                 }
-                finalBotTextResponse = accumulatedResponse;
-                botMessageDiv.innerHTML = marked.parse(finalBotTextResponse);
-                cC();
-
-                if (finalBotTextResponse !== null) {
-                    botReplied = true;
-                    h = [...apiInput.history, newUserMessage];
-                    break;
-                }
+                finalResponseText = accumulatedResponse;
+                botReplied = true;
+            }
+            
+            if (botReplied) {
+                appState.lastWorkingApiKey = apiKey;
+                break;
             }
         } catch (error) {
-            console.error(`Error during API call with key [...] for model ${n}: ${error.message}`);
-            errorOccurredDuringApiCall = true;
-            if (v) {
-                const tempErrorDiv = document.createElement("div");
-                tempErrorDiv.classList.add("message", "bot-message");
-                tempErrorDiv.textContent = `API Key Error (trying next key): ${error.message}`;
-                c.appendChild(tempErrorDiv);
-                scrollToBottom();
+            if (error.name === 'AbortError') {
+                botMessageDiv.innerHTML = '<i>Generation stopped.</i>';
+                appState.lastBotResponseStatus = "aborted";
+                if (appState.history.length > 0 && appState.history[appState.history.length - 1].role === 'user') {
+                    appState.history.pop();
+                }
+                saveAllChats();
+                return;
             }
+            
+            if (appState.debugMode) {
+                appendMessage('bot', `API Key Error: ${error.message}`);
+            }
+
         }
     }
 
     if (botReplied) {
-        if (n === "gemini-2.0-flash-preview-image-generation") {
-            botMessageDiv.innerHTML = '';
-            let modelPartsForHistory = [];
+        botMessageDiv.innerHTML = '';
+        botMessageDiv.dataset.rawText = finalResponseText;
+        let modelPartsForHistory = [];
 
-            if (finalBotTextResponse) {
-                const textElement = document.createElement('div');
-                textElement.innerHTML = marked.parse(finalBotTextResponse);
-                botMessageDiv.appendChild(textElement);
-                modelPartsForHistory.push({ text: finalBotTextResponse });
-            }
-            if (finalBotImageBase64) {
-                const imgElement = document.createElement('img');
-                imgElement.src = `data:${finalBotImageMimeType};base64,${finalBotImageBase64}`;
-                imgElement.classList.add('generated-message-image');
-                imgElement.alt = "Generated Image";
-                botMessageDiv.appendChild(imgElement);
-                if (!finalBotTextResponse) {
-                    modelPartsForHistory.push({ text: "[Image Generated]" });
-                }
-            }
+        if (finalResponseText) {
+            const textElement = document.createElement('div');
+            textElement.innerHTML = marked.parse(finalResponseText);
+            botMessageDiv.appendChild(textElement);
+            modelPartsForHistory.push({ text: finalResponseText });
+        }
+        if (finalResponseImage && finalResponseImage.base64) {
+            const imgElement = document.createElement('img');
+            imgElement.src = `data:${finalResponseImage.mimeType};base64,${finalResponseImage.base64}`;
+            imgElement.className = 'generated-message-image';
+            imgElement.alt = "Generated Image";
+            botMessageDiv.appendChild(imgElement);
+            if (!finalResponseText) modelPartsForHistory.push({ text: "[Image Generated]" });
+        }
 
-            if (contentWasAdded) {
-                lastBotResponseStatus = "success";
-                h.push({ role: "model", parts: modelPartsForHistory });
-            } else {
-                botMessageDiv.innerHTML = "<i>Image model returned no text or image.</i>";
-                lastBotResponseStatus = "empty";
-            }
+        if (modelPartsForHistory.length > 0) {
+            appState.lastBotResponseStatus = "success";
+            appState.history.push({ role: "model", parts: modelPartsForHistory });
+            saveAllChats();
         } else {
-            if (finalBotTextResponse.trim() !== "") {
-                lastBotResponseStatus = "success";
-                h.push({ role: "model", parts: [{ text: finalBotTextResponse }] });
-            } else {
-                botMessageDiv.innerHTML = "<i>Received an empty response.</i>";
-                lastBotResponseStatus = "empty";
-            }
+            botMessageDiv.innerHTML = "<i>Received an empty response.</i>";
+            appState.lastBotResponseStatus = "empty";
         }
     } else {
-        if (errorOccurredDuringApiCall) {
-            botMessageDiv.innerHTML = `<span style="color: red;">Error: I'm sorry, I'm currently unable to process your request after trying all available resources. Please try again later.</span>`;
-            lastBotResponseStatus = "error";
-        } else {
-            botMessageDiv.innerHTML = "<i>Received an empty response after trying all resources.</i>";
-            lastBotResponseStatus = "empty";
+        botMessageDiv.innerHTML = `<span style="color: red;">Error: Unable to process request. All API keys failed.</span>`;
+        appState.lastBotResponseStatus = "error";
+        if (appState.history.length > 0 && appState.history[appState.history.length - 1].role === 'user') {
+            appState.history.pop();
         }
+        saveAllChats();
     }
-
-    t.style.display = "none";
+    
+    addCodeSyntaxHighlighting();
     scrollToBottom();
-    cC();
 }
 
+// --- API CALL HELPERS ---
 
-async function a() {
-    const textInput = i.value.trim();
-    const actualFiles = attachedRawFiles;
-    const previewsToShow = [...currentImagePreviews];
+function getApiKeysInOrder() {
+    if (!appState.lastWorkingApiKey) return API_KEYS;
+    const keys = [appState.lastWorkingApiKey];
+    API_KEYS.forEach(key => {
+        if (key !== appState.lastWorkingApiKey) keys.push(key);
+    });
+    return keys;
+}
 
-    if (textInput === "" && actualFiles.length === 0) return;
+async function* getStandardApiStream(apiKey, apiInput) {
+    let userParts = [];
+    if (apiInput.text) userParts.push({ text: apiInput.text });
 
-    const messageWrapper = document.createElement("div");
-    messageWrapper.classList.add("message-wrapper", "user-message-wrapper");
+    const filePromises = apiInput.rawFiles.map(file => uploadFile(file, apiKey)
+        .then(uploaded => ({ file_data: { mime_type: file.type, file_uri: uploaded.file.uri } }))
+        .catch(err => { 
+            console.error(err); 
+            return null; 
+        })
+    );
+    userParts.push(...(await Promise.all(filePromises)).filter(Boolean));
+
+    const historyWithSystemPrompt = appState.systemPrompt 
+        ? [{ role: "user", parts: [{ text: appState.systemPrompt }] }, { role: "model", parts: [{ text: "Understood." }] }, ...apiInput.history.slice(0, -1)]
+        : apiInput.history.slice(0, -1);
+
+    const requestBody = {
+        contents: [...historyWithSystemPrompt, { role: "user", parts: userParts }],
+        generationConfig: {
+            temperature: appState.temperature,
+            maxOutputTokens: 65536,
+            ...(appState.currentModel === "gemini-2.5-flash" && appState.disableThinking && { thinkingConfig: { thinkingBudget: 0 } })
+        },
+        safetySettings: [
+            { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
+            { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
+            { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
+            { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" },
+        ],
+    };
+
+    const response = await fetch(`${API_BASE_URL}/v1beta/models/${appState.currentModel}:streamGenerateContent?alt=sse&key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+        signal: appState.apiAbortController.signal,
+    });
+
+    if (!response.ok) {
+        const error = new Error(`API request failed: ${response.status} ${response.statusText}`);
+        error.status = response.status;
+        throw error;
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        
+        let boundary;
+        while ((boundary = buffer.indexOf('\n')) >= 0) {
+            const line = buffer.substring(0, boundary).trim();
+            buffer = buffer.substring(boundary + 1);
+            if (line.startsWith("data:")) {
+                try {
+                    const json = JSON.parse(line.substring(5));
+                    const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) yield text;
+                } catch (e) { console.error("SSE parse error:", e); }
+            }
+        }
+    }
+}
+
+async function generateImageApiCall(apiKey, parts) {
+    const finalParts = appState.systemPrompt ? [{ text: appState.systemPrompt }, ...parts] : parts;
+    const response = await fetch(`${API_BASE_URL}/v1beta/models/${appState.currentModel}:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            contents: [{ role: "user", parts: finalParts }],
+            generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+            safetySettings: [ { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" }, { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" }, { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" }, { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" } ],
+        }),
+        signal: appState.apiAbortController.signal,
+    });
+    if (!response.ok) {
+        const error = new Error(`Image API failed: ${response.status}`);
+        error.status = response.status;
+        throw error;
+    }
+    const data = await response.json();
+    const result = { text: "", imageBase64: null, imageMimeType: "image/png" };
+    data.candidates?.[0]?.content?.parts?.forEach(part => {
+        if (part.text) result.text += part.text;
+        if (part.inlineData?.data) {
+            result.imageBase64 = part.inlineData.data;
+            result.imageMimeType = part.inlineData.mimeType;
+        }
+    });
+    return result;
+}
+
+// --- FILE HANDLING ---
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+    });
+}
+
+async function uploadFile(file, apiKey) {
+    const startRes = await fetch(`${API_BASE_URL}/upload/v1beta/files?key=${apiKey}`, {
+        method: "POST",
+        headers: { "X-Goog-Upload-Protocol": "resumable", "X-Goog-Upload-Command": "start", "X-Goog-Upload-Header-Content-Length": file.size.toString(), "X-Goog-Upload-Header-Content-Type": file.type, "Content-Type": "application/json" },
+        body: JSON.stringify({ file: { display_name: file.name }})
+    });
+    if (!startRes.ok) throw new Error(`Upload start failed: ${startRes.status}`);
+    const uploadUrl = startRes.headers.get("X-Goog-Upload-URL");
+    const uploadRes = await fetch(uploadUrl, { method: "POST", headers: { "X-Goog-Upload-Offset": "0", "X-Goog-Upload-Command": "upload, finalize" }, body: file });
+    if (!uploadRes.ok) throw new Error(`Upload failed: ${uploadRes.status}`);
+    return await uploadRes.json();
+}
+
+function clearAttachmentUI() {
+    dom.fileInput.value = "";
+    dom.fileNamesSpan.textContent = '';
+    dom.filePreviewContainer.innerHTML = '';
+    dom.attachmentPreview.style.display = 'none';
+    dom.clearAttachmentsBtn.style.display = 'none';
+    appState.currentImagePreviews = [];
+    appState.attachedRawFiles = [];
+    updateSendButtonState();
+}
+
+function updateAttachmentUI() {
+    dom.fileNamesSpan.textContent = '';
+    dom.filePreviewContainer.innerHTML = '';
+    appState.currentImagePreviews = [];
+
+    if (appState.attachedRawFiles.length > 0) {
+        dom.attachmentPreview.style.display = 'flex';
+        dom.clearAttachmentsBtn.style.display = 'inline-flex';
+        let nonImageFileNames = [];
+        appState.attachedRawFiles.forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const dataUrl = e.target.result;
+                    appState.currentImagePreviews.push({ name: file.name, dataUrl });
+                    const img = document.createElement('img');
+                    img.src = dataUrl;
+                    img.className = 'file-preview-image';
+                    dom.filePreviewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                nonImageFileNames.push(file.name);
+            }
+        });
+        if (nonImageFileNames.length > 0) dom.fileNamesSpan.textContent = nonImageFileNames.join(', ');
+    } else {
+        clearAttachmentUI();
+    }
+    updateSendButtonState();
+}
+
+// --- UI & DOM MANIPULATION ---
+function appendMessage(role, text, imagePreviews = []) {
+    const wrapper = document.createElement("div");
+    wrapper.className = `message-wrapper ${role}`;
 
     const avatar = document.createElement("div");
-    avatar.classList.add("avatar");
-    avatar.textContent = 'U';
+    avatar.className = "avatar";
+    if (role === 'user') avatar.textContent = 'U';
 
-    const userMessageDiv = document.createElement("div");
-    userMessageDiv.classList.add("message", "user-message");
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "message-content";
 
-    if (textInput) {
+    const messageDiv = document.createElement("div");
+    messageDiv.className = `message ${role}-message`;
+    if (role === 'user') messageDiv.dataset.rawText = text;
+    
+    if (text) {
         const textElement = document.createElement('p');
-        textElement.style.margin = 0;
-        textElement.textContent = textInput;
-        userMessageDiv.appendChild(textElement);
+        if (role === 'user') {
+            textElement.textContent = text;
+        } else {
+            textElement.innerHTML = text; // Allow HTML for bot messages (e.g., "typing...")
+        }
+        messageDiv.appendChild(textElement);
     }
-    if (previewsToShow.length > 0) {
+    if (imagePreviews.length > 0) {
         const imageContainer = document.createElement('div');
         imageContainer.className = 'images-container';
-        previewsToShow.forEach(previewData => {
+        imagePreviews.forEach(preview => {
             const img = document.createElement('img');
-            img.src = previewData.dataUrl;
-            img.classList.add('message-image');
-            img.title = previewData.name;
-            img.alt = previewData.name;
+            img.src = preview.dataUrl;
+            img.className = 'message-image';
+            img.alt = preview.name;
             imageContainer.appendChild(img);
         });
-        userMessageDiv.appendChild(imageContainer);
+        messageDiv.appendChild(imageContainer);
     }
-    if (!textInput && previewsToShow.length === 0 && actualFiles.length > 0) {
-        const fileInfoElement = document.createElement('p');
-        fileInfoElement.style.margin = 0;
-        fileInfoElement.textContent = `Attached ${actualFiles.length} file(s): ${actualFiles.map(file => file.name).join(', ')}`;
-        userMessageDiv.appendChild(fileInfoElement);
-    }
+    
+    const actionsDiv = document.createElement('div');
+    actionsDiv.className = 'message-actions';
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'btn-icon message-action-btn';
+    copyBtn.title = 'Copy message';
+    copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+    copyBtn.onclick = () => {
+        const rawText = messageDiv.dataset.rawText;
+        navigator.clipboard.writeText(rawText);
+        showPopup('Copied to clipboard!');
+    };
+    actionsDiv.appendChild(copyBtn);
 
-    messageWrapper.appendChild(userMessageDiv);
-    messageWrapper.appendChild(avatar);
-    c.appendChild(messageWrapper);
+    contentDiv.appendChild(messageDiv);
+    contentDiv.appendChild(actionsDiv);
+    wrapper.appendChild(role === 'user' ? contentDiv : avatar);
+    wrapper.appendChild(role === 'user' ? avatar : contentDiv);
+    dom.chatContainer.appendChild(wrapper);
     scrollToBottom();
-
-    i.value = "";
-    i.style.height = 'auto';
-    f.value = "";
-    fileNamesSpan.textContent = '';
-    filePreviewContainer.innerHTML = '';
-    document.getElementById('attachment-preview').style.display = 'none';
-    currentImagePreviews = [];
-    attachedRawFiles = [];
-
-    t.style.display = "block";
-
-    if (n === "gemini-2.0-flash-preview-image-generation") {
-        let newUserParts = [];
-        if (textInput) {
-            newUserParts.push({ text: textInput });
-        }
-
-        let hasTextPrompt = newUserParts.some(p => p.text && p.text.trim() !== "");
-        if (!hasTextPrompt) {
-            console.log("Image Gen: Text prompt is required.");
-            t.style.display = "none";
-            const errDiv = document.createElement("div");
-            errDiv.classList.add("message", "bot-message");
-            errDiv.textContent = "For image generation, a text prompt is required. You can optionally include one image for editing.";
-            c.appendChild(errDiv);
-            scrollToBottom();
-            return;
-        }
-
-        if (actualFiles.length > 0) {
-            const imageFile = actualFiles.find(file => file.type.startsWith('image/'));
-            if (imageFile) {
-                try {
-                    const base64Data = await fileToBase64(imageFile);
-                    newUserParts.push({
-                        inline_data: {
-                            mime_type: imageFile.type,
-                            data: base64Data
-                        }
-                    });
-                } catch (error) {
-                    console.error(`Error converting image ${imageFile.name} to base64:`, error);
-                }
-            }
-        }
-        h.push({ role: "user", parts: newUserParts });
-        await w(newUserParts);
-    } else {
-        const userMessageForHistory = { role: "user", parts: [{ text: textInput }] };
-        h.push(userMessageForHistory);
-
-        await w({ text: textInput, rawFiles: actualFiles, history: h.slice(0, -1) });
-    }
+    return wrapper;
 }
 
+function addCodeSyntaxHighlighting() {
+    dom.chatContainer.querySelectorAll(".bot-message pre").forEach(pre => {
+        if (pre.querySelector(".code-header")) return;
 
-function fT(file) {
-return new Promise(((resolve, reject) => {
-const reader = new FileReader;
-reader.onload = e => resolve(e.target.result);
-reader.onerror = e => reject(e);
-reader.readAsText(file);
-}))
+        const code = pre.querySelector('code');
+        if (!code) return;
+
+        const langMatch = code.className.match(/language-(\S+)/);
+        const lang = langMatch ? langMatch[1] : 'code';
+
+        const header = document.createElement('div');
+        header.className = 'code-header';
+        
+        const langSpan = document.createElement('span');
+        langSpan.className = 'code-language';
+        langSpan.textContent = lang;
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'btn-icon copy-btn';
+        copyBtn.title = 'Copy code';
+        copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+        copyBtn.onclick = () => {
+            navigator.clipboard.writeText(code.innerText);
+            copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            setTimeout(() => {
+                copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+            }, 2000);
+        };
+
+        header.appendChild(langSpan);
+        header.appendChild(copyBtn);
+        pre.insertBefore(header, code);
+    });
 }
 
-
-tempSlider.addEventListener("input", () => {
-temp = parseFloat(tempSlider.value);
-tempValueDisplay.textContent = temp.toFixed(1);
-});
-
-disableThinkingCheckbox.addEventListener('change', () => {
-    disableThinkingForFlash = disableThinkingCheckbox.checked;
-    console.log(`Disable thinking for Flash: ${disableThinkingForFlash ? 'enabled' : 'disabled'}`);
-});
-
-s.addEventListener("change", () => {
-    n = s.value;
-    console.log(`Model switched to: ${n}`);
-    const isImageModel = n === "gemini-2.0-flash-preview-image-generation";
-    document.querySelector('.temperature-container').style.display = isImageModel ? 'none' : 'flex';
-
-    const isFlashModel = n === "gemini-2.5-flash";
-    if (isFlashModel) {
-        thinkingControlContainer.style.display = 'flex';
-    } else {
-        thinkingControlContainer.style.display = 'none';
-        disableThinkingCheckbox.checked = false;
-        disableThinkingForFlash = false;
-    }
-});
-
-m.addEventListener("click", a);
-i.addEventListener("keydown", (e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); a(); }}));
-i.addEventListener('input', () => {
-    i.style.height = 'auto';
-    i.style.height = (i.scrollHeight) + 'px';
-});
-
-const attachmentPreview = document.getElementById('attachment-preview');
-attachmentPreview.style.display = 'none';
-
-f.addEventListener('change', function() {
-    fileNamesSpan.textContent = '';
-    filePreviewContainer.innerHTML = '';
-    currentImagePreviews = [];
-    attachedRawFiles = [];
-
-    let nonImageFileNames = [];
-    if (f.files && f.files.length > 0) {
-        attachmentPreview.style.display = 'flex';
-        attachedRawFiles = Array.from(f.files);
-
-        const filePromises = attachedRawFiles.map(file => {
-            return new Promise((resolve) => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const dataUrl = e.target.result;
-                        currentImagePreviews.push({ name: file.name, dataUrl: dataUrl });
-                        const img = document.createElement('img');
-                        img.src = dataUrl;
-                        img.classList.add('file-preview-image');
-                        img.title = file.name;
-                        img.alt = file.name;
-                        filePreviewContainer.appendChild(img);
-                        resolve();
-                    };
-                    reader.onerror = () => { console.error("Error reading file:", file.name); nonImageFileNames.push(file.name + " (preview failed)"); resolve(); };
-                    reader.readAsDataURL(file);
-                } else { nonImageFileNames.push(file.name); resolve(); }
-            });
-        });
-        Promise.all(filePromises).then(() => {
-            if (nonImageFileNames.length > 0) { fileNamesSpan.textContent = nonImageFileNames.join(', '); }
-        });
-    } else { attachmentPreview.style.display = 'none'; }
-});
-
-// MODIFIED: Modal handling to accommodate multiple modals
 function setupModal(buttonId, modalId, closeClass) {
     const modal = document.getElementById(modalId);
     const btn = document.getElementById(buttonId);
     const span = modal.querySelector(closeClass);
+    if (!modal || !btn || !span) return;
 
-    if (btn && modal && span) {
-        btn.onclick = () => modal.style.display = "flex";
-        span.onclick = () => modal.style.display = "none";
-        window.addEventListener('click', (event) => {
-            if (event.target == modal) {
-                modal.style.display = "none";
+    const focusableElementsSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    let focusableElements, firstFocusableElement, lastFocusableElement;
+
+    const trapFocus = (e) => {
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey) {
+            if (document.activeElement === firstFocusableElement) {
+                lastFocusableElement.focus();
+                e.preventDefault();
             }
-        });
-    } else {
-        console.warn(`Modal setup failed for: ${modalId}. One or more elements not found.`);
-    }
-}
-
-setupModal('changelog-button', 'changelogModal', '.changelog-close');
-setupModal('settings-button', 'settingsModal', '.settings-close');
-
-
-function sp(message) {
-const popup = document.createElement("div");
-popup.classList.add("popup-message");
-popup.textContent = message;
-p.appendChild(popup);
-popup.offsetWidth;
-popup.classList.add("show");
-setTimeout(() => {
-popup.classList.remove("show");
-setTimeout(() => { if (popup.parentNode) { popup.remove(); }}, 500);
-}, 2500);
-}
-
-function cC() {
-c.querySelectorAll(".bot-message pre").forEach((preElement => {
-if (!preElement.querySelector(".copy-button")) {
-const codeBlock = preElement.querySelector('code');
-if (!codeBlock) return;
-const button = document.createElement("button");
-button.className = "copy-button";
-button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2zm0 16H8V7h11v14z"/></svg>';
-button.title = "Copy code";
-button.addEventListener("click", () => {
-navigator.clipboard.writeText(codeBlock.innerText).then(() => {
-button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>';
-button.title = "Copied!";
-setTimeout(() => {
-button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2zm0 16H8V7h11v14z"/></svg>';
-button.title = "Copy code";
-}, 1500);
-}).catch(err => { console.error("Failed to copy code: ", err); button.title = "Copy failed!"; });
-});
-preElement.appendChild(button);
-}
-}));
-}
-
-const cb = document.getElementById("clear-chat-button");
-if (cb) {
-cb.addEventListener("click", () => {
-c.innerHTML = ""; h = [];
-lastApiCallInput = null;
-lastBotMessageElement = null;
-lastBotResponseStatus = null;
-attachedRawFiles = [];
-fileNamesSpan.textContent = '';
-filePreviewContainer.innerHTML = '';
-document.getElementById('attachment-preview').style.display = 'none';
-currentImagePreviews = [];
-sp("Chat cleared.");
-});
-}
-
-const regenerateButton = document.getElementById("regenerate-button");
-if (regenerateButton) {
-    regenerateButton.addEventListener("click", async () => {
-        if (!lastApiCallInput) {
-            sp("Nothing to regenerate.");
-            return;
-        }
-        sp("Regenerating response...");
-        if (lastBotMessageElement && lastBotMessageElement.parentNode === c) {
-            c.removeChild(lastBotMessageElement);
-        }
-        if (lastBotResponseStatus === "success") {
-            if (h.length > 0 && h[h.length - 1].role === 'model') {
-                h.pop();
-            } else {
-                console.warn("History mismatch: last message was not a model message when regenerating a 'success' status.");
-            }
-            if (h.length > 0 && h[h.length - 1].role === 'user') {
-                h.pop();
+        } else {
+            if (document.activeElement === lastFocusableElement) {
+                firstFocusableElement.focus();
+                e.preventDefault();
             }
         }
-        await w(lastApiCallInput);
-    });
-} else { console.warn("Regenerate button not found."); }
+    };
 
+    const openModal = () => {
+        modal.style.display = "flex";
+        focusableElements = Array.from(modal.querySelectorAll(focusableElementsSelector));
+        firstFocusableElement = focusableElements[0];
+        lastFocusableElement = focusableElements[focusableElements.length - 1];
+        modal.addEventListener('keydown', trapFocus);
+        firstFocusableElement?.focus();
+    };
 
-document.addEventListener("keydown", (function(event) {
-if (event.altKey && event.shiftKey && event.key === 'E') {
-v = !v; sp(v ? "Error messages will be shown in chat." : "Error messages hidden.");
-}
-}));
+    const closeModal = () => {
+        modal.style.display = "none";
+        modal.removeEventListener('keydown', trapFocus);
+        btn.focus();
+    };
 
-let ctrlCount = 0;
-let ctrlPressedTimeout;
-const overlayImage = document.getElementById('overlay-image');
-if (overlayImage) {
-document.addEventListener('keydown', function(event) {
-if (event.key === 'Control' || event.key === 'Meta') {
-ctrlCount++;
-clearTimeout(ctrlPressedTimeout);
-if (ctrlCount >= 3) { ctrlCount = 0; overlayImage.classList.toggle('show'); }
-else { ctrlPressedTimeout = setTimeout(() => { ctrlCount = 0; }, 500); }
-} else if (!event.ctrlKey && !event.metaKey) {
-if (event.key !== 'Control' && event.key !== 'Meta') { ctrlCount = 0; clearTimeout(ctrlPressedTimeout); }
-}
-});
-const preloadImage = new Image();
-preloadImage.src = 'https://github.com/crobperson/Overpriced-Haircut/blob/main/Screenshot.png?raw=true';
-} else { console.warn("Overlay image element not found."); }
-
-
-const initialIsImageModel = s.value === "gemini-2.0-flash-preview-image-generation";
-document.querySelector('.temperature-container').style.display = initialIsImageModel ? 'none' : 'flex';
-
-const initialIsFlashModel = s.value === "gemini-2.5-flash";
-if (initialIsFlashModel) {
-    thinkingControlContainer.style.display = 'flex';
-} else {
-    thinkingControlContainer.style.display = 'none';
+    btn.onclick = openModal;
+    span.onclick = closeModal;
+    window.addEventListener('click', (event) => { if (event.target == modal) closeModal(); });
+    modal.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 }
 
-// NEW: Settings persistence and handling
-const autoScrollToggle = document.getElementById('auto-scroll-toggle');
-
+// --- SETTINGS & PERSISTENCE ---
 function saveSettings() {
     const settings = {
-        autoScroll: autoScrollEnabled
+        autoScroll: appState.autoScroll,
+        disableThinking: appState.disableThinking,
+        theme: document.documentElement.getAttribute('data-theme'),
+        systemPrompt: appState.systemPrompt,
     };
     localStorage.setItem('cliftonAiSettings', JSON.stringify(settings));
 }
 
-function loadSettings() {
-    const savedSettings = localStorage.getItem('cliftonAiSettings');
-    if (savedSettings) {
-        const settings = JSON.parse(savedSettings);
-        // Use nullish coalescing operator to safely default to false
-        autoScrollEnabled = settings.autoScroll ?? false;
-        autoScrollToggle.checked = autoScrollEnabled;
-    }
+function updateThemeIcon(theme) {
+    dom.themeToggleButton.innerHTML = theme === 'dark' ? ICONS.sun : ICONS.moon;
 }
 
-autoScrollToggle.addEventListener('change', (e) => {
-    autoScrollEnabled = e.target.checked;
-    saveSettings();
-    sp(`Automatic scrolling ${autoScrollEnabled ? 'enabled' : 'disabled'}.`);
-});
+function loadSettings() {
+    const saved = localStorage.getItem('cliftonAiSettings');
+    let theme;
+    if (saved) {
+        const settings = JSON.parse(saved);
+        appState.autoScroll = settings.autoScroll ?? true;
+        appState.disableThinking = settings.disableThinking ?? false;
+        appState.systemPrompt = settings.systemPrompt ?? '';
+        document.getElementById('auto-scroll-toggle').checked = appState.autoScroll;
+        dom.disableThinkingCheckbox.checked = appState.disableThinking;
+        dom.systemPromptTextarea.value = appState.systemPrompt;
+        theme = settings.theme;
+    }
+    
+    const finalTheme = theme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', finalTheme);
+    updateThemeIcon(finalTheme);
+}
 
-// Load settings on page load
-loadSettings();
+// --- EVENT LISTENERS ---
+function initializeEventListeners() {
+    dom.sendButton.addEventListener("click", sendMessage);
+    dom.inputBox.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }});
+    dom.inputBox.addEventListener('input', () => {
+        dom.inputBox.style.height = 'auto';
+        dom.inputBox.style.height = `${dom.inputBox.scrollHeight}px`;
+        updateSendButtonState();
+    });
+    dom.stopGeneratingButton.addEventListener('click', () => {
+        appState.apiAbortController?.abort();
+        setLoadingState(false);
+    });
+    dom.modelSelect.addEventListener("change", () => {
+        appState.currentModel = dom.modelSelect.value;
+        const isImageModel = appState.currentModel === "gemini-2.0-flash-preview-image-generation";
+        dom.temperatureControlGroup.style.display = isImageModel ? 'none' : 'flex';
+        dom.thinkingControlContainer.style.display = appState.currentModel === "gemini-2.5-flash" ? 'flex' : 'none';
+        
+        if (isImageModel) {
+            appState.attachedRawFiles = appState.attachedRawFiles.filter(f => f.type.startsWith('image/'));
+            updateAttachmentUI();
+        }
+    });
+    dom.tempSlider.addEventListener("input", () => {
+        appState.temperature = parseFloat(dom.tempSlider.value);
+        dom.tempValueDisplay.textContent = appState.temperature.toFixed(1);
+    });
+    dom.disableThinkingCheckbox.addEventListener('change', (e) => {
+        appState.disableThinking = e.target.checked;
+        saveSettings();
+    });
+    dom.newChatBtn.addEventListener("click", startNewChat);
+    dom.regenerateButton.addEventListener("click", async () => {
+        if (!appState.lastApiCallInput || appState.isLoading) {
+            showPopup("Nothing to regenerate or already generating.");
+            return;
+        }
+        showPopup("Regenerating response...");
+        if (appState.lastBotMessageElement) appState.lastBotMessageElement.remove();
 
-cC();
+        if (appState.lastBotResponseStatus === "success") {
+            const lastModelIndex = appState.history.map(m => m.role).lastIndexOf('model');
+            if (lastModelIndex > -1) {
+                appState.history.splice(lastModelIndex, 1);
+            }
+        }
+        
+        setLoadingState(true);
+        const originalModel = appState.currentModel;
+        appState.currentModel = appState.lastApiCallInput.model;
+        await getBotResponse(appState.lastApiCallInput.payload);
+        appState.currentModel = originalModel;
+        setLoadingState(false);
+    });
+    dom.fileInput.addEventListener('change', () => {
+        appState.attachedRawFiles = Array.from(dom.fileInput.files);
+        updateAttachmentUI();
+    });
+    dom.clearAttachmentsBtn.addEventListener('click', clearAttachmentUI);
+    dom.themeToggleButton.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        updateThemeIcon(newTheme);
+        saveSettings();
+    });
+    document.getElementById('auto-scroll-toggle').addEventListener('change', (e) => {
+        appState.autoScroll = e.target.checked;
+        saveSettings();
+    });
+    document.getElementById('save-system-prompt').addEventListener('click', () => {
+        appState.systemPrompt = dom.systemPromptTextarea.value.trim();
+        saveSettings();
+        showPopup('System prompt saved.');
+        document.getElementById('systemPromptModal').style.display = 'none';
+    });
+
+    // History Sidebar Listeners
+    dom.sidebarToggle.addEventListener('click', () => dom.sidebar.classList.toggle('show'));
+    dom.chatHistoryList.addEventListener('click', (e) => {
+        const item = e.target.closest('.chat-history-item');
+        if (!item) return;
+
+        const chatId = item.dataset.chatId;
+        if (e.target.closest('.delete-chat-btn')) {
+            deleteChat(chatId);
+        } else {
+            loadChat(chatId);
+            if (window.innerWidth <= 1024) {
+                dom.sidebar.classList.remove('show');
+            }
+        }
+    });
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 1024 && dom.sidebar.classList.contains('show')) {
+            if (!dom.sidebar.contains(e.target) && !dom.sidebarToggle.contains(e.target)) {
+                dom.sidebar.classList.remove('show');
+            }
+        }
+    });
+
+    // Easter Egg & Debug
+    let ctrlCount = 0, ctrlTimeout;
+    document.addEventListener('keydown', e => {
+        if (e.altKey && e.shiftKey && e.key === 'E') {
+            appState.debugMode = !appState.debugMode;
+            showPopup(`Debug mode ${appState.debugMode ? "enabled" : "disabled"}.`);
+        }
+        if (e.key === 'Control' || e.key === 'Meta') {
+            ctrlCount++;
+            clearTimeout(ctrlTimeout);
+            if (ctrlCount >= 3) {
+                ctrlCount = 0;
+                dom.overlayImage.classList.toggle('show');
+            } else {
+                ctrlTimeout = setTimeout(() => { ctrlCount = 0; }, 500);
+            }
+        } else if (!e.ctrlKey && !e.metaKey) {
+            ctrlCount = 0;
+        }
+    });
+    dom.overlayImage.addEventListener('click', () => dom.overlayImage.classList.remove('show'));
+}
+
+// --- INITIALIZATION ---
+function initializeApp() {
+    loadSettings();
+    loadAllChats();
+    renderHistorySidebar();
+
+    const lastChatId = localStorage.getItem('cliftonAiLastChatId');
+    if (lastChatId && appState.allChats[lastChatId]) {
+        loadChat(lastChatId);
+    } else {
+        startNewChat();
+    }
+
+    updateSendButtonState();
+    initializeEventListeners();
+    setupModal('changelog-button', 'changelogModal', '.changelog-close');
+    setupModal('settings-button', 'settingsModal', '.settings-close');
+    setupModal('system-prompt-button', 'systemPromptModal', '.system-prompt-close');
+    
+    const isImageModel = dom.modelSelect.value === "gemini-2.0-flash-preview-image-generation";
+    dom.temperatureControlGroup.style.display = isImageModel ? 'none' : 'flex';
+    dom.thinkingControlContainer.style.display = dom.modelSelect.value === "gemini-2.5-flash" ? 'flex' : 'none';
+}
+
+initializeApp();
+
 </script>
 </body>
 </html>
