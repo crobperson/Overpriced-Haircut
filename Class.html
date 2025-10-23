@@ -235,23 +235,32 @@ h1#currentTime {
 
 
 /* --- SETTINGS PANEL --- */
+/* FIX 5: Use CSS Grid for robust height animation instead of max-height */
 #settingsPanel {
     background-color: var(--color-surface-secondary);
     border-top: 1px solid var(--color-border);
-    padding: 0 1.5em; /* Padding will be on the inner container */
     margin-top: 2em;
     border-radius: var(--border-radius-sm);
     text-align: left;
-    overflow: hidden;
-    max-height: 0; /* Animated with JS */
+    display: grid; /* Use grid for animation */
+    grid-template-rows: 0fr; /* Collapsed state */
     opacity: 0;
-    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, padding 0.5s ease-in-out;
+    transition: grid-template-rows 0.5s ease-in-out, opacity 0.5s ease-in-out;
 }
 #settingsPanel.visible {
-    max-height: 2000px; /* Large enough to not clip content */
+    grid-template-rows: 1fr; /* Expanded state */
     opacity: 1;
+}
+/* NEW: Inner wrapper to handle content and padding animation */
+.settings-inner {
+    overflow: hidden;
+    padding: 0 1.5em; /* Animate padding for a smoother look */
+    transition: padding 0.5s ease-in-out;
+}
+#settingsPanel.visible .settings-inner {
     padding: 1.5em;
 }
+
 #settingsPanel h3 {
     display: flex;
     justify-content: space-between;
@@ -377,6 +386,24 @@ h1#currentTime {
 }
 .period-remove-btn:hover { color: var(--color-danger-hover); transform: scale(1.1); }
 
+/* FIX 1: Add media query for responsive schedule editor */
+@media (max-width: 550px) {
+    .period-editor-row {
+        grid-template-columns: 1fr auto; /* Name + remove button on top */
+        grid-template-areas:
+            "name remove"
+            "start start"
+            "end end";
+        row-gap: 10px;
+    }
+    .period-editor-row > input.period-name { grid-area: name; }
+    /* Select the time groups specifically */
+    .period-editor-row > .time-group:nth-of-type(1) { grid-area: start; }
+    .period-editor-row > .time-group:nth-of-type(2) { grid-area: end; }
+    .period-editor-row > .period-remove-btn { grid-area: remove; }
+}
+
+
 /* --- TOAST NOTIFICATIONS --- */
 #toast-container {
     position: fixed;
@@ -396,10 +423,37 @@ h1#currentTime {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     opacity: 0;
     transform: translateX(100%);
-    animation: slideIn 0.5s forwards, fadeOut 0.5s 4.5s forwards;
+    /* FIX 3: Simplify animation for manual dismissal */
+    animation: slideIn 0.5s forwards;
+    /* NEW: Add flex for close button alignment */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+/* NEW: Class added by JS to trigger fade out */
+.toast.toast--hiding {
+    animation: fadeOut 0.5s forwards;
 }
 .toast.success { background-color: var(--color-success); }
 .toast.error { background-color: var(--color-danger); }
+
+/* NEW: Style for the manual close button */
+.toast-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5em;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.7;
+    padding: 0;
+    margin-left: 10px;
+}
+.toast-close-btn:hover {
+    opacity: 1;
+}
+
 @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
 @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
 
@@ -446,71 +500,75 @@ h1#currentTime {
     <p id="dingCountdownDisplay"></p>
 
     <div id="settingsPanel">
-        <h3>
-            <span>Settings</span>
-            <button id="settingsCloseBtn" class="icon-button" style="font-size: 1.2em;">✖</button>
-        </h3>
+        <!-- FIX 5: Add inner wrapper for content -->
+        <div class="settings-inner">
+            <h3>
+                <span>Settings</span>
+                <button id="settingsCloseBtn" class="icon-button" style="font-size: 1.2em;">✖</button>
+            </h3>
 
-        <fieldset>
-            <legend>Schedule Presets</legend>
-            <label for="presetSelect">Load Preset:</label>
-            <div class="button-group">
-                <select id="presetSelect" style="flex-grow: 1; margin-bottom: 0;"></select>
-                <button id="deletePresetBtn" class="danger">Delete</button>
-            </div>
-            <hr style="border: none; border-top: 1px solid var(--color-border); margin: 1.5em 0;">
-            <label for="newPresetName">Save as New Preset:</label>
-             <div class="button-group">
-                <input type="text" id="newPresetName" placeholder="e.g., Half Day" style="flex-grow: 1; margin-bottom: 0;">
-                <button id="saveAsPresetBtn">Save New</button>
-            </div>
-        </fieldset>
+            <fieldset>
+                <legend>Schedule Presets</legend>
+                <label for="presetSelect">Load Preset:</label>
+                <div class="button-group">
+                    <select id="presetSelect" style="flex-grow: 1; margin-bottom: 0;"></select>
+                    <button id="deletePresetBtn" class="danger">Delete</button>
+                </div>
+                <hr style="border: none; border-top: 1px solid var(--color-border); margin: 1.5em 0;">
+                <label for="newPresetName">Save as New Preset:</label>
+                 <div class="button-group">
+                    <input type="text" id="newPresetName" placeholder="e.g., Half Day" style="flex-grow: 1; margin-bottom: 0;">
+                    <button id="saveAsPresetBtn">Save New</button>
+                </div>
+            </fieldset>
 
-        <fieldset>
-            <legend>Edit Schedule</legend>
-            <div id="scheduleEditor"></div>
-            <div class="button-group" style="margin-top: 1.5em; justify-content: space-between;">
-                 <button id="addPeriodBtn" class="secondary">+ Add Period</button>
-                 <button id="applyScheduleChangesBtn">Apply Changes</button>
-            </div>
-        </fieldset>
+            <fieldset>
+                <legend>Edit Schedule</legend>
+                <div id="scheduleEditor"></div>
+                <div class="button-group" style="margin-top: 1.5em; justify-content: space-between;">
+                     <button id="addPeriodBtn" class="secondary">+ Add Period</button>
+                     <button id="applyScheduleChangesBtn">Apply Changes</button>
+                </div>
+            </fieldset>
 
-        <fieldset>
-            <legend>Time Offsets</legend>
-            <label for="startOffsetInput">Class Start Offset (seconds):</label>
-            <input type="number" id="startOffsetInput" value="-45">
-            <p class="description">Negative values make classes start earlier.</p>
+            <fieldset>
+                <legend>Time Offsets</legend>
+                <label for="startOffsetInput">Class Start Offset (seconds):</label>
+                <input type="number" id="startOffsetInput" value="-45">
+                <p class="description">Negative values make classes start earlier.</p>
 
-            <label for="endOffsetInput">Class End Offset (seconds):</p>
-            <input type="number" id="endOffsetInput" value="-45">
-            <p class="description">Negative values make classes end earlier.</p>
-        </fieldset>
-        
-        <fieldset>
-            <legend>Audio Settings</legend>
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5em;">
-                <input type="checkbox" id="dingCountdownToggle">
-                <label for="dingCountdownToggle" style="margin-bottom: 0; cursor: pointer;">Enable Ding Countdown</label>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5em;">
-                <label for="dingVolumeSlider" style="margin-bottom: 0; flex-shrink: 0;">Volume:</label>
-                <input type="range" id="dingVolumeSlider" min="0" max="1" step="0.01" value="0.8" style="width: 100%;">
-            </div>
-            <button id="playDingSoundBtn" class="secondary" style="width: auto;">Play Ding Sound</button>
-        </fieldset>
+                <!-- FIX 4: Corrected closing tag from </p> to </label> -->
+                <label for="endOffsetInput">Class End Offset (seconds):</label>
+                <input type="number" id="endOffsetInput" value="-45">
+                <p class="description">Negative values make classes end earlier.</p>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Audio Settings</legend>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5em;">
+                    <input type="checkbox" id="dingCountdownToggle">
+                    <label for="dingCountdownToggle" style="margin-bottom: 0; cursor: pointer;">Enable Ding Countdown</label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5em;">
+                    <label for="dingVolumeSlider" style="margin-bottom: 0; flex-shrink: 0;">Volume:</label>
+                    <input type="range" id="dingVolumeSlider" min="0" max="1" step="0.01" value="0.8" style="width: 100%;">
+                </div>
+                <button id="playDingSoundBtn" class="secondary" style="width: auto;">Play Ding Sound</button>
+            </fieldset>
 
-        <fieldset>
-            <legend>Bell Time Fine-Tuning</legend>
-            <p class="description" style="margin-top: 0;">Record the bell to find its exact time. Hover over the waveform to see the timestamp.</p>
-            <div class="button-group" style="margin-bottom: 1em;">
-                <button id="recordBtn">Record Bell</button>
-                <span id="recordStatus" style="line-height: 35px; color: var(--color-text-secondary); font-size: 0.9em;"></span>
-            </div>
-            <div id="waveformContainer" style="position: relative;">
-                <canvas id="waveformCanvas" style="width: 100%; height: 100px; background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm);"></canvas>
-                <div id="waveformTooltip"></div>
-            </div>
-        </fieldset>
+            <fieldset>
+                <legend>Bell Time Fine-Tuning</legend>
+                <p class="description" style="margin-top: 0;">Record the bell to find its exact time. Red lines mark detected peaks.</p>
+                <div class="button-group" style="margin-bottom: 1em;">
+                    <button id="recordBtn">Record Bell</button>
+                    <span id="recordStatus" style="line-height: 35px; color: var(--color-text-secondary); font-size: 0.9em;"></span>
+                </div>
+                <div id="waveformContainer" style="position: relative;">
+                    <canvas id="waveformCanvas" style="width: 100%; height: 100px; background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm);"></canvas>
+                    <div id="waveformTooltip"></div>
+                </div>
+            </fieldset>
+        </div>
     </div>
 
     <div id="schedule">
@@ -595,7 +653,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let dingCountdownEnabled = localStorage.getItem('dingCountdownEnabled') === 'true';
     let dingVolume = parseFloat(localStorage.getItem('dingVolume')) || 0.8;
     let dingsPlayedForEvent = new Set(); // Tracks which seconds (3, 2, 1) have dinged
-    const DING_THRESHOLD_MS = 5 * 1000; // Show ding countdown when <= 3 seconds
+    const DING_THRESHOLD_MS = 5 * 1000; // Show ding countdown when <= 5 seconds
 
     // Waveform state
     let audioContext;
@@ -606,6 +664,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let recordingStartTime = null;
     let adjustmentTarget = null;
     let resizeTimer;
+    let detectedPeaks = []; // NEW: To store detected peak timestamps
 
     // --- HELPER FUNCTIONS ---
     const formatTimeDifference = (ms) => {
@@ -620,12 +679,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const format12Hour = (h, m) => new Date(2000, 0, 1, h, m).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
     // --- TOAST NOTIFICATION ---
+    // FIX 3: Rewritten to support manual dismissal
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-        toast.textContent = message;
+        
+        // Use innerHTML for simple structure with a message and button
+        toast.innerHTML = `
+            <span>${message}</span>
+            <button class="toast-close-btn" aria-label="Dismiss">&times;</button>
+        `;
+
         toastContainer.appendChild(toast);
-        setTimeout(() => toast.remove(), 5000);
+
+        const dismiss = () => {
+            // Add a class to trigger the CSS fade-out animation
+            toast.classList.add('toast--hiding');
+            // Remove the element from the DOM after the animation completes
+            toast.addEventListener('animationend', () => toast.remove());
+        };
+
+        // Automatically dismiss after 5 seconds
+        const timeoutId = setTimeout(dismiss, 5000);
+
+        // Allow manual dismissal by clicking the close button
+        toast.querySelector('.toast-close-btn').addEventListener('click', () => {
+            clearTimeout(timeoutId); // Prevent the timeout from running again
+            dismiss();
+        });
     }
     
     // --- THEME MANAGEMENT ---
@@ -650,7 +731,11 @@ document.addEventListener('DOMContentLoaded', () => {
         schedulePresets = {};
         BUILT_IN_SCHEDULES.forEach(builtin => { schedulePresets[builtin.name] = builtin.periods; });
         Object.assign(schedulePresets, userPresets);
-        localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
+        // Persist the combined list
+        const builtInNames = BUILT_IN_SCHEDULES.map(s => s.name);
+        const userPresetsOnly = Object.fromEntries(Object.entries(schedulePresets).filter(([name]) => !builtInNames.includes(name)));
+        localStorage.setItem('schedulePresets', JSON.stringify(userPresetsOnly));
+
         populatePresetDropdown();
         const lastUsedPreset = localStorage.getItem('lastUsedPreset');
         loadSchedule(lastUsedPreset && schedulePresets[lastUsedPreset] ? lastUsedPreset : DEFAULT_SCHEDULE.name);
@@ -682,28 +767,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (schedulePresets[newName]) return showToast('A preset with this name already exists.', 'error');
         
         schedulePresets[newName] = getScheduleFromEditor();
-        localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
+        initializePresets(); // Re-initialize to save and update dropdown
         newPresetNameInput.value = '';
-        populatePresetDropdown();
         loadSchedule(newName);
         showToast(`Preset "${newName}" saved!`, 'success');
     }
     function deleteCurrentPreset() {
+        const presetNameToDelete = presetSelect.value;
+        const isBuiltIn = BUILT_IN_SCHEDULES.some(s => s.name === presetNameToDelete);
+        if (isBuiltIn) return showToast(`Cannot delete the built-in "${presetNameToDelete}" schedule.`, 'error');
         if (Object.keys(schedulePresets).length <= 1) return showToast("Cannot delete the last remaining schedule.", 'error');
         
-        const presetNameToDelete = presetSelect.value;
         if (confirm(`Are you sure you want to delete "${presetNameToDelete}"?`)) {
             delete schedulePresets[presetNameToDelete];
-            localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
-            populatePresetDropdown();
-            loadSchedule(Object.keys(schedulePresets)[0]);
+            initializePresets(); // Re-initialize to save and update dropdown
+            loadSchedule(Object.keys(schedulePresets)[0]); // Load the first available schedule
             showToast(`"${presetNameToDelete}" has been deleted.`, 'success');
         }
     }
     function applyScheduleChanges() {
         const currentPresetName = presetSelect.value;
         schedulePresets[currentPresetName] = getScheduleFromEditor();
-        localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
+        initializePresets(); // Re-initialize to save and update dropdown
         loadSchedule(currentPresetName);
         showToast(`"${currentPresetName}" has been updated.`, 'success');
     }
@@ -760,12 +845,14 @@ document.addEventListener('DOMContentLoaded', () => {
         endOffsetInput.value = localStorage.getItem('endOffset') || -45;
         updateOffsetVariables();
     }
-    function saveOffsets() {
+    function saveOffsets(showNotification = false) {
         localStorage.setItem('startOffset', startOffsetInput.value);
         localStorage.setItem('endOffset', endOffsetInput.value);
         updateOffsetVariables();
         updateDisplay();
-        showToast('Offsets saved!', 'success');
+        if (showNotification) {
+            showToast('Offsets saved!', 'success');
+        }
     }
     function updateOffsetVariables() {
         startOffsetMs = parseInt(startOffsetInput.value, 10) * 1000;
@@ -807,7 +894,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentPresetName = presetSelect.value;
         if (schedulePresets[currentPresetName]) {
             schedulePresets[currentPresetName] = JSON.parse(JSON.stringify(currentSchedule));
-            localStorage.setItem('schedulePresets', JSON.stringify(schedulePresets));
+            initializePresets();
         }
         
         cancelAdjustment();
@@ -816,7 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDisplay(); // Immediately reflect the change
     }
 
-    // --- WAVEFORM VISUALIZATION ---
+    // --- WAVEFORM VISUALIZATION & PEAK DETECTION ---
     function toggleRecording() {
         if (isRecording) {
             stopRecording();
@@ -850,6 +937,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 recordStatus.textContent = 'Recording... (No upcoming event found)';
             }
             recordedAudioBuffer = null;
+            detectedPeaks = []; // NEW: Reset peaks on new recording
             drawWaveform(null);
 
             mediaRecorder = new MediaRecorder(stream);
@@ -880,11 +968,41 @@ document.addEventListener('DOMContentLoaded', () => {
             const arrayBuffer = await blob.arrayBuffer();
             recordedAudioBuffer = await audioContext.decodeAudioData(arrayBuffer);
             recordStatus.textContent = 'Recording complete. Hover to inspect.';
+            
+            // NEW: Detect and store peaks after processing
+            detectedPeaks = findAudioPeaks(recordedAudioBuffer, 0.5, 1.0); // Threshold 50%, min 1s distance
+
             drawWaveform(recordedAudioBuffer);
         } catch (e) {
             recordStatus.textContent = 'Failed to process audio.';
             showToast('Could not decode audio data.', 'error');
         }
+    }
+    /**
+     * Analyzes an AudioBuffer to find prominent audio peaks.
+     * @param {AudioBuffer} buffer The audio buffer to analyze.
+     * @param {number} threshold The amplitude threshold (0 to 1) to count as a peak.
+     * @param {number} minPeakDistanceSec The minimum time in seconds between detected peaks.
+     * @returns {number[]} An array of peak timestamps in seconds.
+     */
+    function findAudioPeaks(buffer, threshold = 0.5, minPeakDistanceSec = 0.5) {
+        const data = buffer.getChannelData(0);
+        const sampleRate = buffer.sampleRate;
+        const minPeakDistanceSamples = minPeakDistanceSec * sampleRate;
+        const peaks = [];
+
+        for (let i = 0; i < data.length; i++) {
+            if (Math.abs(data[i]) > threshold) {
+                const peakTimeSec = i / sampleRate;
+                // Ensure this peak is far enough from the last one
+                if (peaks.length === 0 || (peakTimeSec - peaks[peaks.length - 1]) > minPeakDistanceSec) {
+                    peaks.push(peakTimeSec);
+                    // Skip ahead to avoid detecting the same peak multiple times
+                    i += minPeakDistanceSamples;
+                }
+            }
+        }
+        return peaks;
     }
     function drawWaveform(buffer, cursorX = null) {
         const canvas = waveformCanvas;
@@ -904,15 +1022,14 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText('No recording yet', width / 2, height / 2);
             return;
         }
-
+        
+        // Draw main waveform
         const data = buffer.getChannelData(0);
         const step = Math.ceil(data.length / width);
         const amp = height / 2;
-
         ctx.lineWidth = 1;
         ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-primary');
         ctx.beginPath();
-
         for (let i = 0; i < width; i++) {
             let min = 1.0;
             let max = -1.0;
@@ -926,8 +1043,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         ctx.stroke();
 
-        if (cursorX !== null) {
+        // NEW: Draw peak markers
+        if (detectedPeaks.length > 0) {
             ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-danger');
+            ctx.lineWidth = 2; // Make markers stand out
+            detectedPeaks.forEach(peakTime => {
+                const x = (peakTime / buffer.duration) * width;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            });
+        }
+
+        // Draw hover cursor line
+        if (cursorX !== null) {
+            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary');
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(cursorX, 0);
@@ -938,11 +1069,35 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleWaveformHover(e) {
         if (!recordedAudioBuffer) return;
         const rect = waveformCanvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
+        const width = waveformCanvas.clientWidth;
+        let x = e.clientX - rect.left;
+        let timeInRecordingSec = (x / width) * recordedAudioBuffer.duration;
+        let isSnapped = false;
+
+        // NEW: Snap to the nearest peak marker
+        const snapThreshold = 5; // pixels
+        let closestPeak = null;
+        let minDistance = Infinity;
+
+        detectedPeaks.forEach(peakTime => {
+            const peakX = (peakTime / recordedAudioBuffer.duration) * width;
+            const distance = Math.abs(x - peakX);
+            if (distance < snapThreshold && distance < minDistance) {
+                minDistance = distance;
+                closestPeak = { time: peakTime, x: peakX };
+            }
+        });
+
+        if (closestPeak) {
+            x = closestPeak.x;
+            timeInRecordingSec = closestPeak.time;
+            isSnapped = true;
+        }
+        
         drawWaveform(recordedAudioBuffer, x);
 
-        const timeInRecordingSec = (x / waveformCanvas.clientWidth) * recordedAudioBuffer.duration;
-        let tooltipContent = `Time: ${formatWaveformTime(timeInRecordingSec)}`;
+        let tooltipContent = isSnapped ? `<b>Detected Peak</b><br>` : '';
+        tooltipContent += `Time: ${formatWaveformTime(timeInRecordingSec)}`;
 
         if (adjustmentTarget && recordingStartTime) {
             const bellRealTime = recordingStartTime + (timeInRecordingSec * 1000);
@@ -1106,12 +1261,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- EVENT LISTENERS ---
-    const toggleSettingsPanel = () => settingsPanel.classList.toggle('visible');
+    // FIX 2: Save offsets when panel is closed to prevent data loss.
+    const toggleSettingsPanel = () => {
+        // If panel is currently visible, it's about to be hidden. Save settings.
+        if (settingsPanel.classList.contains('visible')) {
+            saveOffsets(false); // Silently save offsets
+        }
+        settingsPanel.classList.toggle('visible');
+    };
     settingsToggleBtn.addEventListener('click', toggleSettingsPanel);
     settingsCloseBtn.addEventListener('click', toggleSettingsPanel);
     themeToggleBtn.addEventListener('click', toggleTheme);
-    startOffsetInput.addEventListener('change', saveOffsets);
-    endOffsetInput.addEventListener('change', saveOffsets);
+    // Use 'change' event to show toast notification only when user is done editing.
+    startOffsetInput.addEventListener('change', () => saveOffsets(true));
+    endOffsetInput.addEventListener('change', () => saveOffsets(true));
+
     presetSelect.addEventListener('change', () => loadSchedule(presetSelect.value));
     saveAsPresetBtn.addEventListener('click', saveAsNewPreset);
     deletePresetBtn.addEventListener('click', deleteCurrentPreset);
@@ -1132,11 +1296,6 @@ document.addEventListener('DOMContentLoaded', () => {
         dingVolume = parseFloat(dingVolumeSlider.value);
         dingSound.volume = dingVolume;
         localStorage.setItem('dingVolume', dingVolume);
-        if (dingSound.paused) {
-            dingSound.play().catch(e => console.error("Error playing ding sound:", e));
-        } else {
-            dingSound.currentTime = 0;
-        }
     });
 
     scheduleListElem.addEventListener('click', e => {
