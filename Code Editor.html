@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google</title>
+    <title>HTML Editor with Error Console</title>
     <style>
         /* Basic styles for a clean, modern look */
         :root {
             --bg-color: #f4f7f9;
             --editor-bg: #2b2b2b;
             --editor-text: #f8f8f2;
+            --console-bg: #1e1e1e;
+            --console-text: #d4d4d4;
+            --error-text: #ff8a8a;
             --button-bg: #4a90e2;
             --button-hover-bg: #357ABD;
             --text-color: #333;
@@ -69,21 +72,20 @@
             background-color: var(--button-hover-bg);
         }
 
-        /* Hide the default file input */
         #fileInput {
             display: none;
         }
 
         .editor-wrapper {
-            flex-grow: 1;
+            flex: 3; /* Takes up 3 parts of the available space */
             display: flex;
             flex-direction: column;
+            min-height: 200px; /* Ensure it doesn't collapse */
         }
 
         #codeEditor {
             width: 100%;
             height: 100%;
-            flex-grow: 1;
             box-sizing: border-box;
             border: 1px solid var(--border-color);
             border-radius: 5px;
@@ -94,7 +96,6 @@
             background-color: var(--editor-bg);
             color: var(--editor-text);
             resize: vertical;
-            /* Enable tabs in textarea */
             tab-size: 4;
             -moz-tab-size: 4;
             -o-tab-size: 4;
@@ -104,17 +105,89 @@
             outline: 2px solid var(--button-bg);
             border-color: var(--button-bg);
         }
+
+        /* New Error Console Styles */
+        .console-wrapper {
+            flex: 1; /* Takes up 1 part of the available space */
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+            min-height: 100px; /* Ensure it's visible */
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .console-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        #clearConsoleButton {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        #clearConsoleButton:hover {
+            background-color: #e0e0e0;
+        }
+
+        #errorConsole {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            background-color: var(--console-bg);
+            color: var(--console-text);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            overflow-y: auto;
+            white-space: pre-wrap; /* Wrap long lines */
+            word-break: break-all;
+        }
+
+        .error-entry {
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #444;
+        }
+        .error-entry:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .error-message {
+            color: var(--error-text);
+            font-weight: bold;
+        }
+        .error-stack {
+            color: #9cdcfe; /* A lighter blue for stack traces */
+            margin-top: 5px;
+            padding-left: 15px;
+            font-size: 0.85rem;
+        }
+
     </style>
 </head>
 <body>
 
     <div class="container">
         <header>
-            <h1>Simple HTML Editor</h1>
+            <h1>HTML Editor with Error Console</h1>
         </header>
 
         <div class="controls">
-            <!-- File input is hidden, label acts as the button -->
             <label for="fileInput" class="file-label">Open File</label>
             <input type="file" id="fileInput" accept=".html,.htm,.txt">
             
@@ -123,34 +196,54 @@
         </div>
 
         <div class="editor-wrapper">
-            <textarea id="codeEditor" placeholder="Write your HTML code here..."><!-- Default starter code -->
+            <textarea id="codeEditor" placeholder="Write your HTML code here..."><!-- Default starter code with an error example -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Awesome Page</title>
+    <title>Test Page</title>
     <style>
-        body {
-            font-family: sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            text-align: center;
-            padding: 50px;
-        }
-        h1 {
-            color: #0056b3;
-        }
+        body { font-family: sans-serif; text-align: center; padding: 20px; }
+        button { font-size: 1rem; padding: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
+    <h1>Error Console Test</h1>
+    <p>Click the buttons below to generate errors that should appear in the editor's console.</p>
+    
+    <button onclick="generateReferenceError()">Generate ReferenceError</button>
+    <button onclick="generateTypeError()">Generate TypeError</button>
+    <button onclick="generatePromiseRejection()">Generate Unhandled Promise Rejection</button>
 
-    <h1>Hello, World!</h1>
-    <p>This is a preview of your HTML code.</p>
-    <p>You can edit this in the editor and click "Preview" again.</p>
+    <script>
+        function generateReferenceError() {
+            // This will throw a ReferenceError because 'myUndefinedVariable' is not defined.
+            console.log(myUndefinedVariable);
+        }
 
+        function generateTypeError() {
+            // This will throw a TypeError because null has no properties.
+            const myNull = null;
+            console.log(myNull.property);
+        }
+
+        function generatePromiseRejection() {
+            // This will cause an unhandled promise rejection.
+            new Promise((resolve, reject) => {
+                reject(new Error("This is a test promise rejection!"));
+            });
+        }
+    <\/script>
 </body>
 </html></textarea>
+        </div>
+
+        <div class="console-wrapper">
+            <div class="console-header">
+                <h3>Error Console</h3>
+                <button id="clearConsoleButton">Clear</button>
+            </div>
+            <div id="errorConsole">No errors detected.</div>
         </div>
     </div>
 
@@ -160,31 +253,119 @@
             const fileInput = document.getElementById('fileInput');
             const previewButton = document.getElementById('previewButton');
             const saveButton = document.getElementById('saveButton');
+            const errorConsole = document.getElementById('errorConsole');
+            const clearConsoleButton = document.getElementById('clearConsoleButton');
+
+            let errorCount = 0;
 
             // --- Handle File Loading ---
             fileInput.addEventListener('change', (event) => {
                 const file = event.target.files[0];
-                if (!file) {
-                    return;
-                }
+                if (!file) return;
 
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     codeEditor.value = e.target.result;
                 };
                 reader.readAsText(file);
-                
                 event.target.value = null;
             });
 
             // --- Handle Previewing the Code ---
             previewButton.addEventListener('click', () => {
-                const code = codeEditor.value;
-                const blob = new Blob([code], { type: 'text/html' });
+                // Clear console for new preview session
+                clearErrorConsole();
+                errorCount = 0;
+                errorConsole.textContent = 'Preview opened. Listening for errors...';
+
+                const userCode = codeEditor.value;
+
+                // This script will be injected into the preview window to catch errors
+                // and send them back to this main window.
+                const errorCapturingScript = `
+                    <script>
+                        // Capture standard errors
+                        window.onerror = function(message, source, lineno, colno, error) {
+                            const errorData = {
+                                type: 'previewError',
+                                message: message,
+                                source: 'Preview Window',
+                                lineno: lineno,
+                                colno: colno,
+                                stack: error ? error.stack : 'No stack trace available.'
+                            };
+                            if (window.opener) {
+                                window.opener.postMessage(errorData, '*');
+                            }
+                            return true; // Prevents the browser's default error handler
+                        };
+
+                        // Capture unhandled promise rejections
+                        window.addEventListener('unhandledrejection', event => {
+                            const errorData = {
+                                type: 'previewError',
+                                message: 'Unhandled Promise Rejection: ' + (event.reason.message || event.reason),
+                                stack: event.reason.stack || 'No stack trace available.'
+                            };
+                             if (window.opener) {
+                                window.opener.postMessage(errorData, '*');
+                            }
+                        });
+                    <\/script>
+                `;
+
+                // We inject our script right before the closing </head> tag if it exists,
+                // otherwise at the beginning of the document.
+                let finalCode;
+                if (userCode.includes('</head>')) {
+                    finalCode = userCode.replace('</head>', errorCapturingScript + '</head>');
+                } else {
+                    finalCode = errorCapturingScript + userCode;
+                }
+
+                const blob = new Blob([finalCode], { type: 'text/html' });
                 const url = URL.createObjectURL(blob);
                 window.open(url, '_blank');
+                // Note: We don't revoke the URL here, as the new tab needs it.
             });
-            
+
+            // --- Listen for errors from the preview window ---
+            window.addEventListener('message', (event) => {
+                // We only care about messages that are specifically errors from our preview
+                if (event.data && event.data.type === 'previewError') {
+                    if (errorCount === 0) {
+                        errorConsole.innerHTML = ''; // Clear the "listening" message
+                    }
+                    errorCount++;
+                    displayError(event.data);
+                }
+            });
+
+            function displayError(errorData) {
+                const entry = document.createElement('div');
+                entry.className = 'error-entry';
+
+                const message = document.createElement('div');
+                message.className = 'error-message';
+                message.textContent = errorData.message;
+
+                const stack = document.createElement('div');
+                stack.className = 'error-stack';
+                stack.textContent = errorData.stack || `at ${errorData.source}:${errorData.lineno}:${errorData.colno}`;
+
+                entry.appendChild(message);
+                entry.appendChild(stack);
+                errorConsole.appendChild(entry);
+                errorConsole.scrollTop = errorConsole.scrollHeight; // Auto-scroll to the latest error
+            }
+
+            function clearErrorConsole() {
+                errorConsole.innerHTML = 'No errors detected.';
+                errorCount = 0;
+            }
+
+            clearConsoleButton.addEventListener('click', clearErrorConsole);
+
             // --- Handle Saving/Downloading the Code ---
             saveButton.addEventListener('click', () => {
                 const code = codeEditor.value;
@@ -201,19 +382,15 @@
                 URL.revokeObjectURL(url);
             });
             
-            // --- FIXED: Enable using the Tab key for indentation in the textarea ---
+            // --- Enable using the Tab key for indentation ---
             codeEditor.addEventListener('keydown', function(e) {
                 if (e.key === 'Tab') {
-                    e.preventDefault(); // Prevent focus from changing
-
-                    // Use the more efficient execCommand to insert the tab character.
-                    // This is much faster and avoids the "freezing" issue.
+                    e.preventDefault();
                     document.execCommand('insertText', false, '\t');
                 }
             });
         });
     </script>
-
 
 </body>
 </html>
