@@ -464,7 +464,7 @@
                     <select id="model-select">
                         <option value="gemini-2.5-flash">Clifton Flash</option>
                         <option value="gemini-2.5-pro">Clifton Pro</option>
-                        <option value="gemini-2.0-flash-preview-image-generation">Clifton Image Gen</option>
+                        <option value="gemini-2.5-flash-image">Clifton Image Gen</option>
                     </select>
                 </div>
                 <div class="control-group" id="temperature-control-group">
@@ -854,7 +854,7 @@ async function sendMessage() {
     updateSendButtonState();
 
     let apiInput;
-    if (appState.currentModel === "gemini-2.0-flash-preview-image-generation") {
+    if (appState.currentModel === "gemini-2.5-flash-image") {
         let parts = [];
         if (textInput) parts.push({ text: textInput });
         
@@ -902,7 +902,7 @@ async function getBotResponse(apiInput) {
 
     for (const apiKey of orderedApiKeys) {
         try {
-            if (appState.currentModel === "gemini-2.0-flash-preview-image-generation") {
+            if (appState.currentModel === "gemini-2.5-flash-image") {
                 const result = await generateImageApiCall(apiKey, apiInput.parts);
                 finalResponseText = result.text;
                 finalResponseImage = { base64: result.imageBase64, mimeType: result.imageMimeType };
@@ -1348,7 +1348,7 @@ function initializeEventListeners() {
     });
     dom.modelSelect.addEventListener("change", () => {
         appState.currentModel = dom.modelSelect.value;
-        const isImageModel = appState.currentModel === "gemini-2.0-flash-preview-image-generation";
+        const isImageModel = appState.currentModel === "gemini-2.5-flash-image";
         dom.temperatureControlGroup.style.display = isImageModel ? 'none' : 'flex';
         dom.thinkingControlContainer.style.display = appState.currentModel === "gemini-2.5-flash" ? 'flex' : 'none';
         
@@ -1477,7 +1477,7 @@ function initializeApp() {
     setupModal('settings-button', 'settingsModal', '.settings-close');
     setupModal('system-prompt-button', 'systemPromptModal', '.system-prompt-close');
     
-    const isImageModel = dom.modelSelect.value === "gemini-2.0-flash-preview-image-generation";
+    const isImageModel = dom.modelSelect.value === "gemini-2.5-flash-image";
     dom.temperatureControlGroup.style.display = isImageModel ? 'none' : 'flex';
     dom.thinkingControlContainer.style.display = dom.modelSelect.value === "gemini-2.5-flash" ? 'flex' : 'none';
 }
