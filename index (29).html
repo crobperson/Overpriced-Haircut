@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google</title>
+    <!-- Import Google Fonts seen in the video -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat&family=Comfortaa&family=Comic+Neue&family=Courier+Prime&family=EB+Garamond&family=Lexend&family=Lobster&family=Lora&family=Merriweather&family=Montserrat&family=Nunito&family=Oswald&family=Pacifico&family=Permanent+Marker&family=Playfair+Display&family=Roboto&family=Roboto+Mono&family=Roboto+Serif&family=Rowdies&family=Spectral&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Basic Setup & Typography --- */
+        :root {
+            --page-bg: #f7f9fa;
+            --doc-bg: #ffffff;
+            --text-color: #202124;
+            --primary-color: #1a73e8;
+            --primary-text: #ffffff;
+            --border-color: #dadce0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --status-color: #5f6368;
+            --hover-bg: #f1f3f4;
+            --icon-color: #5f6368;
+            /* Google Docs selection blue */
+            --selection-blue: rgba(179, 215, 255, 0.5); 
+            --sidebar-width: 300px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--page-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; /* Manage scroll via containers */
+        }
+
+        /* --- Header / Toolbar --- */
+        .toolbar {
+            position: sticky;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            background-color: var(--doc-bg);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px var(--shadow-color);
+            z-index: 1000; 
+            height: 40px;
+            flex-shrink: 0;
+        }
+
+        .toolbar-title {
+            font-size: 1.15em;
+            font-weight: 500;
+            margin-right: 24px;
+            color: var(--primary-color);
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .separator {
+            width: 1px;
+            height: 20px;
+            background-color: var(--border-color);
+            margin: 0 4px;
+        }
+
+        /* --- Font Family Selector --- */
+        .font-family-control {
+            position: relative;
+        }
+
+        .ff-btn {
+            background: none;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 14px;
+            height: 28px;
+            padding: 0 6px 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 120px;
+            user-select: none;
+        }
+
+        .ff-btn:hover {
+            background-color: var(--hover-bg);
+            border-color: var(--border-color);
+        }
+
+        .ff-current {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100px;
+            min-height: 1em; /* Ensure it keeps height if empty */
+        }
+
+        .dropdown-arrow {
+            font-size: 10px;
+            color: var(--icon-color);
+            margin-left: 8px;
+        }
+
+        .ff-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 260px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.2);
+            box-shadow: 0 4px 5px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            padding: 6px 0;
+            display: none; /* Hidden by default */
+            z-index: 2000;
+        }
+
+        .ff-dropdown.show {
+            display: block;
+        }
+
+        .ff-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 16px 6px 32px; /* Left padding space for checkmark */
+            cursor: pointer;
+            font-size: 14px;
+            position: relative;
+            color: #000;
+        }
+
+        .ff-item:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .ff-item.active::before {
+            content: '✓';
+            position: absolute;
+            left: 10px;
+            color: var(--text-color);
+            font-weight: bold;
+        }
+
+        /* --- Font Size Control Group --- */
+        .font-size-control {
+            display: flex;
+            align-items: center;
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            padding: 0 8px;
+            height: 24px;
+        }
+
+        .fs-btn {
+            background: none;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            cursor: pointer;
+            color: var(--icon-color);
+            font-size: 18px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .fs-btn:hover {
+            background-color: var(--hover-bg);
+            color: var(--text-color);
+        }
+
+        .fs-input-wrapper {
+            position: relative;
+            margin: 0 4px;
+        }
+
+        .fs-input {
+            width: 40px;
+            height: 24px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-color);
+            font-family: inherit;
+            outline: none;
+        }
+
+        .fs-input:hover {
+            border-color: var(--border-color);
+        }
+
+        .fs-input:focus {
+            border-color: var(--primary-color);
+            border-width: 2px;
+            margin: -1px;
+        }
+
+        /* Hide number spinner arrows */
+        .fs-input::-webkit-outer-spin-button,
+        .fs-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .fs-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        #saveStatus {
+            font-size: 0.85em;
+            color: var(--status-color);
+        }
+
+        /* --- Gemini Button --- */
+        .ai-toggle-btn {
+            background: linear-gradient(135deg, #1a73e8, #8ab4f8);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-toggle-btn:hover {
+            opacity: 0.9;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* --- Main Layout --- */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- Editor Area --- */
+        .page-container {
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            cursor: text;
+            flex: 1;
+            overflow-y: auto;
+            background-color: var(--page-bg);
+        }
+
+        .page-container:active {
+            cursor: text; 
+        }
+
+        #editor {
+            width: 8.5in;
+            max-width: 100%;
+            min-height: 11in;
+            padding: 1in;
+            background-color: var(--doc-bg);
+            box-shadow: 0 0 10px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            outline: none;
+            box-sizing: border-box;
+            font-size: 11pt; /* Default */
+            font-family: Arial, sans-serif;
+            white-space: pre-wrap; 
+            z-index: 1;
+            position: relative;
+        }
+
+        #editor span {
+            line-height: 1.5;
+        }
+
+        /* --- Side Menu (Gemini) --- */
+        .side-menu {
+            width: 0;
+            background: #fff;
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .side-menu.open {
+            width: var(--sidebar-width);
+        }
+
+        .sm-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+        }
+        .sm-title {
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sm-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--icon-color);
+        }
+
+        .sm-content {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .sm-section {
+            margin-bottom: 24px;
+        }
+        .sm-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #5f6368;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sm-input, .sm-select, .sm-textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 13px;
+            margin-bottom: 8px;
+            box-sizing: border-box;
+        }
+        .sm-textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .sm-input:focus, .sm-select:focus, .sm-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .sm-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 500;
+        }
+        .sm-btn:hover {
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            opacity: 0.95;
+        }
+        .sm-btn.secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+        }
+        .sm-btn.secondary:hover {
+            background-color: #f1f3f4;
+        }
+
+        .saved-actions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .action-btn {
+            background-color: #e8f0fe;
+            color: #1967d2;
+            border: 1px solid transparent;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: left;
+            cursor: pointer;
+            flex: 1;
+            transition: background 0.2s;
+        }
+        .action-btn:hover {
+            background-color: #d2e3fc;
+        }
+        .action-edit, .action-delete {
+            background: none;
+            border: none;
+            color: #5f6368;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 16px;
+        }
+        .action-edit:hover {
+            color: var(--primary-color);
+        }
+        .action-delete:hover {
+            color: #d93025;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            display: none;
+        }
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- Visual Overlays (Caret & Highlight) --- */
+        
+        #overlayContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999; 
+            overflow: hidden;
+        }
+
+        .fake-caret {
+            position: absolute;
+            width: 2px;
+            background-color: #000;
+            display: none;
+            animation: blink-animation 1s steps(2, start) infinite;
+        }
+
+        .selection-rect {
+            position: absolute;
+            background-color: var(--selection-blue);
+            mix-blend-mode: multiply; 
+        }
+
+        @keyframes blink-animation {
+            to {
+                visibility: hidden;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="toolbar">
+        <div class="toolbar-left">
+            <div class="toolbar-title">Clifton Docs 1.0</div>
+            
+            <!-- Font Family Selector -->
+            <div class="font-family-control">
+                <button id="fontFamilyBtn" class="ff-btn" title="Font">
+                    <span id="currentFontName" class="ff-current">Arial</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div id="fontDropdown" class="ff-dropdown">
+                    <!-- Items generated by JS -->
+                </div>
+            </div>
+
+            <div class="separator"></div>
+
+            <!-- Font Size Selector -->
+            <div class="font-size-control">
+                <button id="btnDecrease" class="fs-btn" title="Decrease font size">−</button>
+                <div class="fs-input-wrapper">
+                    <input type="number" id="fontSizeInput" class="fs-input" placeholder="" min="1" max="400">
+                </div>
+                <button id="btnIncrease" class="fs-btn" title="Increase font size">+</button>
+            </div>
+        </div>
+
+        <div class="toolbar-actions">
+            <span id="saveStatus"></span>
+            <button class="ai-toggle-btn" id="toggleAiBtn">
+                <span>✨</span> Gemini Tools
+            </button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <main class="page-container" onclick="document.getElementById('editor').focus()">
+            <div id="editor" contenteditable="true" spellcheck="true"></div>
+            <div id="loadingOverlay" class="loading-overlay">
+                <div class="spinner"></div>
+            </div>
+        </main>
+
+        <!-- Side Menu -->
+        <aside class="side-menu" id="sideMenu">
+            <div class="sm-header">
+                <div class="sm-title"><span>✨</span> Gemini Intelligence</div>
+                <button class="sm-close" id="closeSideMenu">×</button>
+            </div>
+            <div class="sm-content">
+                
+                <!-- API Key Section -->
+                <div class="sm-section">
+                    <label class="sm-label">API Configuration</label>
+                    <input type="password" id="apiKeyInput" class="sm-input" placeholder="Paste Gemini API Key">
+                    <div style="font-size:10px; color:#5f6368;">Key is saved locally in your browser.</div>
+                </div>
+
+                <!-- Intelligence Model Selection -->
+                <div class="sm-section">
+                    <label class="sm-label">Intelligence Level</label>
+                    <select id="modelSelector" class="sm-select">
+                        <option value="flash-no-think">Gemini 2.5 Flash (Standard)</option>
+                        <option value="flash-think">Gemini 2.5 Flash (Thinking)</option>
+                        <option value="pro-think">Gemini 2.5 Pro (Thinking)</option>
+                    </select>
+                </div>
+
+                <!-- Action Creator -->
+                <div class="sm-section" style="border-top: 1px solid #eee; padding-top:16px;">
+                    <label id="actionCreatorLabel" class="sm-label">Create New Action</label>
+                    <textarea id="promptInput" class="sm-textarea" placeholder="E.g., Summarize this text..."></textarea>
+                    <input type="text" id="actionNameInput" class="sm-input" placeholder="Button Name (e.g., Summarize)">
+                    <button id="saveActionBtn" class="sm-btn secondary">Save as Button</button>
+                    <button id="cancelEditBtn" class="sm-btn secondary" style="display: none; margin-top: 8px; background-color: #f1f3f4;">Cancel Edit</button>
+                </div>
+
+                <!-- Saved Actions -->
+                <div class="sm-section">
+                    <label class="sm-label">Your Actions</label>
+                    <div id="actionList" class="saved-actions-list">
+                        <!-- Buttons appear here -->
+                        <div style="font-size:12px; color:#999; font-style:italic; padding:4px;">No actions saved yet.</div>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+    </div>
+
+    <!-- Overlay Container for Carets and Highlights -->
+    <div id="overlayContainer">
+        <div id="fakeCaret" class="fake-caret"></div>
+        <div id="highlightOverlay"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editor = document.getElementById('editor');
+            const saveStatus = document.getElementById('saveStatus');
+            const fakeCaret = document.getElementById('fakeCaret');
+            const highlightOverlay = document.getElementById('highlightOverlay');
+            
+            // Font Controls
+            const btnDecrease = document.getElementById('btnDecrease');
+            const btnIncrease = document.getElementById('btnIncrease');
+            const fontSizeInput = document.getElementById('fontSizeInput');
+            const fontFamilyBtn = document.getElementById('fontFamilyBtn');
+            const fontDropdown = document.getElementById('fontDropdown');
+            const currentFontName = document.getElementById('currentFontName');
+
+            // AI / Side Menu Controls
+            const toggleAiBtn = document.getElementById('toggleAiBtn');
+            const closeSideMenu = document.getElementById('closeSideMenu');
+            const sideMenu = document.getElementById('sideMenu');
+            const apiKeyInput = document.getElementById('apiKeyInput');
+            const modelSelector = document.getElementById('modelSelector');
+            const promptInput = document.getElementById('promptInput');
+            const actionNameInput = document.getElementById('actionNameInput');
+            const saveActionBtn = document.getElementById('saveActionBtn');
+            const actionList = document.getElementById('actionList');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const actionCreatorLabel = document.getElementById('actionCreatorLabel');
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+            const STORAGE_KEY = 'AutoSaveDocsContent';
+            const ACTIONS_KEY = 'GeminiActions';
+            const API_KEY_STORAGE = 'GeminiApiKey';
+            const AUTOSAVE_DELAY = 500;
+            
+            let autosaveTimeout = null;
+            let isDirty = false;
+            let lastValidRange = null;
+            let editingActionIndex = null;
+
+            // --- 0. Font Configuration ---
+            const availableFonts = [
+                { name: 'Arial', val: 'Arial, sans-serif' },
+                { name: 'Comic Sans MS', val: '"Comic Sans MS", "Comic Sans", cursive' },
+                { name: 'Courier New', val: '"Courier New", Courier, monospace' },
+                { name: 'EB Garamond', val: '"EB Garamond", serif' },
+                { name: 'Georgia', val: 'Georgia, serif' },
+                { name: 'Impact', val: 'Impact, sans-serif' },
+                { name: 'Lexend', val: '"Lexend", sans-serif' },
+                { name: 'Lobster', val: '"Lobster", cursive' },
+                { name: 'Lora', val: '"Lora", serif' },
+                { name: 'Merriweather', val: '"Merriweather", serif' },
+                { name: 'Montserrat', val: '"Montserrat", sans-serif' },
+                { name: 'Nunito', val: '"Nunito", sans-serif' },
+                { name: 'Oswald', val: '"Oswald", sans-serif' },
+                { name: 'Pacifico', val: '"Pacifico", cursive' },
+                { name: 'Permanent Marker', val: '"Permanent Marker", cursive' },
+                { name: 'Playfair Display', val: '"Playfair Display", serif' },
+                { name: 'Roboto', val: '"Roboto", sans-serif' },
+                { name: 'Roboto Mono', val: '"Roboto Mono", monospace' },
+                { name: 'Roboto Serif', val: '"Roboto Serif", serif' },
+                { name: 'Rowdies', val: '"Rowdies", cursive' },
+                { name: 'Spectral', val: '"Spectral", serif' },
+                { name: 'Times New Roman', val: '"Times New Roman", Times, serif' },
+                { name: 'Trebuchet MS', val: '"Trebuchet MS", sans-serif' },
+                { name: 'Verdana', val: 'Verdana, sans-serif' }
+            ];
+
+            // --- 1. Core Editor Functions ---
+
+            function loadContent() {
+                const savedContent = localStorage.getItem(STORAGE_KEY);
+                if (savedContent) {
+                    editor.innerHTML = savedContent;
+                } else {
+                    editor.innerHTML = '<p style="font-family: Arial, sans-serif;">Welcome to Clifton Docs! (Full of bugs)\n\nYou can type here using a thing called a "keyboard." Your work is saved automatically.\n\nIt is completely private and offline. This prevents tech CEOs from having freakoffs with money gained from selling your data (allegedly)</p>';
+                }
+                updateStatus('AllChangesSaved');
+            }
+
+            function saveContent() {
+                const currentContent = editor.innerHTML;
+                localStorage.setItem(STORAGE_KEY, currentContent);
+                isDirty = false;
+                updateStatus('AllChangesSaved');
+            }
+
+            function updateStatus(state) {
+                if(state === 'Saving') saveStatus.textContent = 'Saving...';
+                if(state === 'AllChangesSaved') saveStatus.textContent = 'All changes saved';
+                if(state === 'Error') saveStatus.textContent = 'Error saving';
+            }
+
+            function triggerAutoSave() {
+                clearTimeout(autosaveTimeout);
+                if (!isDirty) {
+                    isDirty = true;
+                    updateStatus('Saving');
+                }
+                autosaveTimeout = setTimeout(saveContent, AUTOSAVE_DELAY);
+            }
+
+            // --- 2. Visualization Logic ---
+
+            function visualizeSelection() {
+                const range = lastValidRange;
+                if (!range) return;
+                hideVisualization();
+
+                if (range.collapsed) {
+                    let rects = range.getClientRects();
+                    let rect = rects.length > 0 ? rects[0] : null;
+
+                    if (!rect || rect.height === 0) {
+                        const marker = document.createElement('span');
+                        marker.appendChild(document.createTextNode('\u200b'));
+                        try {
+                            range.insertNode(marker);
+                            rect = marker.getBoundingClientRect();
+                            marker.parentNode.removeChild(marker);
+                        } catch (e) {}
+                    } else {
+                        rect = range.getBoundingClientRect();
+                    }
+
+                    if (rect) {
+                        fakeCaret.style.top = rect.top + 'px';
+                        fakeCaret.style.left = rect.left + 'px';
+                        fakeCaret.style.height = rect.height + 'px';
+                        fakeCaret.style.display = 'block';
+                    }
+                } else {
+                    const rects = range.getClientRects();
+                    for (let i = 0; i < rects.length; i++) {
+                        const r = rects[i];
+                        const div = document.createElement('div');
+                        div.className = 'selection-rect';
+                        div.style.top = r.top + 'px';
+                        div.style.left = r.left + 'px';
+                        div.style.width = r.width + 'px';
+                        div.style.height = r.height + 'px';
+                        highlightOverlay.appendChild(div);
+                    }
+                }
+            }
+
+            function hideVisualization() {
+                fakeCaret.style.display = 'none';
+                highlightOverlay.innerHTML = '';
+            }
+
+            // --- 3. Font Family Logic ---
+
+            function initFontDropdown() {
+                fontDropdown.innerHTML = '';
+                availableFonts.forEach(font => {
+                    const item = document.createElement('div');
+                    item.className = 'ff-item';
+                    item.textContent = font.name;
+                    item.style.fontFamily = font.val;
+                    
+                    item.addEventListener('mousedown', (e) => {
+                        e.preventDefault(); 
+                        applyFontFamily(font.val);
+                        fontDropdown.classList.remove('show');
+                        updateFontFamilyUI(font.name);
+                    });
+                    fontDropdown.appendChild(item);
+                });
+            }
+
+            function applyFontFamily(fontVal) {
+                editor.focus();
+                document.execCommand('styleWithCSS', false, true);
+                document.execCommand('fontName', false, fontVal);
+                triggerAutoSave();
+            }
+
+            function getFontFamilyAtCursor(node) {
+                if (!node) return 'Arial';
+                const element = (node.nodeType === 3) ? node.parentElement : node;
+                if (!element) return 'Arial';
+                let family = window.getComputedStyle(element).fontFamily;
+                family = family.replace(/['"]/g, ''); 
+                return family;
+            }
+
+            function updateFontFamilyUI(familyName) {
+                let match = availableFonts.find(f => {
+                    const cleanVal = f.val.replace(/['"]/g, '').toLowerCase();
+                    const cleanCheck = familyName.toLowerCase();
+                    return cleanVal.includes(cleanCheck) || cleanCheck.includes(f.name.toLowerCase());
+                });
+
+                const displayName = match ? match.name : 'Arial';
+                currentFontName.textContent = displayName;
+
+                const items = fontDropdown.querySelectorAll('.ff-item');
+                items.forEach(item => {
+                    if (item.textContent === displayName) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+
+            // --- 4. Font Size Logic ---
+
+            function pxToPt(pxStr) {
+                const px = parseFloat(pxStr);
+                if (isNaN(px)) return 11; 
+                return Math.round(px * 0.75); 
+            }
+
+            function getFontSizePt(node) {
+                const element = (node.nodeType === 3) ? node.parentElement : node;
+                if (!element) return 11;
+                const computed = window.getComputedStyle(element).fontSize;
+                return pxToPt(computed);
+            }
+
+            function getTextNodesInRange(range) {
+                const textNodes = [];
+                let root = range.commonAncestorContainer;
+                if (root.nodeType === 3) {
+                    if (range.intersectsNode(root)) textNodes.push(root);
+                    return textNodes;
+                }
+                const walker = document.createTreeWalker(
+                    root, NodeFilter.SHOW_TEXT, {
+                        acceptNode: function(node) {
+                            return range.intersectsNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                        }
+                    }
+                );
+                while(walker.nextNode()) textNodes.push(walker.currentNode);
+                return textNodes;
+            }
+
+            function normalizeRangeBoundaries(range) {
+                if (range.collapsed) return range;
+                if (range.endContainer.nodeType === 3 && range.endOffset < range.endContainer.length && range.endOffset > 0) {
+                     range.endContainer.splitText(range.endOffset);
+                }
+                if (range.startContainer.nodeType === 3 && range.startOffset > 0 && range.startOffset < range.startContainer.length) {
+                     const newNode = range.startContainer.splitText(range.startOffset);
+                     range.setStart(newNode, 0);
+                }
+                return range;
+            }
+
+            function applyFontSize(size) {
+                if (!lastValidRange) return;
+                editor.focus();
+                
+                let range = normalizeRangeBoundaries(lastValidRange);
+                const nodes = getTextNodesInRange(range);
+
+                if (nodes.length > 0) {
+                    const newRange = document.createRange();
+                    let firstSpan = null;
+                    let lastSpan = null;
+
+                    nodes.forEach((node, index) => {
+                        const parent = node.parentNode;
+                        if (parent.tagName === 'SPAN' && parent.childNodes.length === 1 && parent !== editor) {
+                            parent.style.fontSize = size + 'pt';
+                            if (index === 0) firstSpan = parent;
+                            if (index === nodes.length - 1) lastSpan = parent;
+                        } else {
+                            const span = document.createElement('span');
+                            span.style.fontSize = size + 'pt';
+                            node.replaceWith(span);
+                            span.appendChild(node);
+                            if (index === 0) firstSpan = span;
+                            if (index === nodes.length - 1) lastSpan = span;
+                        }
+                    });
+
+                    if (firstSpan && lastSpan) {
+                        newRange.setStart(firstSpan.firstChild, 0);
+                        newRange.setEnd(lastSpan.lastChild, lastSpan.lastChild.length);
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                        lastValidRange = newRange.cloneRange();
+                    }
+                } 
+                editor.normalize();
+                triggerAutoSave();
+            }
+
+            function applyRelativeFontSize(delta) {
+                if (!lastValidRange) return;
+                editor.focus();
+                let range = normalizeRangeBoundaries(lastValidRange);
+                const nodes = getTextNodesInRange(range);
+                
+                if (nodes.length > 0) {
+                    const newRange = document.createRange();
+                    let firstSpan = null;
+                    let lastSpan = null;
+
+                    nodes.forEach((node, index) => {
+                        const currentSize = getFontSizePt(node);
+                        const newSize = Math.max(1, currentSize + delta);
+                        const parent = node.parentNode;
+                        if (parent.tagName === 'SPAN' && parent.childNodes.length === 1 && parent !== editor) {
+                            parent.style.fontSize = newSize + 'pt';
+                            if (index === 0) firstSpan = parent;
+                            if (index === nodes.length - 1) lastSpan = parent;
+                        } else {
+                            const span = document.createElement('span');
+                            span.style.fontSize = newSize + 'pt';
+                            node.replaceWith(span);
+                            span.appendChild(node);
+                            if (index === 0) firstSpan = span;
+                            if (index === nodes.length - 1) lastSpan = span;
+                        }
+                    });
+
+                    if (firstSpan && lastSpan) {
+                        newRange.setStart(firstSpan.firstChild, 0);
+                        newRange.setEnd(lastSpan.lastChild, lastSpan.lastChild.length);
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                        lastValidRange = newRange.cloneRange();
+                    }
+                }
+                editor.normalize();
+                triggerAutoSave();
+                handleSelectionChange(); 
+            }
+
+            function handleFontSizeInputChange() {
+                let val = parseInt(fontSizeInput.value);
+                hideVisualization(); 
+                if (isNaN(val)) return;
+                if (val < 1) val = 1;
+                if (val > 400) val = 400;
+                fontSizeInput.value = val;
+                applyFontSize(val);
+            }
+
+            function changeSize(delta) {
+                hideVisualization();
+                let currentVal = parseInt(fontSizeInput.value);
+                if (isNaN(currentVal)) {
+                    applyRelativeFontSize(delta);
+                } else {
+                    let newVal = currentVal + delta;
+                    if (newVal < 1) newVal = 1;
+                    fontSizeInput.value = newVal;
+                    applyFontSize(newVal);
+                }
+            }
+
+            // --- 5. Detection Logic ---
+
+            function handleSelectionChange() {
+                if (document.activeElement === fontSizeInput || document.activeElement === apiKeyInput || document.activeElement === promptInput || document.activeElement === actionNameInput) return;
+
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    if (editor.contains(range.commonAncestorContainer) || range.commonAncestorContainer === editor) {
+                        lastValidRange = range.cloneRange();
+                        detectFormats(range);
+                    }
+                }
+            }
+
+            function detectFormats(range) {
+                let anchor = range.startContainer;
+                let element = (anchor.nodeType === 3) ? anchor.parentElement : anchor;
+                if (!editor.contains(element) && element !== editor) return;
+
+                const nodes = !range.collapsed ? getTextNodesInRange(range) : [];
+
+                // Font Size
+                if (!range.collapsed && nodes.length > 0) {
+                    const firstSize = getFontSizePt(nodes[0]);
+                    let isMixed = false;
+                    for (let i = 1; i < nodes.length; i++) {
+                        if (getFontSizePt(nodes[i]) !== firstSize) {
+                            isMixed = true;
+                            break;
+                        }
+                    }
+                    fontSizeInput.value = isMixed ? "" : firstSize;
+                } else {
+                     fontSizeInput.value = pxToPt(window.getComputedStyle(element).fontSize);
+                }
+
+                // Font Family
+                const currentFamily = getFontFamilyAtCursor(anchor);
+                updateFontFamilyUI(currentFamily);
+            }
+
+            // --- 6. Side Menu / AI Logic ---
+
+            // Load Saved Data
+            function loadAiData() {
+                const storedKey = localStorage.getItem(API_KEY_STORAGE);
+                if (storedKey) apiKeyInput.value = storedKey;
+
+                const storedActions = JSON.parse(localStorage.getItem(ACTIONS_KEY) || '[]');
+                renderActions(storedActions);
+            }
+
+            apiKeyInput.addEventListener('change', () => {
+                localStorage.setItem(API_KEY_STORAGE, apiKeyInput.value);
+            });
+
+            // Toggle Panel
+            toggleAiBtn.addEventListener('click', () => {
+                sideMenu.classList.add('open');
+            });
+            closeSideMenu.addEventListener('click', () => {
+                sideMenu.classList.remove('open');
+            });
+
+            function resetActionForm() {
+                promptInput.value = '';
+                actionNameInput.value = '';
+                editingActionIndex = null;
+                saveActionBtn.textContent = 'Save as Button';
+                actionCreatorLabel.textContent = 'Create New Action';
+                cancelEditBtn.style.display = 'none';
+            }
+
+            function startEditingAction(index) {
+                const actions = JSON.parse(localStorage.getItem(ACTIONS_KEY) || '[]');
+                const actionToEdit = actions[index];
+                if (!actionToEdit) return;
+
+                editingActionIndex = index;
+                promptInput.value = actionToEdit.prompt;
+                actionNameInput.value = actionToEdit.name;
+
+                saveActionBtn.textContent = 'Update Button';
+                actionCreatorLabel.textContent = 'Edit Action';
+                cancelEditBtn.style.display = 'block';
+                promptInput.focus();
+            }
+
+            cancelEditBtn.addEventListener('click', resetActionForm);
+
+
+            // Save Action Logic
+            saveActionBtn.addEventListener('click', () => {
+                const prompt = promptInput.value.trim();
+                const name = actionNameInput.value.trim();
+
+                if (!prompt || !name) {
+                    alert('Please enter both a prompt and a name for the button.');
+                    return;
+                }
+
+                const actions = JSON.parse(localStorage.getItem(ACTIONS_KEY) || '[]');
+                
+                if (editingActionIndex !== null) {
+                    actions[editingActionIndex] = { name, prompt };
+                    localStorage.setItem(ACTIONS_KEY, JSON.stringify(actions));
+                    renderActions(actions);
+                    resetActionForm();
+                } else {
+                    actions.push({ name, prompt });
+                    localStorage.setItem(ACTIONS_KEY, JSON.stringify(actions));
+                    renderActions(actions);
+                    promptInput.value = '';
+                    actionNameInput.value = '';
+                }
+            });
+
+            function renderActions(actions) {
+                actionList.innerHTML = '';
+                if (actions.length === 0) {
+                    actionList.innerHTML = '<div style="font-size:12px; color:#999; font-style:italic; padding:4px;">No actions saved yet.</div>';
+                    return;
+                }
+
+                actions.forEach((action, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'action-item';
+
+                    const btn = document.createElement('button');
+                    btn.className = 'action-btn';
+                    btn.textContent = action.name;
+                    btn.title = action.prompt;
+                    btn.onclick = () => runGeminiAction(action.prompt);
+
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'action-edit';
+                    editBtn.textContent = '✎';
+                    editBtn.title = 'Edit Action';
+                    editBtn.onclick = () => startEditingAction(index);
+
+                    const del = document.createElement('button');
+                    del.className = 'action-delete';
+                    del.textContent = '×';
+                    del.title = 'Remove Action';
+                    del.onclick = () => {
+                        actions.splice(index, 1);
+                        localStorage.setItem(ACTIONS_KEY, JSON.stringify(actions));
+                        renderActions(actions);
+                    };
+
+                    item.appendChild(btn);
+                    item.appendChild(editBtn);
+                    item.appendChild(del);
+                    actionList.appendChild(item);
+                });
+            }
+
+            function simpleMarkdownToHtml(markdown) {
+                let html = markdown
+                    // Basic HTML entity escaping for safety
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+
+                // Bold (**text**)
+                html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                
+                // Italic (*text*)
+                html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                
+                // Newlines to <br> tags
+                html = html.replace(/\n/g, '<br>');
+
+                return html;
+            }
+
+            // Gemini API Logic
+            async function runGeminiAction(userPrompt) {
+                const apiKey = apiKeyInput.value.trim();
+                if (!apiKey) {
+                    alert('Please enter your Gemini API Key in the side menu.');
+                    sideMenu.classList.add('open');
+                    return;
+                }
+
+                if (!lastValidRange || lastValidRange.collapsed) {
+                    alert('Please select the text you want to process in the editor.');
+                    return;
+                }
+                
+                const tempDiv = document.createElement("div");
+                tempDiv.appendChild(lastValidRange.cloneContents());
+                const selectedText = tempDiv.innerText;
+
+                const mode = modelSelector.value;
+                
+                // Determine Model and Configuration
+                let modelName = 'gemini-2.5-flash'; // Fallback / Default
+                let generationConfig = {};
+
+                if (mode === 'flash-no-think') {
+                    modelName = 'gemini-2.5-flash';
+                    // Explicitly disable thinking or ensure budget is 0
+                    generationConfig = {
+                        thinkingConfig: {thinkingBudget: 0 }
+                    };
+                } else if (mode === 'flash-think') {
+                    modelName = 'gemini-2.5-flash';
+                    // Enable thinking with a budget
+                    generationConfig = {
+                        thinkingConfig: {thinkingBudget: 24576 }
+                    };
+                } else if (mode === 'pro-think') {
+                    modelName = 'gemini-2.5-pro'; // Using latest experimental pro as specific 2.5 pro ID varies
+                    // Enable thinking
+                    generationConfig = {
+                        thinkingConfig: {thinkingBudget: 24576 }
+                    };
+                }
+
+
+                
+                if (mode === 'flash-no-think') modelName = 'gemini-2.5-flash';
+                if (mode === 'flash-think') modelName = 'gemini-2.5-flash';
+                if (mode === 'pro-think') modelName = 'gemini-2.5-pro';
+
+                loadingOverlay.style.display = 'flex';
+
+                const fullPrompt = `Instruction: ${userPrompt}\n\nInput Text: "${selectedText}"\n\nProvide only the result of the instruction applied to the input text. Do not add any extra commentary or explanation.`;
+
+                try {
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+                    
+                    const payload = {
+                        contents: [{
+                            parts: [{ text: fullPrompt }]
+                        }]
+                    };
+
+                    // Only add generationConfig if needed (thinking models)
+                    if (mode.includes('think')) {
+                        payload.generationConfig = {
+                           thinkingConfig: { 
+    
+                               thinkingBudget: 24576 
+                           }
+                        };
+                    } else if (mode === 'flash-no-think') {
+                         payload.generationConfig = {
+                           thinkingConfig: { 
+                               includeThoughts: false, 
+                               thinkingBudgetTokenCount: 0 
+                           }
+                        };
+                    }
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.error?.message || 'API Error');
+                    }
+
+                    const data = await response.json();
+                    
+                    // Extract text
+                    let resultText = '';
+                    if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
+                        data.candidates[0].content.parts.forEach(part => {
+                            if (part.text) resultText += part.text;
+                        });
+                    }
+
+                    if (resultText) {
+                        // Apply to editor
+                        editor.focus();
+                        // Restore selection
+                        const sel = window.getSelection();
+                        sel.removeAllRanges();
+                        sel.addRange(lastValidRange);
+                        
+                        const resultHtml = simpleMarkdownToHtml(resultText);
+                        document.execCommand('insertHTML', false, resultHtml);
+                        triggerAutoSave();
+                    }
+
+                } catch (error) {
+                    alert('Gemini API Error: ' + error.message);
+                } finally {
+                    loadingOverlay.style.display = 'none';
+                }
+            }
+
+
+            // --- 7. Event Listeners ---
+
+            const preventFocusLoss = (e) => {
+                e.preventDefault(); 
+            };
+
+            // Font Family Dropdown Toggle
+            fontFamilyBtn.addEventListener('mousedown', (e) => {
+                preventFocusLoss(e);
+                fontDropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking elsewhere
+            document.addEventListener('mousedown', (e) => {
+                if (!fontFamilyBtn.contains(e.target) && !fontDropdown.contains(e.target)) {
+                    fontDropdown.classList.remove('show');
+                }
+            });
+
+            // Font Size Listeners
+            btnDecrease.addEventListener('mousedown', preventFocusLoss);
+            btnIncrease.addEventListener('mousedown', preventFocusLoss);
+            btnDecrease.addEventListener('click', () => changeSize(-1));
+            btnIncrease.addEventListener('click', () => changeSize(1));
+            
+            fontSizeInput.addEventListener('focus', visualizeSelection);
+            fontSizeInput.addEventListener('blur', () => { setTimeout(hideVisualization, 200); });
+            fontSizeInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleFontSizeInputChange();
+                    editor.focus();
+                }
+            });
+
+            window.addEventListener('scroll', hideVisualization, true);
+
+            editor.addEventListener('input', () => {
+                hideVisualization(); 
+                triggerAutoSave();
+            });
+            
+            document.addEventListener('selectionchange', handleSelectionChange);
+
+            window.addEventListener('beforeunload', (event) => {
+                if (isDirty) {
+                    event.preventDefault();
+                    event.returnValue = '';
+                }
+            });
+
+            // Initialize
+            initFontDropdown();
+            loadContent();
+            loadAiData();
+        });
+    </script>
+</body>
+</html>
