@@ -556,6 +556,7 @@
                 <div class="sm-section">
                     <label class="sm-label">In-telly-gence Level</label>
                     <select id="modelSelector" class="sm-select">
+						<option value="retard">Gemini 2.5 lite </option>
                         <option value="flash-no-think">Gemini 2.5 Flash (Standard)</option>
                         <option value="flash-think">Gemini 2.5 Flash (Thinking)</option>
                         <option value="pro-think">Gemini 2.5 Pro (Thinking)</option>
@@ -1148,7 +1149,10 @@
                 // Determine Model and Configuration
                 let modelName = 'gemini-2.5-flash'; // Fallback / Default
                 let generationConfig = {};
-
+                if (mode === 'retard') {
+                    modelName = 'gemini-2.5-flash-lite';
+                    // Explicitly disable thinking or ensure budget is 0
+};
                 if (mode === 'flash-no-think') {
                     modelName = 'gemini-2.5-flash';
                     // Explicitly disable thinking or ensure budget is 0
